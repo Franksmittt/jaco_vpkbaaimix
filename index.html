@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Braai Mix - Overlay Studio Grid</title>
+    <style>
+        :root {
+            --apple-white: #f5f5f7;
+            --samsung-black: #000000;
+            --samsung-blue: #1428A0;
+            --galaxy-glow: #2b60ff;
+            --supernova-yellow: #FFC600;
+            /* Comma-separated R,G,B for rgba(var(--accent-rgb), a) — updated by accent picker */
+            --accent-rgb: 255, 198, 0;
+            --titanium-gray: #86868b;
+            --glass-bg: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            /* Default studio background (same folder as index.html) */
+            --canvas-default-bg: url('Gemini_Generated_Image_ctjuvhctjuvhctju.png');
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: var(--apple-white);
+            margin: 0;
+            padding: 40px;
+        }
+
+        /* --- CONTROL PANEL --- */
+        .control-panel {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--apple-white);
+            color: var(--samsung-black);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.02);
+            background-color: var(--supernova-yellow);
+        }
+
+        /* --- GRID SYSTEM --- */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(300px, 1fr));
+            gap: 40px 20px;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+
+        .template-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .template-name {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--titanium-gray);
+            margin-bottom: 10px;
+        }
+
+        /* --- CANVAS --- */
+        .ad-canvas {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background-color: #111;
+            background-image: var(--canvas-default-bg);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #333;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            transition: background-image 0.3s ease;
+            container-type: inline-size;
+        }
+
+        /* Flat colour cards (no photo overlay gradient) */
+        .ad-canvas.ad-canvas--solid::after {
+            display: none;
+        }
+
+        /* Text readability over photo backgrounds */
+        .ad-canvas::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* --- TEXT LAYERS --- */
+        .layer {
+            position: absolute;
+            z-index: 10;
+            box-sizing: border-box;
+            padding: 24px;
+            width: 100%;
+        }
+
+        .t-top { top: 0; left: 0; }
+        .t-bottom { bottom: 0; left: 0; }
+        .t-center { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; }
+        .t-left { left: 0; text-align: left; }
+        .t-right { right: 0; text-align: right; }
+
+        .flex-row { display: flex; justify-content: space-between; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        
+        /* Typography */
+        .headline-massive { font-size: 48px; font-weight: 900; line-height: 0.9; letter-spacing: -2px; text-transform: uppercase; }
+        .headline-large { font-size: 32px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+        .subhead { font-size: 18px; font-weight: 600; color: var(--titanium-gray); }
+        .body-text { font-size: 14px; font-weight: 400; line-height: 1.4; color: #ccc; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .specs { font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--titanium-gray); }
+        
+        /* Accents */
+        .color-yellow { color: var(--supernova-yellow); }
+        .color-blue { color: var(--galaxy-glow); }
+        .color-white { color: var(--apple-white); }
+        
+        .squircle {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--supernova-yellow);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .divider { height: 1px; background: rgba(255,255,255,0.2); margin: 12px 0; }
+        /* High-contrast line for busy backgrounds (SKU / pack summary) */
+        .specs.specs-read,
+        .body-text.specs-read {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 10px rgba(0,0,0,0.65);
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+
+        .accent-row {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+        .accent-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--titanium-gray);
+            margin-bottom: 14px;
+        }
+        .accent-tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 14px 18px;
+        }
+        .accent-swatches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .accent-swatch {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.25);
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+        }
+        .accent-swatch:hover {
+            transform: scale(1.08);
+        }
+        .accent-swatch[aria-pressed="true"] {
+            outline: 2px solid var(--apple-white);
+            outline-offset: 3px;
+        }
+        .accent-custom-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--titanium-gray);
+        }
+        #accentColorPicker {
+            width: 48px;
+            height: 38px;
+            padding: 0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: transparent;
+        }
+        #accentColorPicker::-webkit-color-swatch-wrapper { padding: 2px; }
+        #accentColorPicker::-webkit-color-swatch { border-radius: 8px; border: 2px solid rgba(255,255,255,0.25); }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h1>Ultimate Braai Mix Studio</h1>
+        <label for="imageUpload" class="upload-btn">
+            <svg style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Upload Background Image
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+        <div class="accent-row">
+            <div class="accent-label">Accent color (all templates)</div>
+            <div class="accent-tools">
+                <div class="accent-swatches" role="group" aria-label="Preset accent colors">
+                    <button type="button" class="accent-swatch" data-hex="#FFC600" style="background:#FFC600;" title="Gold" aria-pressed="true"></button>
+                    <button type="button" class="accent-swatch" data-hex="#2b60ff" style="background:#2b60ff;" title="Blue" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#e53935" style="background:#e53935;" title="Red" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#00c853" style="background:#00c853;" title="Green" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#ff6d00" style="background:#ff6d00;" title="Orange" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#9c27b0" style="background:#9c27b0;" title="Purple" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#00bcd4" style="background:#00bcd4;" title="Cyan" aria-pressed="false"></button>
+                </div>
+                <div class="accent-custom-wrap">
+                    <span>Custom</span>
+                    <input type="color" id="accentColorPicker" value="#FFC600" aria-label="Pick custom accent color" title="Custom color">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="studio-grid">
+
+        <div class="template-wrapper">
+            <div class="template-name">A1: The Monolith</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="headline-massive mb-1" style="text-align:center;width:100%;text-shadow:0 2px 14px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.95);">ULTIMATE.</div>
+                    <div class="headline-massive" style="text-align:center;width:100%;text-shadow:0 2px 14px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.95);">BRAAI MIX</div>
+                </div>
+                <div class="layer t-bottom text-center" style="left:0;right:0;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div style="width:100%;max-width:100%;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:3px;padding:0 10px;box-sizing:border-box;min-width:0;margin-bottom:12px;">
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--apple-white);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.4);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 3px rgba(0,0,0,0.9);">Swarthaak</span>
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--supernova-yellow);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(255,255,255,0.18);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 4px rgba(0,0,0,0.85);">Geelhaak</span>
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--apple-white);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.4);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 3px rgba(0,0,0,0.9);">Kameeldoring</span>
+                    </div>
+                    <div class="squircle" style="width:100%;max-width:100%;text-align:center;box-sizing:border-box;">
+                        <div class="specs mb-1" style="text-align:center;">10kg Bags | R25/bag | Min 50</div>
+                        <div class="body-text color-yellow mb-1" style="text-align:center;">R1250 Total + Free Gauteng Delivery</div>
+                        <div class="badge" style="display:inline-block;margin-left:auto;margin-right:auto;">WhatsApp 063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A2: Price Reveal</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="display:flex;justify-content:center;box-sizing:border-box;">
+                    <div class="squircle" style="width:100%;max-width:100%;min-width:0;overflow:hidden;text-align:center;box-sizing:border-box;padding:16px 12px;border-color:rgba(var(--accent-rgb),0.25);box-shadow:0 8px 32px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.08);">
+                        <div style="font-size:clamp(12px,3.8vw,17px);font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.2;margin-bottom:12px;max-width:100%;overflow-wrap:anywhere;word-break:break-word;">Vaalpenskraal Braai Mix</div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.75),transparent);margin:0 0 12px 0;opacity:0.9;max-width:100%;"></div>
+                        <div style="max-width:100%;min-width:0;box-sizing:border-box;font-size:11px;font-weight:700;line-height:1.5;color:var(--apple-white);letter-spacing:0.02em;text-shadow:0 1px 10px rgba(0,0,0,0.95),0 2px 4px rgba(0,0,0,0.85);text-align:center;overflow-wrap:anywhere;">
+                            <span style="color:var(--apple-white);">Swarthaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span style="color:var(--apple-white);">Geelhaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><br><span style="color:var(--apple-white);">Kameeldoring</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layer t-center">
+                    <div class="headline-massive color-yellow" style="text-shadow:0 2px 6px rgba(0,0,0,0.95),0 4px 18px rgba(0,0,0,0.75),0 0 1px rgba(0,0,0,1),0 1px 0 rgba(0,0,0,0.5);">R1250</div>
+                    <div class="subhead color-white" style="text-shadow:0 1px 5px rgba(0,0,0,0.95),0 3px 14px rgba(0,0,0,0.8),0 0 1px rgba(0,0,0,0.9);">50 Bags. Delivered.</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge mb-1">10KG ULTIMATE MIX</div>
+                    <div class="body-text">Order: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A3: Macro Detail</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="headline-large mb-1" style="color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 24px rgba(0,0,0,0.55);line-height:1.15;">Vaalpenskraal<br>Ultimate.</div>
+                    <div class="body-text" style="font-size:15px;font-weight:600;line-height:1.45;color:var(--apple-white);letter-spacing:0.02em;text-shadow:0 1px 8px rgba(0,0,0,0.95),0 2px 12px rgba(0,0,0,0.75);">Gauteng's finest mix.</div>
+                </div>
+                <div class="layer t-bottom text-right">
+                    <div class="headline-large color-yellow mb-1">R25</div>
+                    <div class="specs color-white">Per 10kg Bag</div>
+                    <div class="specs mb-2 color-white">Min Order: 50</div>
+                    <div class="badge" style="display:inline-block;text-align:center;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A4: Glass Overlay</div>
+            <div class="ad-canvas">
+                <div class="layer t-center squircle w-100">
+                    <div class="badge mb-2">FREE GAUTENG DELIVERY</div>
+                    <div class="headline-large mb-1">50x 10KG Bags</div>
+                    <div class="subhead color-yellow mb-2">R1250 Total</div>
+                    <div class="body-text mb-2">Swarthaak / Geelhaak / Kameeldoring</div>
+                    <div class="divider"></div>
+                    <div class="specs">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A5: The Signature</div>
+            <div class="ad-canvas">
+                <div class="layer t-bottom">
+                    <div class="headline-large mb-1">Ultimate<br>Braai Mix.</div>
+                    <div class="flex-row mb-1">
+                        <div class="specs color-white">10kg</div>
+                        <div class="specs color-white">50 Bags</div>
+                        <div class="specs color-white">R1250</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="squircle" style="margin-top:10px;padding:16px 14px;text-align:center;border-color:rgba(var(--accent-rgb),0.32);box-shadow:0 8px 28px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);">
+                        <div style="font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;line-height:1.4;color:var(--apple-white);text-shadow:0 2px 12px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:12px;">
+                            <span style="color:var(--supernova-yellow);">Free</span> delivery in Gauteng
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.65),transparent);margin:0 0 12px 0;"></div>
+                        <div style="font-size:21px;font-weight:900;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.15;text-align:center;width:100%;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B3: Neon Contrast</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 2px 12px rgba(0,0,0,0.85),0 1px 2px rgba(0,0,0,0.9);">The Ultimate Braai Mix.</div>
+                </div>
+                <div class="layer t-center text-center" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                    <div class="headline-massive" style="color: transparent; -webkit-text-stroke: 2px var(--supernova-yellow);">50</div>
+                    <div class="headline-massive mb-1">BAGS.</div>
+                    <div class="badge">R1250 DELIVERED (GP)</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B4: Interaction Zone</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="headline-large mb-1" style="text-align:center;width:100%;color:var(--apple-white);text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 24px rgba(0,0,0,0.55);">Vaalpenskraal</div>
+                    <div class="subhead color-white" style="text-align:center;width:100%;font-weight:700;font-size:17px;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 12px rgba(0,0,0,0.95),0 2px 8px rgba(0,0,0,0.85);">The Ultimate Mix.</div>
+                </div>
+                <div class="layer t-bottom" style="background: rgba(0,0,0,0.85); padding-top: 28px; border-top: 1px solid #333; backdrop-filter: blur(10px);">
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--supernova-yellow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Price per 10kg</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--supernova-yellow);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R25</div>
+                        </div>
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid rgba(255,255,255,0.35);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">MOQ (50 Bags)</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--apple-white);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R1250</div>
+                        </div>
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--galaxy-glow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Gauteng Delivery</div>
+                            <div style="font-size:20px;font-weight:900;letter-spacing:0.06em;color:var(--galaxy-glow);line-height:1;text-shadow:0 0 18px rgba(43,96,255,0.35);">FREE</div>
+                        </div>
+                    </div>
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B5: Motion Blur</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="headline-massive color-yellow" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FAST.</div>
+                    <div class="headline-massive" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FREE.</div>
+                    <div class="subhead mt-1 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Gauteng Delivery.</div>
+                </div>
+                <div class="layer t-bottom squircle" style="text-align:center;border-color:rgba(var(--accent-rgb),0.28);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);padding:18px 16px;">
+                    <div style="font-size:14px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);line-height:1.3;margin-bottom:12px;">
+                        50 x 10kg Bags = <span style="color:var(--supernova-yellow);">R1250</span>
+                    </div>
+                    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.75),transparent);margin:0 0 12px 0;opacity:0.95;"></div>
+                    <div style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.5;margin-bottom:6px;">
+                        <span>Swarthaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Geelhaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Kameeldoring</span>
+                    </div>
+                    <div style="font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--titanium-gray);margin-bottom:14px;text-shadow:0 1px 6px rgba(0,0,0,0.9);">ULTIMATE BRAAI MIX</div>
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C1: The Trifecta</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="specs mb-2 text-center color-white">THE FORMULA</div>
+                    <div style="display:flex;justify-content:center;align-items:stretch;gap:5px;margin-bottom:12px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:0 4px;">
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">1</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Swarthaak</div>
+                        </div>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">2</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Geelhaak</div>
+                        </div>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">3</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Kameeldoring</div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="headline-large text-center mt-2" style="line-height:1.15;padding:0 6px;">The Ultimate Braai Mix</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="body-text specs-read mb-1">10kg Bags • Min 50 • R25/bag</div>
+                    <div class="badge mb-2">R1250 Delivered in Gauteng</div>
+                    <div class="specs color-white">Order: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C4: Composition</div>
+            <div class="ad-canvas">
+                <div class="layer t-center w-100">
+                    <div class="badge mb-2">VAALPENSKRAAL</div>
+                    <div class="headline-large mb-2">The Ultimate Braai Mix.</div>
+                    <div class="squircle text-left mb-2">
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Swarthaak</div>
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Geelhaak</div>
+                        <div class="body-text" style="text-shadow: none;">✓ Kameeldoring</div>
+                    </div>
+                    <div class="subhead color-white">R1250 / 50x 10kg Bags</div>
+                </div>
+                <div class="layer t-bottom text-center" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                    <div class="specs color-white" style="text-shadow:0 1px 8px rgba(0,0,0,0.9);">Free Gauteng Delivery</div>
+                    <div style="font-size:20px;font-weight:900;letter-spacing:0.04em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.2;">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D1: The Cinema</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); padding-bottom: 40px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding-top:6px;">
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                        <div style="font-size:clamp(15px,5.2cqw,24px);font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:var(--apple-white);line-height:1.25;text-shadow:0 2px 14px rgba(0,0,0,0.96),0 1px 2px rgba(0,0,0,1),0 4px 30px rgba(0,0,0,0.6),0 0 40px rgba(var(--accent-rgb),0.12);">VAALPENSKRAAL</div>
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                    </div>
+                </div>
+                <div class="layer t-bottom text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding-top: 60px;">
+                    <div class="mb-1" style="width:100%;max-width:100%;display:flex;justify-content:center;box-sizing:border-box;">
+                        <span class="headline-large" style="white-space:nowrap;font-size:clamp(12px,6.5cqw,32px);line-height:1.15;">Ultimate Braai Mix</span>
+                    </div>
+                    <div class="body-text mb-2">Swarthaak. Geelhaak. Kameeldoring.</div>
+                    <div class="flex-row">
+                        <div class="specs color-white">50x 10kg Bags</div>
+                        <div class="specs color-yellow">R1250 Total</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="body-text">Free GP Delivery | WA: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D2: Location Focus</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="badge mb-2" style="background:var(--supernova-yellow); color:#000;">GAUTENG EXCLUSIVE</div>
+                    <div class="headline-large" style="text-shadow:0 2px 8px rgba(0,0,0,0.95),0 4px 22px rgba(0,0,0,0.75),0 0 2px rgba(0,0,0,1),0 1px 0 rgba(0,0,0,0.45);">Free<br>Delivery.</div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle" style="text-align:center;padding:18px 16px;border-color:rgba(var(--accent-rgb),0.3);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);">
+                        <div style="width:fit-content;max-width:100%;margin:0 auto 12px auto;text-align:center;box-sizing:border-box;">
+                            <div class="subhead color-white" style="font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.9);margin:0;line-height:1.2;">Vaalpenskraal</div>
+                            <div style="font-size:13px;font-weight:600;letter-spacing:0.07em;line-height:1.35;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.88);margin-top:8px;text-transform:none;">Ultimate Braai Mix</div>
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.55),transparent);margin:0 0 14px 0;"></div>
+                        <div style="font-size:14px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;line-height:1.35;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:14px;">
+                            10kg Bags @ <span style="color:var(--supernova-yellow);">R25</span> each.
+                        </div>
+                        <div style="font-size:12px;font-weight:800;letter-spacing:0.05em;line-height:1.4;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95),0 2px 6px rgba(0,0,0,0.75);margin-bottom:16px;">
+                            Minimum Order: 50 Bags <span style="color:var(--supernova-yellow);">(R1250)</span>
+                        </div>
+                        <div class="badge w-100 text-center" style="display:block;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D3: Heavy Weight</div>
+            <div class="ad-canvas">
+                <div class="layer t-center">
+                    <div class="headline-massive" style="font-size: 100px; color: rgba(255,255,255,0.2); line-height: 0.8; mix-blend-mode: overlay;">10KG</div>
+                </div>
+                <div class="layer t-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">Heavy Duty.</div>
+                    <div class="subhead mb-2 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Ultimate Mix.</div>
+                    <div style="font-size:17px;font-weight:600;line-height:1.55;letter-spacing:0.02em;color:var(--apple-white);text-align:center;max-width:100%;padding:0 12px;box-sizing:border-box;text-shadow:0 1px 5px rgba(0,0,0,0.95),0 2px 14px rgba(0,0,0,0.8),0 0 1px rgba(0,0,0,1);">Order 50 bags for <span style="font-weight:800;color:var(--supernova-yellow);">R1250</span> and we deliver for <span style="font-weight:800;color:var(--supernova-yellow);">free</span> in Gauteng.</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">E4: Audacious Bleed</div>
+            <div class="ad-canvas">
+                <div class="layer" style="top:50%;left:0;right:0;width:100%;max-width:100%;min-width:0;transform:translateY(-50%);padding:12px 14px;box-sizing:border-box;text-align:center;display:flex;justify-content:center;align-items:center;">
+                    <div style="font-size:clamp(28px,21cqw,76px);font-weight:900;line-height:0.86;letter-spacing:-0.02em;text-transform:uppercase;text-align:center;color:rgba(255,255,255,0.92);max-width:100%;box-sizing:border-box;margin:0;overflow-wrap:anywhere;">
+                        ULTI<br>MATE<br>MIX.
+                    </div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle">
+                        <div class="flex-row mb-1">
+                            <div class="subhead color-white">10kg</div>
+                            <div class="subhead color-white">50 Min</div>
+                            <div class="subhead color-yellow">R1250</div>
+                        </div>
+                        <div class="body-text mb-1" style="text-shadow: none;text-align:center;width:100%;box-sizing:border-box;">Free Delivery Gauteng</div>
+                        <div style="font-size:clamp(17px,5.5cqw,24px);font-weight:900;letter-spacing:0.08em;color:var(--apple-white);text-align:center;width:100%;text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 20px rgba(0,0,0,0.65);line-height:1.2;margin-top:4px;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const canvases = document.querySelectorAll('.ad-canvas');
+
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                canvases.forEach(canvas => {
+                    canvas.style.backgroundImage = `url(${imageUrl})`;
+                    canvas.style.backgroundSize = 'cover';
+                    canvas.style.backgroundPosition = 'center';
+                });
+            }
+        });
+
+        function hexToRgbString(hex) {
+            let h = hex.replace('#', '').trim();
+            if (h.length === 3) h = h.split('').map(c => c + c).join('');
+            const n = parseInt(h, 16);
+            if (Number.isNaN(n) || h.length !== 6) return '255, 198, 0';
+            return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(', ');
+        }
+
+        function setStudioAccent(hex) {
+            if (!hex || !hex.startsWith('#')) return;
+            const root = document.documentElement;
+            root.style.setProperty('--supernova-yellow', hex);
+            root.style.setProperty('--accent-rgb', hexToRgbString(hex));
+            try { localStorage.setItem('studioAccentHex', hex); } catch (e) {}
+
+            const picker = document.getElementById('accentColorPicker');
+            if (picker) picker.value = hex;
+
+            document.querySelectorAll('.accent-swatch').forEach(btn => {
+                btn.setAttribute('aria-pressed', btn.getAttribute('data-hex').toLowerCase() === hex.toLowerCase() ? 'true' : 'false');
+            });
+        }
+
+        document.querySelectorAll('.accent-swatch').forEach(btn => {
+            btn.addEventListener('click', () => setStudioAccent(btn.getAttribute('data-hex')));
+        });
+
+        const accentPicker = document.getElementById('accentColorPicker');
+        if (accentPicker) {
+            accentPicker.addEventListener('input', () => setStudioAccent(accentPicker.value));
+        }
+
+        try {
+            const saved = localStorage.getItem('studioAccentHex');
+            if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) setStudioAccent(saved);
+        } catch (e) {}
+    </script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "vpk-braai-ultimate",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-gallery.mjs"
+  }
+}

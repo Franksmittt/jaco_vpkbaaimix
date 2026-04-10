@@ -395,6 +395,181 @@
                 rgba(0, 0, 0, 0.55) 100%
             );
         }
+
+        /* WS14 hybrid pack: lighter vignette, compact overlay UI */
+        .ad-canvas.ad-canvas--hybrid:not(.ad-canvas--square)::after {
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.24) 0%,
+                transparent 14%,
+                transparent 84%,
+                rgba(0, 0, 0, 0.36) 100%
+            );
+        }
+        .ad-canvas.ad-canvas--hybrid.ad-canvas--square::after {
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.3) 0%,
+                transparent 9%,
+                transparent 91%,
+                rgba(0, 0, 0, 0.34) 100%
+            );
+        }
+
+        .template-name .format-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #2a2a2c;
+            color: #e8e8ed;
+            font-size: 9px;
+            letter-spacing: 0.06em;
+            margin-left: 6px;
+            vertical-align: middle;
+            font-weight: 700;
+        }
+
+        .ad-canvas.ad-canvas--hybrid .z-content {
+            position: absolute;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-top {
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: clamp(8px, 3cqw, 12px) clamp(10px, 3.5cqw, 16px);
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-bottom {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: clamp(8px, 3cqw, 12px) clamp(10px, 3.5cqw, 16px);
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-tl {
+            top: clamp(10px, 3.2cqw, 16px);
+            left: clamp(10px, 3.2cqw, 16px);
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-tr {
+            top: clamp(10px, 3.2cqw, 16px);
+            right: clamp(10px, 3.2cqw, 16px);
+            text-align: right;
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-bl {
+            bottom: clamp(10px, 3.2cqw, 16px);
+            left: clamp(10px, 3.2cqw, 16px);
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-br {
+            bottom: clamp(10px, 3.2cqw, 16px);
+            right: clamp(10px, 3.2cqw, 16px);
+            text-align: right;
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-left-edge {
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+        }
+        .ad-canvas.ad-canvas--hybrid .pos-right-edge {
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+        }
+
+        .ad-canvas.ad-canvas--hybrid .h-mini {
+            font-size: clamp(10px, 3.6cqw, 16px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .ad-canvas.ad-canvas--hybrid .h-mid {
+            font-size: clamp(13px, 5.2cqw, 22px);
+            font-weight: 900;
+            line-height: 1;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .ad-canvas.ad-canvas--hybrid .t-small {
+            font-size: clamp(8px, 2.5cqw, 11px);
+            font-weight: 500;
+            opacity: 0.95;
+            margin: 2px 0;
+        }
+        .ad-canvas.ad-canvas--hybrid .t-micro {
+            font-size: clamp(6px, 2cqw, 9px);
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--titanium-gray);
+        }
+        .ad-canvas.ad-canvas--hybrid .color-y { color: var(--supernova-yellow); }
+        .ad-canvas.ad-canvas--hybrid .color-w { color: var(--apple-white); }
+        .ad-canvas.ad-canvas--hybrid .shadow-txt { text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9); }
+        .ad-canvas.ad-canvas--hybrid .mt-1 { margin-top: 4px; }
+        .ad-canvas.ad-canvas--hybrid .m-2 { margin: 16px; }
+        .ad-canvas.ad-canvas--hybrid .tracking-wide { letter-spacing: 0.12em; }
+        .ad-canvas.ad-canvas--hybrid .font-weight-bold { font-weight: 700; }
+        .ad-canvas.ad-canvas--hybrid .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+
+        .ad-canvas.ad-canvas--hybrid .pill {
+            background: rgba(10, 10, 10, 0.72);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: clamp(5px, 1.8cqw, 8px) clamp(8px, 3cqw, 12px);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .ad-canvas.ad-canvas--hybrid .pill.flex-col {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            border-radius: 16px;
+        }
+        .ad-canvas.ad-canvas--hybrid .squircle-box {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: clamp(8px, 2.8cqw, 10px);
+        }
+        .ad-canvas.ad-canvas--hybrid .solid-bar {
+            background: #000;
+            color: #fff;
+            padding: clamp(6px, 2.2cqw, 8px) clamp(10px, 3.5cqw, 16px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ad-canvas.ad-canvas--hybrid .stripe-y {
+            border-left: 4px solid var(--supernova-yellow);
+            padding-left: 8px;
+        }
+
+        .ad-canvas.ad-canvas--hybrid .ws14-hero-ultimate {
+            font-size: clamp(22px, 11cqw, 40px);
+            font-weight: 900;
+            opacity: 0.88;
+            line-height: 0.85;
+            margin: 0;
+        }
+
+        .ad-canvas.ad-canvas--hybrid .bg-black { background: #000; }
+        .ad-canvas.ad-canvas--hybrid .text-white { color: #fff; }
+        .ad-canvas.ad-canvas--hybrid .p-1 { padding: 2px 4px; }
+        .ad-canvas.ad-canvas--hybrid .d-inline-block { display: inline-block; }
+        .ad-canvas.ad-canvas--hybrid .w-100 {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
         .ad-canvas.ad-canvas--square .layer {
             padding: 10px 12px;
         }
@@ -775,12 +950,55 @@
         }
 
         /* Square A4–E4 — compact paired variants (global .ad-canvas--square .layer padding applies) */
-        .ad-canvas.ad-canvas--square.sq-a4 .squircle { padding: 11px 11px; border-radius: 16px; }
-        .ad-canvas.ad-canvas--square.sq-a4 .badge { font-size: clamp(6px, 2.1cqw, 10px); padding: 3px 8px; }
-        .ad-canvas.ad-canvas--square.sq-a4 .headline-large { font-size: clamp(13px, 4.8cqw, 21px); }
-        .ad-canvas.ad-canvas--square.sq-a4 .subhead { font-size: clamp(9px, 3.2cqw, 14px); }
-        .ad-canvas.ad-canvas--square.sq-a4 .body-text { font-size: clamp(8px, 2.6cqw, 12px); }
-        .ad-canvas.ad-canvas--square.sq-a4 .specs { font-size: clamp(7px, 2.2cqw, 10px); }
+        /* A4 square: bottom glass card, compact stack */
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-layer {
+            padding: 6px 10px 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-heading {
+            font-size: clamp(11px, 3.9cqw, 17px);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.12;
+            color: var(--apple-white);
+            text-shadow: 0 1px 12px rgba(0, 0, 0, 0.92), 0 1px 2px rgba(0, 0, 0, 1);
+            margin: 0 0 4px;
+        }
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-heading em {
+            font-style: normal;
+            color: var(--supernova-yellow);
+        }
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-badge {
+            font-size: clamp(5px, 1.75cqw, 8px);
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(245, 245, 247, 0.9);
+            margin: 0 0 3px;
+            line-height: 1.2;
+        }
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-woods {
+            font-size: clamp(6px, 2cqw, 9px);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: rgba(245, 245, 247, 0.82);
+            line-height: 1.2;
+            margin: 0 0 5px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.88);
+        }
+        .ad-canvas.ad-canvas--square.sq-a4 .sq-a4-wa {
+            font-size: clamp(7px, 2.4cqw, 11px);
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            margin: 0;
+            padding-top: 5px;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.92);
+            line-height: 1.2;
+        }
 
         .ad-canvas.ad-canvas--square.sq-a5 .layer.t-bottom { padding: 8px 10px 10px; }
         .ad-canvas.ad-canvas--square.sq-a5 .headline-large { font-size: clamp(14px, 5.5cqw, 22px); }
@@ -882,6 +1100,15 @@
             border: 1px solid var(--glass-border);
             border-radius: 24px;
             padding: 16px;
+        }
+
+        .ad-canvas.ad-canvas--square.sq-a4 .squircle.sq-a4-card {
+            padding: 8px 10px 9px;
+            border-radius: 14px;
+            text-align: center;
+            margin: 0 auto;
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         .badge {
@@ -1156,13 +1383,13 @@
         <div class="template-wrapper">
             <div class="template-name">A4: Glass Overlay (1:1 Square)</div>
             <div class="ad-canvas ad-canvas--square sq-a4">
-                <div class="layer t-center squircle w-100">
-                    <div class="badge mb-2">FREE GAUTENG DELIVERY</div>
-                    <div class="headline-large mb-1">50x 10KG Bags</div>
-                    <div class="subhead color-yellow mb-2">R1250 Total</div>
-                    <div class="body-text mb-2">Swarthaak / Geelhaak / Kameeldoring</div>
-                    <div class="divider"></div>
-                    <div class="specs">WhatsApp 063 184 1939</div>
+                <div class="layer t-bottom w-100 sq-a4-layer">
+                    <div class="squircle w-100 sq-a4-card">
+                        <div class="sq-a4-heading">50×10kg bags — <em>R1250</em> total</div>
+                        <div class="sq-a4-badge">Free Gauteng delivery</div>
+                        <div class="sq-a4-woods">Swarthaak · Geelhaak · Kameeldoring</div>
+                        <div class="sq-a4-wa">WhatsApp 063 184 1939</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1623,6 +1850,411 @@
             </div>
         </div>
 
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 1: Top/Bottom Split <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-top shadow-txt">
+                    <div class="t-micro" style="margin-bottom:4px;opacity:0.95;">VAALPENSKRAAL</div>
+                    <div class="flex-row" style="align-items:flex-start;">
+                        <div class="flex-col" style="gap:2px;text-align:left;">
+                            <span class="h-mini">Ultimate Braai Mix</span>
+                            <span class="t-micro">10kg bags · R25/bag</span>
+                        </div>
+                        <span class="h-mini color-y">R1250</span>
+                    </div>
+                </div>
+                <div class="z-content pos-bottom flex-row shadow-txt">
+                    <div class="flex-col">
+                        <span class="t-small">Minimum order 50 bags</span>
+                        <span class="t-micro">Swarthaak · Geelhaak · Kameeldoring</span>
+                        <span class="t-small color-y">FREE delivery in Gauteng</span>
+                    </div>
+                    <div class="t-small font-weight-bold text-right">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 2: Corner Lock Left <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-bl stripe-y shadow-txt">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mid">Ultimate Braai Mix</div>
+                    <div class="t-small">10kg bags · R25/bag</div>
+                    <div class="t-small">Minimum order 50 bags</div>
+                    <div class="h-mid color-y mt-1">R1250</div>
+                    <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-micro mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 3: Ultra-Thin Frame <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid" style="border: 10px solid #000;">
+                <div class="z-content pos-bottom text-center" style="background: #000; padding: 8px 6px; bottom: -10px;">
+                    <div class="flex-col" style="gap:4px;">
+                        <span class="t-small">VAALPENSKRAAL · Ultimate Braai Mix · 10kg bags · R25/bag · MOQ 50 · R1250</span>
+                        <span class="t-small">Swarthaak · Geelhaak · Kameeldoring · FREE delivery in Gauteng · 063 184 1939</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 4: Minimal Badges <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-tl pill"><span class="t-micro">10kg bags</span></div>
+                <div class="z-content pos-tr pill" style="border-color: var(--supernova-yellow);">
+                    <span class="h-mini color-y">R25/bag</span>
+                </div>
+                <div class="z-content pos-bottom text-center shadow-txt">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="t-small">Ultimate Braai Mix</div>
+                    <div class="t-small">Minimum order 50 bags · R1250</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-small font-weight-bold">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 5: The Stamp <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-br squircle-box text-right">
+                    <div class="h-mini">VAALPENSKRAAL</div>
+                    <div class="t-small">Ultimate Braai Mix</div>
+                    <div class="t-small">10kg bags · R25/bag</div>
+                    <div class="t-small">Minimum order 50 · R1250</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-micro color-y mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 6: Floating Footer Bar <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-bottom" style="padding-bottom: 12px;">
+                    <div class="pill w-100 flex-col" style="width: calc(100% - 24px); margin: 0 auto; gap: 6px; align-items: stretch; padding: 10px 12px;">
+                        <div class="flex-row"><span class="t-micro">VAALPENSKRAAL</span><span class="t-small color-y">R1250</span></div>
+                        <span class="t-small text-center">Ultimate Braai Mix · 10kg bags · R25/bag · MOQ 50</span>
+                        <span class="t-micro text-center">Swarthaak · Geelhaak · Kameeldoring</span>
+                        <span class="t-small text-center color-y">FREE delivery in Gauteng</span>
+                        <div class="flex-row"><span class="t-micro">WhatsApp</span><span class="t-small font-weight-bold">063 184 1939</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 7: Top Glass Strip <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-top" style="background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 10px 14px;">
+                    <div class="t-micro" style="margin-bottom:4px;">VAALPENSKRAAL</div>
+                    <div class="flex-row">
+                        <div class="h-mini">Ultimate Braai Mix</div>
+                        <div class="h-mini color-y">R1250</div>
+                    </div>
+                    <div class="flex-row mt-1">
+                        <span class="t-micro">10kg · R25/bag · MOQ 50</span>
+                        <span class="t-micro color-y">FREE delivery in Gauteng</span>
+                    </div>
+                    <div class="t-micro mt-1" style="line-height:1.25;">Swarthaak · Geelhaak · Kameeldoring · 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 8: Circle & Pill <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-tl pill" style="max-width:72%;align-items:flex-start;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="t-small">Ultimate Braai Mix</div>
+                </div>
+                <div class="z-content pos-tr" style="background: var(--supernova-yellow); color: #000; width: 45px; height: 45px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;">
+                    <b style="font-size:14px;">50</b><span style="font-size:7px;">MOQ</span>
+                </div>
+                <div class="z-content pos-bottom text-center shadow-txt" style="padding-bottom:10px;">
+                    <div class="t-small">10kg bags · R25/bag · R1250 · min. 50 bags</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-small font-weight-bold">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 9: Dual Side Tabs <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-left-edge pill vertical-text" style="border-radius: 0 12px 12px 0; padding: 12px 6px;">
+                    <span class="t-micro">VAALPENSKRAAL</span>
+                </div>
+                <div class="z-content pos-right-edge squircle-box text-right" style="border-radius: 12px 0 0 12px; padding: 12px;">
+                    <div class="t-small">Ultimate Braai Mix</div>
+                    <div class="t-small">10kg bags · R25/bag</div>
+                    <div class="t-small">Minimum order 50</div>
+                    <div class="t-small color-y">R1250 · FREE delivery in Gauteng</div>
+                    <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-micro mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 10: Bottom Glow <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-bottom text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.92), transparent); padding-top: 36px;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mid color-y mb-1">R1250</div>
+                    <div class="t-small">Ultimate Braai Mix · 10kg bags · R25/bag</div>
+                    <div class="t-small">Minimum order 50 bags</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y mb-1">FREE delivery in Gauteng</div>
+                    <div class="t-small font-weight-bold">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 11: Data Bottom Row <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-bottom solid-bar flex-col" style="align-items: stretch; gap: 6px;">
+                    <div class="flex-row"><span class="t-micro">ORIGIN</span><span class="t-small">VAALPENSKRAAL</span></div>
+                    <div class="flex-row"><span class="t-micro">PRODUCT</span><span class="t-small">Ultimate Braai Mix · 10kg</span></div>
+                    <div class="flex-row"><span class="t-micro">PRICE</span><span class="t-small color-y">R25/bag · R1250 (50)</span></div>
+                    <div class="flex-row"><span class="t-micro">MOQ</span><span class="t-small">50 bags</span></div>
+                    <div class="flex-row"><span class="t-micro">WOODS</span><span class="t-small">Swarthaak · Geelhaak · Kameeldoring</span></div>
+                    <div class="flex-row"><span class="t-micro">DELIVERY</span><span class="t-small color-y">FREE delivery in Gauteng</span></div>
+                    <div class="flex-row"><span class="t-micro">CONTACT</span><span class="t-small">063 184 1939</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 12: Side Strip Grid <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-bl shadow-txt" style="max-width:70%;padding:10px;bottom:10px;">
+                    <span class="t-micro">Swarthaak · Geelhaak · Kameeldoring</span>
+                    <div class="t-small color-y mt-1">FREE delivery in Gauteng</div>
+                </div>
+                <div class="z-content pos-right-edge solid-bar flex-col" style="height: 100%; width: clamp(52px, 15cqw, 72px); padding: 8px 0; justify-content: center; gap: 6px;">
+                    <div class="t-micro vertical-text">VAALPENSKRAAL</div>
+                    <div class="t-micro vertical-text">ULTIMATE BRAAI MIX</div>
+                    <div class="h-mini vertical-text color-y">R1250</div>
+                    <div class="t-micro vertical-text">10KG R25/BAG</div>
+                    <div class="t-micro vertical-text">MOQ 50</div>
+                    <div class="t-micro vertical-text">FREE GP</div>
+                    <div class="t-micro vertical-text">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 13: Corner Bracket <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-tr text-right shadow-txt" style="border-top: 3px solid var(--supernova-yellow); border-right: 3px solid var(--supernova-yellow); padding: 8px;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mini">MOQ 50</div>
+                    <div class="h-mid color-y">R1250</div>
+                </div>
+                <div class="z-content pos-bl shadow-txt">
+                    <div class="t-small">Ultimate Braai Mix · 10kg bags · R25/bag</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-small font-weight-bold">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 14: Bottom Right Grid <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-br squircle-box text-left" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; max-width:min(94%,320px);">
+                    <div style="grid-column: span 2;"><div class="t-micro">BRAND</div><div class="t-small">VAALPENSKRAAL · Ultimate Braai Mix</div></div>
+                    <div><div class="t-micro">BAG</div><div class="t-small">10kg · R25</div></div>
+                    <div><div class="t-micro">MOQ</div><div class="t-small">50 bags</div></div>
+                    <div style="grid-column: span 2;"><div class="t-micro">TOTAL</div><div class="t-small color-y">R1250 · FREE delivery in Gauteng</div></div>
+                    <div style="grid-column: span 2;"><div class="t-micro">WOODS</div><div class="t-small">Swarthaak · Geelhaak · Kameeldoring</div></div>
+                    <div style="grid-column: span 2;"><div class="t-micro">WHATSAPP</div><div class="t-small">063 184 1939</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 15: Outline Box <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-bottom text-center" style="padding: 14px;">
+                    <div style="border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.55); padding: 12px;">
+                        <div class="t-micro">VAALPENSKRAAL</div>
+                        <div class="h-mini">Ultimate Braai Mix</div>
+                        <div class="t-small">10kg bags · R25/bag · minimum order 50 · R1250</div>
+                        <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                        <div class="t-small color-y mt-1">FREE delivery in Gauteng</div>
+                        <div class="t-small font-weight-bold mt-1">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 16: Cinematic Letterbox <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-top solid-bar flex-col text-center" style="height: 14%; padding: 6px 8px; justify-content: center; gap: 2px;">
+                    <span class="h-mini tracking-wide">VAALPENSKRAAL</span>
+                    <span class="t-micro">Ultimate Braai Mix</span>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-col text-center" style="height: auto; min-height: 14%; padding: 8px; gap: 4px; align-items: center;">
+                    <span class="t-small text-center">10kg bags · R25/bag · MOQ 50 · R1250</span>
+                    <span class="t-micro text-center">Swarthaak · Geelhaak · Kameeldoring</span>
+                    <div class="flex-row" style="width:100%;justify-content:center;gap:10px;flex-wrap:wrap;">
+                        <span class="t-small color-y">FREE delivery in Gauteng</span>
+                        <span class="t-small">063 184 1939</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 17: Bottom Third Block <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-bottom text-left" style="background: #000; border-top-right-radius: 20px; width: 88%; padding: 14px;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mid mb-1">Ultimate Braai Mix</div>
+                    <div class="t-small color-y">10kg bags · R25/bag · min. order 50 bags · R1250</div>
+                    <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small mt-1">FREE delivery in Gauteng · 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 18: Top Third Block <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-top text-right" style="background: #000; border-bottom-left-radius: 20px; width: 88%; left: auto; right: 0; padding: 12px;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mini color-y">FREE delivery in Gauteng</div>
+                    <div class="t-small">Ultimate Braai Mix · 10kg bags · R25/bag</div>
+                    <div class="t-small">Minimum order 50 · R1250</div>
+                    <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-micro mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 19: Center Thin Strip <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-left-edge solid-bar w-100 flex-col" style="background: rgba(0,0,0,0.88); width: 100%; box-sizing: border-box; text-align:center; top: 50%; transform: translateY(-50%); padding: 10px 8px; gap: 6px; justify-content: center;">
+                    <div class="t-micro">VAALPENSKRAAL · Ultimate Braai Mix</div>
+                    <div class="h-mini color-y">R1250 · MOQ 50 bags</div>
+                    <div class="t-small">10kg bags · R25/bag</div>
+                    <div class="t-micro">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y">FREE delivery in Gauteng</div>
+                    <div class="t-small font-weight-bold">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 20: The Subtitle <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-tl shadow-txt" style="padding:10px;">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                </div>
+                <div class="z-content pos-bottom text-center shadow-txt" style="margin-bottom: 16px;">
+                    <div class="t-small" style="background: rgba(0,0,0,0.65); display: inline-block; padding: 6px 12px; border-radius: 6px; max-width:92%;">Ultimate Braai Mix — 10kg bags, R25/bag, minimum order 50, R1250 total.</div><br>
+                    <div class="t-small mt-1" style="background: rgba(0,0,0,0.65); display: inline-block; padding: 6px 12px; border-radius: 6px;">Swarthaak · Geelhaak · Kameeldoring</div><br>
+                    <div class="t-small color-y mt-1" style="background: rgba(0,0,0,0.65); display: inline-block; padding: 6px 12px; border-radius: 6px;">FREE delivery in Gauteng · 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 21: High Contrast Corner <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-tl" style="background: var(--supernova-yellow); color: #000; padding: 12px; font-weight: 900; line-height: 1.15;">
+                    <div class="t-micro" style="color:#000;">VAALPENSKRAAL</div>
+                    <div style="font-size: clamp(16px, 6cqw, 20px);">R1250</div>
+                    <div style="font-size: clamp(11px, 3.5cqw, 12px);">MOQ 50 · 10kg · R25/bag</div>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-col text-center" style="gap:4px;padding:10px;">
+                    <span class="t-small">Ultimate Braai Mix</span>
+                    <span class="t-micro">Swarthaak · Geelhaak · Kameeldoring</span>
+                    <span class="t-small color-y">FREE delivery in Gauteng</span>
+                    <span class="t-small font-weight-bold">063 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 22: Diagonal Cut <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-br" style="background: #000; padding: 16px 36px 12px 16px; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%); width: 72%;">
+                    <div class="t-micro text-right">VAALPENSKRAAL</div>
+                    <div class="h-mini text-right color-y">R1250</div>
+                    <div class="t-small text-right">Ultimate Braai Mix</div>
+                    <div class="t-small text-right">10kg bags · R25/bag · MOQ 50</div>
+                    <div class="t-micro text-right mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small text-right color-y mt-1">FREE delivery in Gauteng</div>
+                    <div class="t-micro text-right mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 23: Warning Tape <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-top text-center" style="background: var(--supernova-yellow); color: #000; padding: 8px 6px; font-weight: 900; text-transform: uppercase;line-height:1.2;">
+                    VAALPENSKRAAL · Ultimate Braai Mix · 10kg bags · R25/bag
+                </div>
+                <div class="z-content pos-bottom squircle-box text-center m-2" style="margin: 14px; width: calc(100% - 28px);">
+                    <div class="h-mini mb-1">Minimum order 50 · R1250</div>
+                    <div class="t-small">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small color-y mt-1">FREE delivery in Gauteng</div>
+                    <div class="t-micro mt-1">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 24: Brutalist Block <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--hybrid">
+                <div class="z-content pos-bl" style="background: #fff; color: #000; padding: 12px; border: 4px solid #000; max-width:min(92%,280px);">
+                    <div class="t-micro">VAALPENSKRAAL</div>
+                    <div class="h-mid mb-1">Ultimate Braai Mix</div>
+                    <div class="h-mid mb-1">MOQ 50 · R1250</div>
+                    <div class="t-small font-weight-bold">10kg bags · R25/bag</div>
+                    <div class="t-micro mt-1">Swarthaak · Geelhaak · Kameeldoring</div>
+                    <div class="t-small mt-1">FREE delivery in Gauteng</div>
+                    <div class="t-micro mt-1 bg-black text-white p-1 d-inline-block" style="background:#000; color:#fff; padding: 4px 6px;">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">WS14 · 25: Floating Bold <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas ad-canvas--hybrid">
+                <div class="z-content pos-top text-center shadow-txt" style="padding-top:10px;">
+                    <span class="t-micro">VAALPENSKRAAL</span>
+                </div>
+                <div class="z-content pos-center text-center shadow-txt" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;">
+                    <div class="ws14-hero-ultimate">ULTIMATE</div>
+                    <div class="t-small" style="margin-top:6px;opacity:0.95;">Braai Mix</div>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-col text-center w-100" style="box-sizing: border-box; gap:4px;padding:10px;">
+                    <span class="t-small">10kg bags · R25/bag · MOQ 50 · R1250</span>
+                    <span class="t-micro">Swarthaak · Geelhaak · Kameeldoring</span>
+                    <span class="t-small color-y">FREE delivery in Gauteng</span>
+                    <span class="t-small font-weight-bold">063 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
     <section class="asset-gallery" aria-labelledby="gallery-heading">
@@ -1644,7 +2276,7 @@
         </div>
     </div>
 
-    <script id="gallery-manifest-data" type="application/json">{"generatedAt":"2026-04-10T08:19:42.684Z","items":[{"name":"5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","type":"image"},{"name":"AI Image Prompts for Firewood (1).txt","type":"file"},{"name":"Gemini_Generated_Image_11sqhg11sqhg11sq.png","type":"image"},{"name":"Gemini_Generated_Image_1uh0g51uh0g51uh0.png","type":"image"},{"name":"Gemini_Generated_Image_24m5pv24m5pv24m5.png","type":"image"},{"name":"Gemini_Generated_Image_437ou5437ou5437o.png","type":"image"},{"name":"Gemini_Generated_Image_5vce3m5vce3m5vce.png","type":"image"},{"name":"Gemini_Generated_Image_6c5p416c5p416c5p.png","type":"image"},{"name":"Gemini_Generated_Image_9g9i89g9i89g9i89.png","type":"image"},{"name":"Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","type":"image"},{"name":"Gemini_Generated_Image_clsjlfclsjlfclsj.png","type":"image"},{"name":"Gemini_Generated_Image_ctjuvhctjuvhctju.png","type":"image"},{"name":"Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","type":"image"},{"name":"Gemini_Generated_Image_dvepp4dvepp4dvep.png","type":"image"},{"name":"Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","type":"image"},{"name":"Gemini_Generated_Image_hg4dzchg4dzchg4d.png","type":"image"},{"name":"Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","type":"image"},{"name":"Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","type":"image"},{"name":"Gemini_Generated_Image_l11q7cl11q7cl11q.png","type":"image"},{"name":"Gemini_Generated_Image_lqb22elqb22elqb2.png","type":"image"},{"name":"Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","type":"image"},{"name":"Gemini_Generated_Image_nv4jianv4jianv4j.png","type":"image"},{"name":"Gemini_Generated_Image_p59fq4p59fq4p59f.png","type":"image"},{"name":"Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","type":"image"},{"name":"Gemini_Generated_Image_t2oulnt2oulnt2ou.png","type":"image"},{"name":"Gemini_Generated_Image_tgz6vftgz6vftgz6.png","type":"image"},{"name":"Gemini_Generated_Image_u5tv38u5tv38u5tv.png","type":"image"},{"name":"Gemini_Generated_Image_xqvej3xqvej3xqve.png","type":"image"},{"name":"Generated Image April 09, 2026 - 1_06PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_27PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_31PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_39AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_54AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_04AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_05AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_58AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_59AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_39PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 4_51PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_00PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_55PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_04PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_57PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 7_05PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 9_10PM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_08AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (1).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (2).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_03AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_06AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_09AM.jpg","type":"image"}],"images":["5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","Gemini_Generated_Image_11sqhg11sqhg11sq.png","Gemini_Generated_Image_1uh0g51uh0g51uh0.png","Gemini_Generated_Image_24m5pv24m5pv24m5.png","Gemini_Generated_Image_437ou5437ou5437o.png","Gemini_Generated_Image_5vce3m5vce3m5vce.png","Gemini_Generated_Image_6c5p416c5p416c5p.png","Gemini_Generated_Image_9g9i89g9i89g9i89.png","Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","Gemini_Generated_Image_clsjlfclsjlfclsj.png","Gemini_Generated_Image_ctjuvhctjuvhctju.png","Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","Gemini_Generated_Image_dvepp4dvepp4dvep.png","Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","Gemini_Generated_Image_hg4dzchg4dzchg4d.png","Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","Gemini_Generated_Image_l11q7cl11q7cl11q.png","Gemini_Generated_Image_lqb22elqb22elqb2.png","Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","Gemini_Generated_Image_nv4jianv4jianv4j.png","Gemini_Generated_Image_p59fq4p59fq4p59f.png","Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","Gemini_Generated_Image_t2oulnt2oulnt2ou.png","Gemini_Generated_Image_tgz6vftgz6vftgz6.png","Gemini_Generated_Image_u5tv38u5tv38u5tv.png","Gemini_Generated_Image_xqvej3xqvej3xqve.png","Generated Image April 09, 2026 - 1_06PM.jpg","Generated Image April 09, 2026 - 1_27PM.jpg","Generated Image April 09, 2026 - 1_31PM.jpg","Generated Image April 09, 2026 - 10_39AM.jpg","Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_43AM - Copy.jpg","Generated Image April 09, 2026 - 10_43AM.jpg","Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_51AM - Copy.jpg","Generated Image April 09, 2026 - 10_51AM.jpg","Generated Image April 09, 2026 - 10_54AM.jpg","Generated Image April 09, 2026 - 11_04AM.jpg","Generated Image April 09, 2026 - 11_05AM.jpg","Generated Image April 09, 2026 - 11_58AM.jpg","Generated Image April 09, 2026 - 11_59AM.jpg","Generated Image April 09, 2026 - 12_01PM.jpg","Generated Image April 09, 2026 - 12_39PM.jpg","Generated Image April 09, 2026 - 4_51PM.jpg","Generated Image April 09, 2026 - 5_00PM.jpg","Generated Image April 09, 2026 - 5_55PM.jpg","Generated Image April 09, 2026 - 6_01PM.jpg","Generated Image April 09, 2026 - 6_04PM.jpg","Generated Image April 09, 2026 - 6_57PM.jpg","Generated Image April 09, 2026 - 7_05PM.jpg","Generated Image April 09, 2026 - 9_10PM.jpg","Generated Image April 10, 2026 - 8_08AM.jpg","Generated Image April 10, 2026 - 8_11AM (1).jpg","Generated Image April 10, 2026 - 8_11AM (2).jpg","Generated Image April 10, 2026 - 8_11AM.jpg","Generated Image April 10, 2026 - 9_03AM.jpg","Generated Image April 10, 2026 - 9_06AM.jpg","Generated Image April 10, 2026 - 9_09AM.jpg"]}</script>
+    <script id="gallery-manifest-data" type="application/json">{"generatedAt":"2026-04-10T14:24:18.468Z","items":[{"name":"5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","type":"image"},{"name":"AI Image Prompts for Firewood (1).txt","type":"file"},{"name":"Gemini_Generated_Image_11sqhg11sqhg11sq.png","type":"image"},{"name":"Gemini_Generated_Image_1uh0g51uh0g51uh0.png","type":"image"},{"name":"Gemini_Generated_Image_24m5pv24m5pv24m5.png","type":"image"},{"name":"Gemini_Generated_Image_437ou5437ou5437o.png","type":"image"},{"name":"Gemini_Generated_Image_5vce3m5vce3m5vce.png","type":"image"},{"name":"Gemini_Generated_Image_6c5p416c5p416c5p.png","type":"image"},{"name":"Gemini_Generated_Image_9g9i89g9i89g9i89.png","type":"image"},{"name":"Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","type":"image"},{"name":"Gemini_Generated_Image_clsjlfclsjlfclsj.png","type":"image"},{"name":"Gemini_Generated_Image_ctjuvhctjuvhctju.png","type":"image"},{"name":"Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","type":"image"},{"name":"Gemini_Generated_Image_dvepp4dvepp4dvep.png","type":"image"},{"name":"Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","type":"image"},{"name":"Gemini_Generated_Image_hg4dzchg4dzchg4d.png","type":"image"},{"name":"Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","type":"image"},{"name":"Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","type":"image"},{"name":"Gemini_Generated_Image_l11q7cl11q7cl11q.png","type":"image"},{"name":"Gemini_Generated_Image_lqb22elqb22elqb2.png","type":"image"},{"name":"Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","type":"image"},{"name":"Gemini_Generated_Image_nv4jianv4jianv4j.png","type":"image"},{"name":"Gemini_Generated_Image_p59fq4p59fq4p59f.png","type":"image"},{"name":"Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","type":"image"},{"name":"Gemini_Generated_Image_t2oulnt2oulnt2ou.png","type":"image"},{"name":"Gemini_Generated_Image_tgz6vftgz6vftgz6.png","type":"image"},{"name":"Gemini_Generated_Image_u5tv38u5tv38u5tv.png","type":"image"},{"name":"Gemini_Generated_Image_xqvej3xqvej3xqve.png","type":"image"},{"name":"Generated Image April 09, 2026 - 1_06PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_27PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_31PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_39AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_54AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_04AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_05AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_58AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_59AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_39PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 4_51PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_00PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_55PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_04PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_57PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 7_05PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 9_10PM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_08AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (1).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (2).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_03AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_06AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_09AM.jpg","type":"image"}],"images":["5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","Gemini_Generated_Image_11sqhg11sqhg11sq.png","Gemini_Generated_Image_1uh0g51uh0g51uh0.png","Gemini_Generated_Image_24m5pv24m5pv24m5.png","Gemini_Generated_Image_437ou5437ou5437o.png","Gemini_Generated_Image_5vce3m5vce3m5vce.png","Gemini_Generated_Image_6c5p416c5p416c5p.png","Gemini_Generated_Image_9g9i89g9i89g9i89.png","Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","Gemini_Generated_Image_clsjlfclsjlfclsj.png","Gemini_Generated_Image_ctjuvhctjuvhctju.png","Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","Gemini_Generated_Image_dvepp4dvepp4dvep.png","Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","Gemini_Generated_Image_hg4dzchg4dzchg4d.png","Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","Gemini_Generated_Image_l11q7cl11q7cl11q.png","Gemini_Generated_Image_lqb22elqb22elqb2.png","Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","Gemini_Generated_Image_nv4jianv4jianv4j.png","Gemini_Generated_Image_p59fq4p59fq4p59f.png","Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","Gemini_Generated_Image_t2oulnt2oulnt2ou.png","Gemini_Generated_Image_tgz6vftgz6vftgz6.png","Gemini_Generated_Image_u5tv38u5tv38u5tv.png","Gemini_Generated_Image_xqvej3xqvej3xqve.png","Generated Image April 09, 2026 - 1_06PM.jpg","Generated Image April 09, 2026 - 1_27PM.jpg","Generated Image April 09, 2026 - 1_31PM.jpg","Generated Image April 09, 2026 - 10_39AM.jpg","Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_43AM - Copy.jpg","Generated Image April 09, 2026 - 10_43AM.jpg","Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_51AM - Copy.jpg","Generated Image April 09, 2026 - 10_51AM.jpg","Generated Image April 09, 2026 - 10_54AM.jpg","Generated Image April 09, 2026 - 11_04AM.jpg","Generated Image April 09, 2026 - 11_05AM.jpg","Generated Image April 09, 2026 - 11_58AM.jpg","Generated Image April 09, 2026 - 11_59AM.jpg","Generated Image April 09, 2026 - 12_01PM.jpg","Generated Image April 09, 2026 - 12_39PM.jpg","Generated Image April 09, 2026 - 4_51PM.jpg","Generated Image April 09, 2026 - 5_00PM.jpg","Generated Image April 09, 2026 - 5_55PM.jpg","Generated Image April 09, 2026 - 6_01PM.jpg","Generated Image April 09, 2026 - 6_04PM.jpg","Generated Image April 09, 2026 - 6_57PM.jpg","Generated Image April 09, 2026 - 7_05PM.jpg","Generated Image April 09, 2026 - 9_10PM.jpg","Generated Image April 10, 2026 - 8_08AM.jpg","Generated Image April 10, 2026 - 8_11AM (1).jpg","Generated Image April 10, 2026 - 8_11AM (2).jpg","Generated Image April 10, 2026 - 8_11AM.jpg","Generated Image April 10, 2026 - 9_03AM.jpg","Generated Image April 10, 2026 - 9_06AM.jpg","Generated Image April 10, 2026 - 9_09AM.jpg"]}</script>
 
     <script>
         const imageUpload = document.getElementById('imageUpload');

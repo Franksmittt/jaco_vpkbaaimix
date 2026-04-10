@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hybrid Overlay Studio - Alternating Formats</title>
+    <style>
+        :root {
+            --apple-white: #f5f5f7;
+            --samsung-black: #000000;
+            --samsung-blue: #1428A0;
+            --galaxy-glow: #2b60ff;
+            --supernova-yellow: #FFC600;
+            --titanium-gray: #86868b;
+            --glass-bg: rgba(10, 10, 10, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #050505;
+            color: var(--apple-white);
+            margin: 0;
+            padding: 40px;
+        }
+
+        /* --- CONTROL PANEL --- */
+        .control-panel {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 { font-weight: 800; margin-top: 0; margin-bottom: 20px; }
+
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--apple-white);
+            color: var(--samsung-black);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .upload-btn:hover { background-color: var(--supernova-yellow); transform: scale(1.02); }
+
+        /* --- GRID SYSTEM --- */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(240px, 1fr));
+            gap: 40px 20px;
+            width: 100%;
+            max-width: 1800px;
+            margin: 0 auto;
+            align-items: start; /* Prevents square templates from stretching to match vertical ones */
+        }
+
+        .template-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .template-name { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--titanium-gray); margin-bottom: 12px; text-align: center; }
+        .format-badge { display: inline-block; padding: 2px 6px; border-radius: 4px; background: #333; color: #fff; font-size: 9px; margin-left: 6px; }
+
+        /* --- CANVAS BASE --- */
+        .ad-canvas {
+            width: 100%;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+        }
+
+        /* Aspect Ratios */
+        .is-vertical { aspect-ratio: 9 / 16; border-radius: 16px; }
+        .is-square { aspect-ratio: 1 / 1; border-radius: 0px; } /* Square for FB posts */
+
+        /* Placeholder Pattern */
+        .ad-canvas::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 40px);
+            z-index: 0;
+        }
+
+        .ad-canvas.has-image::before { display: none; }
+        
+        /* Subtle edge darkening for legibility */
+        .ad-canvas.has-image::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+            z-index: 1; pointer-events: none;
+        }
+
+        /* --- COMPACT TEXT LAYERS (Max 20% Area) --- */
+        .z-content { position: absolute; z-index: 10; box-sizing: border-box; }
+
+        .pos-top { top: 0; left: 0; width: 100%; padding: 12px 16px; }
+        .pos-bottom { bottom: 0; left: 0; width: 100%; padding: 12px 16px; }
+        .pos-tl { top: 16px; left: 16px; }
+        .pos-tr { top: 16px; right: 16px; text-align: right; }
+        .pos-bl { bottom: 16px; left: 16px; }
+        .pos-br { bottom: 16px; right: 16px; text-align: right; }
+        .pos-left-edge { top: 50%; left: 0; transform: translateY(-50%); }
+        .pos-right-edge { top: 50%; right: 0; transform: translateY(-50%); }
+
+        /* Typography */
+        .h-mini { font-size: 16px; font-weight: 800; line-height: 1.1; margin: 0; text-transform: uppercase; }
+        .h-mid { font-size: 22px; font-weight: 900; line-height: 1; margin: 0; letter-spacing: -0.5px; }
+        .t-small { font-size: 11px; font-weight: 500; opacity: 0.9; margin: 2px 0; }
+        .t-micro { font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--titanium-gray); }
+        
+        .color-y { color: var(--supernova-yellow); }
+        .color-w { color: var(--apple-white); }
+        
+        /* UI Elements */
+        .pill { background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--glass-border); border-radius: 50px; padding: 6px 12px; display: inline-flex; align-items: center; gap: 8px; }
+        .squircle-box { background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); border-radius: 12px; padding: 10px; }
+        .solid-bar { background: #000; color: #fff; padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .stripe-y { border-left: 4px solid var(--supernova-yellow); padding-left: 8px; }
+        
+        .flex-row { display: flex; justify-content: space-between; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        
+        .vertical-text { writing-mode: vertical-rl; text-orientation: mixed; transform: rotate(180deg); }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .shadow-txt { text-shadow: 0 2px 5px rgba(0,0,0,0.9); }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h1>Hybrid Overlay Studio</h1>
+        <p style="color: var(--titanium-gray); margin-bottom: 20px;">Alternating Vertical (9:16) and Square (1:1) formats. 80% Image Visibility.</p>
+        <label for="imageUpload" class="upload-btn">
+            Upload Background Image
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+    </div>
+
+    <div class="studio-grid">
+
+        <div class="template-wrapper">
+            <div class="template-name">1: Top/Bottom Split <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-top flex-row shadow-txt">
+                    <div class="h-mini">ULTIMATE MIX</div>
+                    <div class="h-mini color-y">R25/10KG</div>
+                </div>
+                <div class="z-content pos-bottom flex-row shadow-txt">
+                    <div class="flex-col">
+                        <span class="t-small">50 Bag MOQ (R1250)</span>
+                        <span class="t-small color-y">Free GP Delivery</span>
+                    </div>
+                    <div class="t-small font-weight-bold">WA: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">2: Corner Lock Left <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-bl stripe-y shadow-txt">
+                    <div class="h-mid">R1250 TOTAL</div>
+                    <div class="t-small">50x 10kg Ultimate Bags</div>
+                    <div class="t-small color-y">Free Gauteng Delivery</div>
+                    <div class="t-micro mt-1">WA: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">3: Ultra-Thin Frame <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical" style="border: 10px solid #000;">
+                <div class="z-content pos-bottom text-center" style="background: #000; padding: 6px; bottom: -10px;">
+                    <span class="t-small">10KG ULTIMATE | R1250 / 50 BAGS | FREE GP DEL | +27 63 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">4: Minimal Badges <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-tl pill"><span class="t-micro">10KG BAGS</span></div>
+                <div class="z-content pos-tr pill" style="border-color: var(--supernova-yellow);">
+                    <span class="h-mini color-y">R25</span>
+                </div>
+                <div class="z-content pos-bottom text-center shadow-txt">
+                    <div class="t-small">Min 50 Bags (R1250). Free GP Delivery. WA: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">5: The Stamp <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-br squircle-box text-right">
+                    <div class="h-mini">VAALPENSKRAAL</div>
+                    <div class="t-small">50x 10kg Bags = R1250</div>
+                    <div class="t-small">Free Delivery (GP)</div>
+                    <div class="t-micro color-y mt-1">+27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">6: Floating Footer Bar <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-bottom" style="padding-bottom: 16px;">
+                    <div class="pill w-100 flex-row" style="width: calc(100% - 32px); margin: 0 auto; justify-content: space-between;">
+                        <span class="t-small"><b>R1250</b> (50x 10kg)</span>
+                        <span class="t-small color-y">Free GP Delivery</span>
+                        <span class="t-small">+27 63 184 1939</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">7: Top Glass Strip <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-top" style="background: var(--glass-bg); backdrop-filter: blur(10px); padding: 12px 16px;">
+                    <div class="flex-row">
+                        <div class="h-mini">ULTIMATE MIX</div>
+                        <div class="h-mini color-y">R1250 / 50x</div>
+                    </div>
+                    <div class="flex-row mt-1">
+                        <div class="t-micro">Swarthaak, Geelhaak, Kameeldoring</div>
+                        <div class="t-micro">WA: +27 63 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">8: Circle & Pill <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-tl" style="background: var(--supernova-yellow); color: #000; width: 45px; height: 45px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1;">
+                    <b style="font-size:14px;">50</b><span style="font-size:7px;">BAGS</span>
+                </div>
+                <div class="z-content pos-br pill">
+                    <span class="t-small">R1250 Delivered (GP) | WA: +27 63 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">9: Dual Side Tabs <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-left-edge pill vertical-text" style="border-radius: 0 12px 12px 0; padding: 12px 6px;">
+                    <span class="t-micro">VAALPENSKRAAL</span>
+                </div>
+                <div class="z-content pos-right-edge squircle-box text-right" style="border-radius: 12px 0 0 12px; padding: 12px;">
+                    <div class="t-small">10kg @ R25</div>
+                    <div class="t-small">MOQ: 50</div>
+                    <div class="t-small color-y">Free GP Del</div>
+                    <div class="t-micro mt-1">+27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">10: Bottom Glow <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-bottom text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding-top: 40px;">
+                    <div class="h-mid color-y mb-1">R1250 TOTAL</div>
+                    <div class="t-small">50x 10kg Ultimate Mix. Free GP Delivery.</div>
+                    <div class="t-small mb-1">WhatsApp: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">11: Data Bottom Row <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-bottom solid-bar flex-col" style="align-items: stretch; gap: 8px;">
+                    <div class="flex-row"><span class="t-micro">PRODUCT</span><span class="t-small">10KG ULTIMATE</span></div>
+                    <div class="flex-row"><span class="t-micro">MOQ / TOTAL</span><span class="t-small color-y">50 BAGS / R1250</span></div>
+                    <div class="flex-row"><span class="t-micro">ORDER</span><span class="t-small">+27 63 184 1939</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">12: Side Strip Grid <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-right-edge solid-bar flex-col" style="height: 100%; width: 50px; padding: 10px 0;">
+                    <div class="t-micro vertical-text">ULTIMATE MIX</div>
+                    <div class="h-mini vertical-text color-y">R1250</div>
+                    <div class="t-micro vertical-text">50x 10KG</div>
+                    <div class="t-micro vertical-text">+27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">13: Corner Bracket <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-tr text-right shadow-txt" style="border-top: 3px solid var(--supernova-yellow); border-right: 3px solid var(--supernova-yellow); padding: 8px;">
+                    <div class="h-mini">50 BAGS</div>
+                    <div class="h-mid color-y">R1250</div>
+                </div>
+                <div class="z-content pos-bl shadow-txt">
+                    <div class="t-small">10kg Ultimate Mix</div>
+                    <div class="t-small">Free GP Delivery | +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">14: Bottom Right Grid <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-br squircle-box text-left" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <div><div class="t-micro">BAG</div><div class="t-small">10kg</div></div>
+                    <div><div class="t-micro">MOQ</div><div class="t-small">50</div></div>
+                    <div style="grid-column: span 2;"><div class="t-micro">TOTAL</div><div class="t-small color-y">R1250 Delivered (GP)</div></div>
+                    <div style="grid-column: span 2;"><div class="t-micro">WA</div><div class="t-small">+27 63 184 1939</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">15: Outline Box <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-bottom text-center" style="padding: 16px;">
+                    <div style="border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.5); padding: 12px;">
+                        <div class="h-mini">ULTIMATE MIX</div>
+                        <div class="t-small">50x 10kg = R1250</div>
+                        <div class="t-small">Free GP Delivery | WA: +27 63 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">16: Cinematic Letterbox <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-top solid-bar text-center" style="height: 12%;">
+                    <span class="h-mini tracking-wide">VAALPENSKRAAL</span>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-row" style="height: 12%;">
+                    <span class="t-small">50x 10kg = R1250</span>
+                    <span class="t-small color-y">Free GP Del</span>
+                    <span class="t-small">+27 63 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">17: Bottom Third Block <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-bottom text-left" style="background: #000; border-top-right-radius: 20px; width: 85%; padding: 16px;">
+                    <div class="h-mid mb-1">R1250</div>
+                    <div class="t-small color-y">50x 10kg Ultimate Mix Bags</div>
+                    <div class="t-small">Free GP Del | +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">18: Top Third Block <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-top text-right" style="background: #000; border-bottom-left-radius: 20px; width: 80%; left: auto; right: 0; padding: 12px;">
+                    <div class="h-mini color-y">FREE GP DELIVERY</div>
+                    <div class="t-small">50x 10kg Bags (R1250 Total)</div>
+                    <div class="t-micro mt-1">WA: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">19: Center Thin Strip <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-left-edge solid-bar w-100 flex-col" style="background: rgba(0,0,0,0.85); width: 100%; box-sizing: border-box; text-align:center;">
+                    <div class="h-mini color-y">50 BAGS = R1250</div>
+                    <div class="t-small">10kg Ultimate Mix | Free GP Delivery | +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">20: The Subtitle <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-bottom text-center shadow-txt" style="margin-bottom: 20px;">
+                    <div class="t-small" style="background: rgba(0,0,0,0.6); display: inline-block; padding: 4px 10px; border-radius: 4px;">"Ultimate Mix. 50x 10kg bags for R1250."</div><br>
+                    <div class="t-small color-y mt-1" style="background: rgba(0,0,0,0.6); display: inline-block; padding: 4px 10px; border-radius: 4px;">Free GP Delivery | +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">21: High Contrast Corner <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-tl" style="background: var(--supernova-yellow); color: #000; padding: 12px; font-weight: 900; line-height: 1;">
+                    <div style="font-size: 20px;">R1250</div>
+                    <div style="font-size: 12px;">50 BAGS</div>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-col text-center">
+                    <span class="t-small mb-1">10kg Ultimate Mix | Free GP Del</span>
+                    <span class="t-small font-weight-bold">+27 63 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">22: Diagonal Cut <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-br" style="background: #000; padding: 20px 40px 10px 20px; clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%); width: 65%;">
+                    <div class="h-mini text-right color-y">R1250 TOTAL</div>
+                    <div class="t-small text-right">50x 10kg Bags (GP Only)</div>
+                    <div class="t-micro text-right mt-1">+27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">23: Warning Tape <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-top text-center" style="background: var(--supernova-yellow); color: #000; padding: 6px; font-weight: 900; text-transform: uppercase;">
+                    10kg Ultimate • 10kg Ultimate
+                </div>
+                <div class="z-content pos-bottom squircle-box text-center m-2" style="margin: 16px; width: calc(100% - 32px);">
+                    <div class="h-mini mb-1">50 BAGS = R1250</div>
+                    <div class="t-small">Free GP Delivery | WA: +27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">24: Brutalist Block <span class="format-badge">1:1</span></div>
+            <div class="ad-canvas is-square">
+                <div class="z-content pos-bl" style="background: #fff; color: #000; padding: 12px; border: 4px solid #000;">
+                    <div class="h-mid mb-1">50 BAGS.</div>
+                    <div class="h-mid mb-1">R1250.</div>
+                    <div class="t-small font-weight-bold">10kg. Free GP Del.</div>
+                    <div class="t-micro mt-1 bg-black text-white p-1 d-inline-block" style="background:#000; color:#fff; padding: 2px 4px;">+27 63 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">25: Floating Bold <span class="format-badge">9:16</span></div>
+            <div class="ad-canvas is-vertical">
+                <div class="z-content pos-center text-center shadow-txt" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%;">
+                    <div style="font-size: 40px; font-weight: 900; opacity: 0.8; line-height: 0.8;">ULTIMATE</div>
+                </div>
+                <div class="z-content pos-bottom solid-bar flex-col text-center w-100" style="box-sizing: border-box;">
+                    <span class="t-small color-y mb-1">50x 10kg = R1250</span>
+                    <span class="t-small">Free GP Del | +27 63 184 1939</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const canvases = document.querySelectorAll('.ad-canvas');
+
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                canvases.forEach(canvas => {
+                    canvas.style.backgroundImage = `url(${imageUrl})`;
+                    canvas.style.backgroundSize = 'cover';
+                    canvas.style.backgroundPosition = 'center';
+                    canvas.classList.add('has-image');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

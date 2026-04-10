@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const indexPath = path.join(root, 'public', 'index.html');
+const indexPath = path.join(root, 'public', 'vaal-studio.html');
 const fragPath = path.join(root, 'scripts', 'ws14-templates.inc.html');
 
 let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
@@ -41,4 +41,4 @@ if (!index.includes(needle)) {
 }
 index = index.replace(needle, replacement);
 fs.writeFileSync(indexPath, index, 'utf8');
-console.log('Merged WS14 templates into public/index.html');
+console.log('Merged WS14 templates into public/vaal-studio.html');

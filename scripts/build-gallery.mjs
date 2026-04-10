@@ -6,7 +6,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
 const publicDir = path.join(root, 'public');
 const imagesDir = path.join(publicDir, 'images');
-const indexPath = path.join(publicDir, 'index.html');
+const studioHtmlPath = path.join(publicDir, 'vaal-studio.html');
 const manifestPath = path.join(imagesDir, 'gallery-manifest.json');
 const MANIFEST_FILENAME = 'gallery-manifest.json';
 
@@ -62,12 +62,12 @@ console.log(
   `Wrote public/images/gallery-manifest.json (${items.length} files, ${payload.images.length} previewable as images).`,
 );
 
-let html = fs.readFileSync(indexPath, 'utf8');
+let html = fs.readFileSync(studioHtmlPath, 'utf8');
 const re = /(<script id="gallery-manifest-data" type="application\/json">)([\s\S]*?)(<\/script>)/;
 if (!re.test(html)) {
-  console.error('index.html: missing <script id="gallery-manifest-data" type="application/json">…</script>');
+  console.error('vaal-studio.html: missing <script id="gallery-manifest-data" type="application/json">…</script>');
   process.exit(1);
 }
 html = html.replace(re, `$1${JSON.stringify(payload)}$3`);
-fs.writeFileSync(indexPath, html, 'utf8');
-console.log('Updated gallery manifest embed in index.html.');
+fs.writeFileSync(studioHtmlPath, html, 'utf8');
+console.log('Updated gallery manifest embed in vaal-studio.html.');

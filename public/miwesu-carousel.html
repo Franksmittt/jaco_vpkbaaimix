@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miwesu — Facebook Carousel Studio</title>
+    <style>
+        :root {
+            --apple-white: #f5f5f7;
+            --samsung-black: #000000;
+            --miwesu-amber: #FF6B00;
+            --titanium: #86868b;
+            --glass-bg: rgba(15, 15, 15, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #050505;
+            color: var(--apple-white);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .site-nav {
+            max-width: 1920px;
+            margin: 0 auto 24px;
+            font-size: 14px;
+        }
+        .site-nav a {
+            color: var(--titanium);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(134, 134, 139, 0.35);
+        }
+        .site-nav a:hover {
+            color: var(--apple-white);
+            border-bottom-color: rgba(245, 245, 247, 0.4);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(20, 20, 22, 0.8);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 { font-weight: 800; margin-top: 0; margin-bottom: 10px; letter-spacing: -1px; text-transform: uppercase; }
+        h1 span { color: var(--miwesu-amber); }
+        .subtitle {
+            color: var(--titanium);
+            font-size: 14px;
+            margin-bottom: 0;
+            font-weight: 400;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        .carousel-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 40px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .carousel-wrapper::-webkit-scrollbar { display: none; }
+
+        .carousel-track {
+            display: flex;
+            gap: 24px;
+            width: max-content;
+            margin: 0 auto;
+            padding: 4px;
+        }
+
+        .carousel-item {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .carousel-item__toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 18px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-family: inherit;
+        }
+        .toolbar-btn:disabled {
+            opacity: 0.55;
+            cursor: wait;
+        }
+        label.toolbar-btn {
+            background-color: var(--apple-white);
+            color: var(--samsung-black);
+        }
+        label.toolbar-btn:hover {
+            background-color: var(--miwesu-amber);
+            color: #fff;
+        }
+        .toolbar-btn--secondary {
+            background: transparent;
+            color: var(--apple-white);
+            border: 1px solid var(--glass-border);
+        }
+        .toolbar-btn--secondary:hover {
+            border-color: rgba(255, 255, 255, 0.35);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .ad-canvas {
+            width: 400px;
+            height: 400px;
+            background-color: #111;
+            border: 1px solid #333;
+            border-radius: 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+            box-sizing: border-box;
+        }
+
+        /* Real element (not ::after): html2canvas tiles large exports and often mis-paints
+           pseudo-element gradients so one quadrant looks correct and the rest look too dark. */
+        .ad-canvas-image-shade {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.8) 100%);
+        }
+        .ad-canvas.has-image .ad-canvas-image-shade {
+            display: block;
+        }
+
+        /* 400× logical layout; on export the canvas is widened and this layer is scaled up so photos aren’t 400px-rasterised */
+        .ad-canvas-scale-root {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 400px;
+            height: 400px;
+            transform-origin: 0 0;
+            z-index: 5;
+            box-sizing: border-box;
+        }
+
+        .z-content { position: absolute; z-index: 10; box-sizing: border-box; }
+
+        .pos-top { top: 15%; left: 0; width: 100%; padding: 0 20px; }
+        .pos-bottom { bottom: 22%; left: 0; width: 100%; padding: 0 20px; }
+        .pos-center { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; text-align: center; }
+
+        .h-massive { font-size: 32px; font-weight: 900; line-height: 1; text-transform: uppercase; letter-spacing: -1px; }
+        .h-mid { font-size: 20px; font-weight: 800; line-height: 1.1; letter-spacing: -0.5px; }
+        .t-body { font-size: 13px; font-weight: 500; color: #ddd; margin-top: 6px; line-height: 1.4; }
+        .t-micro { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--miwesu-amber); margin-bottom: 6px; }
+
+        .color-amber { color: var(--miwesu-amber); }
+        .shadow-txt { text-shadow: 0 4px 15px rgba(0,0,0,0.9); }
+
+        .pill-kicker {
+            display: inline-block;
+            margin: 0;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+            line-height: 1.25;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+            max-width: 360px;
+            text-align: center;
+        }
+
+        /* Card 1 bottom: same harsh stacked drop shadows as card 3 */
+        .card-1-bottom .h-massive {
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.92),
+                3px 3px 0 rgba(0, 0, 0, 0.85),
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 6px 20px rgba(0, 0, 0, 0.75);
+        }
+        .card-1-bottom .h-massive .color-amber {
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.9),
+                0 3px 10px rgba(0, 0, 0, 0.92),
+                0 0 12px rgba(0, 0, 0, 0.45);
+        }
+        .card-1-bottom .t-body {
+            color: #f0f0f0;
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.95),
+                0 2px 6px rgba(0, 0, 0, 0.92),
+                0 4px 14px rgba(0, 0, 0, 0.85);
+        }
+        .card-1-bottom .card-1-swipe-line {
+            margin-top: 2px;
+        }
+
+        /* Card 3: hard dark drop shadow for headline + subcopy on busy photos */
+        .card-3-bottom .h-massive {
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.92),
+                3px 3px 0 rgba(0, 0, 0, 0.85),
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 6px 20px rgba(0, 0, 0, 0.75);
+        }
+        .card-3-bottom .h-massive .color-amber {
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.9),
+                0 3px 10px rgba(0, 0, 0, 0.92),
+                0 0 12px rgba(0, 0, 0, 0.45);
+        }
+        .card-3-bottom .t-body {
+            color: #f0f0f0;
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.95),
+                0 2px 6px rgba(0, 0, 0, 0.92),
+                0 4px 14px rgba(0, 0, 0, 0.85);
+        }
+        .card-3-pill-label.t-micro {
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+        }
+
+        /* Card 5: same harsh drop shadows as card 3 (headline + WhatsApp line; t-body softer below) */
+        .card-5-copy .card-5-headline {
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.92),
+                3px 3px 0 rgba(0, 0, 0, 0.85),
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 6px 20px rgba(0, 0, 0, 0.75);
+        }
+        .card-5-copy .card-5-wa-text {
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.98),
+                2px 2px 0 rgba(0, 0, 0, 0.92),
+                3px 3px 0 rgba(0, 0, 0, 0.85),
+                0 3px 8px rgba(0, 0, 0, 0.95),
+                0 6px 20px rgba(0, 0, 0, 0.75);
+        }
+        .card-5-copy .t-body {
+            color: #f0f0f0;
+            text-shadow:
+                0 0 1px rgba(0, 0, 0, 1),
+                1px 1px 0 rgba(0, 0, 0, 0.95),
+                0 2px 6px rgba(0, 0, 0, 0.92),
+                0 4px 14px rgba(0, 0, 0, 0.85);
+        }
+
+        /* Card 4: background watermark — stronger than old 0.15 + dark stroke for shape on busy photos */
+        .card-4-bags-mark {
+            font-size: 80px;
+            line-height: 0.8;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -1px;
+            color: rgba(255, 255, 255, 0.5);
+            -webkit-text-stroke-width: 2px;
+            -webkit-text-stroke-color: rgba(255, 255, 255, 0.9);
+            paint-order: stroke fill;
+        }
+
+        .glass-pill {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 8px 16px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* Card 1: solid pill — html2canvas mishandles backdrop-filter; must follow .glass-pill */
+        .glass-pill.glass-pill--solid {
+            background: rgba(12, 12, 14, 0.94);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Card 5: opaque WhatsApp pill — same blur/export issues as other glass-pill; must stay solid */
+        .glass-pill.glass-pill--wa {
+            background: #25d366;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            box-shadow: 0 2px 14px rgba(0, 0, 0, 0.35);
+        }
+
+        /* PNG export: strip blur so panels match on-screen solids as closely as possible */
+        .ad-canvas.exporting .glass-pill:not(.glass-pill--solid):not(.glass-pill--wa) {
+            background: rgba(15, 15, 15, 0.94) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        .ad-canvas.exporting .glass-panel {
+            background: rgba(10, 10, 10, 0.94) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+        /* Card 4 rail: opaque fill + no amber inset shadow — html2canvas tiles + photo bleed read as orange otherwise */
+        .ad-canvas.exporting .glass-panel.card-4-offer-panel {
+            background: rgb(18, 18, 20) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            box-shadow:
+                4px 0 20px rgba(0, 0, 0, 0.55),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        /* Card 4: full-height left rail (overlay on image) */
+        .card-4-left-rail {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32%;
+            height: 100%;
+            z-index: 6;
+            box-sizing: border-box;
+            pointer-events: none;
+        }
+        .glass-panel.card-4-offer-panel {
+            box-sizing: border-box;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            max-width: none;
+            margin: 0;
+            padding: 10px 6px 12px;
+            border-radius: 0;
+            border-left: none;
+            border-color: rgba(255, 255, 255, 0.14);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: stretch;
+            text-align: center;
+            box-shadow:
+                4px 0 24px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                inset -1px 0 0 rgba(255, 107, 0, 0.15);
+        }
+        .glass-panel.card-4-offer-panel .t-micro {
+            margin-bottom: 0;
+            line-height: 1.2;
+            letter-spacing: 0.08em;
+        }
+        .card-4-offer-panel-upper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .card-4-offer-panel-lower {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            gap: 5px;
+        }
+        .card-4-min-banner {
+            margin: 0 0 8px;
+            padding: 0 2px 6px;
+            border-bottom: 1px solid rgba(255, 107, 0, 0.45);
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            text-align: center;
+            color: var(--miwesu-amber);
+            line-height: 1.4;
+        }
+        .card-4-offer-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+        .card-4-price-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            line-height: 1;
+            margin: 0;
+        }
+        .card-4-price-main {
+            font-size: 19px;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: #fff;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+        }
+        .card-4-price-sub {
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.52);
+            margin-top: 2px;
+        }
+        .glass-panel.card-4-offer-panel .t-body.card-4-free-delivery {
+            margin-top: 0;
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: #f5f5f7;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+        }
+        .card-4-bags-rail-slot {
+            flex: 1 1 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            overflow: visible;
+        }
+        .card-4-bags-mark.card-4-bags-mark--rail {
+            font-size: 46px;
+            line-height: 0.85;
+            letter-spacing: -0.02em;
+            transform: rotate(-90deg);
+            transform-origin: center center;
+            white-space: nowrap;
+        }
+
+        .flex-row { display: flex; justify-content: space-between; align-items: center; }
+        .text-right { text-align: right; }
+
+        .w-100 { width: 100%; }
+        .mb-2 { margin-bottom: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .p-0 { padding: 0; }
+
+        .mix-two-col {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+        .mix-col {
+            flex: 1;
+            min-width: 0;
+        }
+        .mix-col .mix-wood-line {
+            font-size: 10.5px;
+            line-height: 1.3;
+            font-weight: 500;
+            color: #ddd;
+            margin: 4px 0 0;
+        }
+        .mix-col .mix-wood-line:first-child {
+            margin-top: 0;
+        }
+
+        /* Card 2: panel stays centred on canvas; kicker centred, species list left-aligned */
+        .card-2-mix-panel {
+            text-align: left;
+        }
+        .card-2-mix-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        /* Same spec as former "THE BRAAI MIX" line (12px / 900 / tracking / uppercase) */
+        .card-2-mix-panel .card-2-mix-headline {
+            display: block;
+            width: 100%;
+            margin: 0;
+            color: var(--miwesu-amber);
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            line-height: 1.25;
+        }
+        .card-2-mix-panel .card-2-mix-headline .card-2-mix-headline-accent {
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+        }
+        .card-2-mix-panel .mix-two-col {
+            justify-content: flex-start;
+        }
+        .card-2-mix-panel .mix-col .mix-wood-line {
+            position: relative;
+            text-align: left;
+            padding-left: 13px;
+        }
+        .card-2-mix-panel .mix-col .mix-wood-line::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--miwesu-amber);
+            box-shadow:
+                0 0 0 1px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        }
+
+        .export-note {
+            margin-top: 16px;
+            font-size: 12px;
+            color: var(--titanium);
+            max-width: 560px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.45;
+        }
+
+        .fb-recording-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+        .fb-recording-tools label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--titanium);
+        }
+        .fb-recording-tools input[type="number"] {
+            width: 56px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--apple-white);
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .fb-preview-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99999;
+            background: #f0f2f5;
+            color: #050505;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0;
+            padding-top: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .fb-preview-overlay[hidden] {
+            display: none !important;
+        }
+        .fb-preview-overlay.fb-preview-overlay--minimal .fb-preview-chrome {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .fb-preview-chrome {
+            position: relative;
+            flex-shrink: 0;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            background: #fff;
+            border-bottom: 1px solid #e4e6eb;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+            z-index: 2;
+            transition: opacity 0.25s ease;
+        }
+        .fb-preview-close-minimal {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 100000;
+            opacity: 0.85;
+            font-size: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #ccd0d5;
+            background: rgba(255,255,255,0.95);
+            color: #050505;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .fb-preview-close-minimal:hover {
+            opacity: 1;
+            background: #fff;
+        }
+        .fb-preview-chrome-meta {
+            font-size: 13px;
+            color: #65676b;
+        }
+        .fb-preview-chrome-meta strong {
+            color: #050505;
+            font-weight: 700;
+        }
+        .fb-preview-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .fb-preview-actions .toolbar-btn {
+            font-size: 11px;
+            padding: 8px 14px;
+        }
+        /* Override page dark-theme buttons — white bar needs dark text */
+        .fb-preview-chrome .toolbar-btn--secondary {
+            background: #e4e6eb;
+            color: #050505;
+            border: 1px solid #ccd0d5;
+        }
+        .fb-preview-chrome .toolbar-btn--secondary:hover {
+            background: #d8dadf;
+            border-color: #b0b3b8;
+            color: #050505;
+        }
+        .fb-preview-chrome .toolbar-btn:not(.toolbar-btn--secondary) {
+            color: #fff;
+        }
+        .fb-preview-stage-outer {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            width: 100%;
+            padding: 16px;
+            overflow: auto;
+        }
+        .fb-post-scale-wrap {
+            transform-origin: top center;
+        }
+        .fb-post-card {
+            width: 500px;
+            max-width: 100%;
+            background: #fff;
+            color: #050505;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid #e4e6eb;
+        }
+        .fb-post-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 16px;
+        }
+        .fb-post-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b00, #cc4400);
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .fb-post-names { min-width: 0; }
+        .fb-post-page-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #050505;
+            line-height: 1.25;
+        }
+        .fb-post-meta {
+            font-size: 13px;
+            color: #65676b;
+            margin-top: 2px;
+        }
+        .fb-post-media {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .fb-preview-scaler {
+            width: 400px;
+            height: 400px;
+            transform-origin: center center;
+            flex-shrink: 0;
+        }
+        .fb-preview-scaler .ad-canvas {
+            box-shadow: none;
+            border: none;
+        }
+        /* Carousel creative must stay light-on-image; overlay sets dark text for FB chrome */
+        .fb-post-media .fb-preview-scaler {
+            color: #f5f5f7;
+        }
+        .fb-post-media .fb-preview-scaler .t-body {
+            color: #ddd;
+        }
+        .fb-post-media .fb-preview-scaler .glass-panel {
+            color: #ddd;
+        }
+        .fb-post-media .fb-preview-scaler .mix-wood-line {
+            color: #ddd;
+        }
+        .fb-post-dots {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px 6px;
+            background: #fff;
+        }
+        .fb-post-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccd0d5;
+            flex-shrink: 0;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .fb-post-dot.is-active {
+            background: #1877f2;
+            transform: scale(1.15);
+        }
+        .fb-post-caption {
+            padding: 0 16px 14px;
+            font-size: 15px;
+            line-height: 1.45;
+            color: #050505;
+            border-top: 1px solid #f0f2f5;
+        }
+        .fb-post-caption p {
+            margin: 0 0 8px;
+        }
+        .fb-post-caption p:last-child {
+            margin-bottom: 0;
+        }
+        .fb-post-caption-sub {
+            font-size: 14px;
+            color: #65676b;
+        }
+        .fb-post-caption .fb-post-caption-sub strong {
+            color: #050505;
+        }
+        .fb-post-engagement {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 12px 12px;
+            border-top: 1px solid #e4e6eb;
+            font-size: 15px;
+            font-weight: 600;
+            color: #65676b;
+        }
+        .fb-post-engagement span {
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        body.fb-preview-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav"><a href="index.html">← Home</a></nav>
+
+    <div class="control-panel">
+        <h1><span>Miwesu</span> Facebook Carousel Studio</h1>
+        <p class="subtitle">Five 1:1 cards (400px preview). <strong>Download PNG</strong> renders at <strong>1080×1080</strong> using your image at full resolution (not a blurry upscale from the preview). Very heavy blurs may still differ slightly in the PNG.</p>
+        <div class="fb-recording-tools">
+            <label>
+                <span>Seconds per card</span>
+                <input type="number" id="fbPreviewSeconds" value="3" min="1" max="30" step="0.5">
+            </label>
+            <label style="cursor:pointer;">
+                <input type="checkbox" id="fbPreviewHideChrome" checked>
+                <span>Hide studio toolbar during playback (Facebook post stays visible)</span>
+            </label>
+            <button type="button" class="toolbar-btn" id="fbPreviewOpen" style="background:var(--miwesu-amber);color:#fff;">Facebook carousel preview (record)</button>
+        </div>
+    </div>
+
+    <div class="carousel-wrapper">
+        <div class="carousel-track">
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="1">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-top">
+                            <div class="glass-pill glass-pill--solid">
+                                <span class="pill-kicker">MIWESU PREMIUM FIRE WOOD</span>
+                            </div>
+                        </div>
+                        <div class="z-content pos-bottom card-1-bottom">
+                            <div class="h-massive">The Premium<br><span class="color-amber">Braai Mix.</span></div>
+                            <div class="t-body">Estate &amp; Residential Delivery.</div>
+                            <div class="t-body card-1-swipe-line">Swipe to build your fire.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="2">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-center glass-panel w-100 card-2-mix-panel" style="width: 92%; padding: 12px 14px;">
+                            <div class="card-2-mix-header">
+                                <div class="card-2-mix-headline">The <span class="card-2-mix-headline-accent">Perfect</span> Handpicked Recipe</div>
+                            </div>
+                            <div style="border-left: 2px solid var(--miwesu-amber); padding-left: 10px;">
+                                <div class="mix-two-col">
+                                    <div class="mix-col">
+                                        <div class="mix-wood-line">Scented thorn (Snuifpeul)</div>
+                                        <div class="mix-wood-line">Knob thorn (Knoppiesdoring)</div>
+                                        <div class="mix-wood-line">Yellow-hook (Geelhaak)</div>
+                                    </div>
+                                    <div class="mix-col">
+                                        <div class="mix-wood-line">Sickle bush (Sekelbos)</div>
+                                        <div class="mix-wood-line">Mopane (Mopanie)</div>
+                                        <div class="mix-wood-line">Red bushwillow (Rooibos)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="3">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-top text-right w-100">
+                            <div class="glass-pill shadow-txt" style="border-color: var(--miwesu-amber);">
+                                <span class="t-micro card-3-pill-label" style="margin:0;">FRIENDS &amp; FAMILY</span>
+                            </div>
+                        </div>
+                        <div class="z-content pos-bottom shadow-txt text-right card-3-bottom">
+                            <div class="h-massive">Coals That<br>Outlast The <span class="color-amber">Party.</span></div>
+                            <div class="t-body">Easy light. Extreme heat. Zero effort.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="4">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="card-4-left-rail">
+                            <div class="glass-panel card-4-offer-panel">
+                                <div class="card-4-offer-panel-upper">
+                                    <div class="card-4-min-banner">Minimum order · 50 bags</div>
+                                    <div class="card-4-offer-stack">
+                                        <div class="t-micro">10KG BAGS</div>
+                                        <div class="card-4-price-block">
+                                            <span class="card-4-price-main">R1750</span>
+                                            <span class="card-4-price-sub">total</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-4-bags-rail-slot">
+                                    <span class="card-4-bags-mark card-4-bags-mark--rail">50 BAGS</span>
+                                </div>
+                                <div class="card-4-offer-panel-lower">
+                                    <div class="t-micro color-amber">GAUTENG ONLY</div>
+                                    <div class="t-body card-4-free-delivery">Free Delivery</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="5">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-center text-center card-5-copy">
+                            <div class="h-mid mb-2 card-5-headline">Premium Fire Wood,<br>Delivered.</div>
+                            <div class="glass-pill glass-pill--wa mt-3" style="padding: 12px 24px; margin-top: 20px;">
+                                <span class="h-mid card-5-wa-text" style="font-size: 16px;">WhatsApp 072 717 2572</span>
+                            </div>
+                            <div class="t-body" style="margin-top: 16px;">Click the button below to secure your load.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="fbPreviewOverlay" class="fb-preview-overlay" hidden>
+        <div class="fb-preview-chrome">
+            <div class="fb-preview-chrome-meta">
+                <strong>Preview</strong> — carousel card <span id="fbPreviewIndex">1</span> / <span id="fbPreviewTotal">5</span> · Start recorder, then play
+            </div>
+            <div class="fb-preview-actions">
+                <button type="button" class="toolbar-btn toolbar-btn--secondary" id="fbPreviewPlay">▶ Start sequence</button>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary" id="fbPreviewStop" disabled>Stop</button>
+                <button type="button" class="toolbar-btn" id="fbPreviewClose" style="background:#1877f2;color:#fff;border:none;">Close (Esc)</button>
+            </div>
+        </div>
+        <button type="button" class="fb-preview-close-minimal" id="fbPreviewCloseMinimal" hidden>Esc · Close</button>
+        <div class="fb-preview-stage-outer">
+            <div class="fb-post-scale-wrap" id="fbPostScaleWrap">
+                <article class="fb-post-card" id="fbPostCard" aria-label="Facebook post preview">
+                    <header class="fb-post-header">
+                        <div class="fb-post-avatar" aria-hidden="true">M</div>
+                        <div class="fb-post-names">
+                            <div class="fb-post-page-name">Miwesu Premium Fire Wood</div>
+                            <div class="fb-post-meta">Sponsored · <span id="fbPostTimeLabel">Just now</span></div>
+                        </div>
+                    </header>
+                    <div class="fb-post-media">
+                        <div class="fb-preview-scaler" id="fbPreviewScaler"></div>
+                    </div>
+                    <div class="fb-post-dots" id="fbPreviewDots" role="tablist" aria-label="Carousel position"></div>
+                    <div class="fb-post-caption">
+                        <p><strong>Miwesu Premium Fire Wood</strong> — The ultimate braai mix, estate delivery in Gauteng. <strong>50 × 10kg bags · R1750 total · free delivery.</strong> Swipe through the photos above to see the full story.</p>
+                        <p class="fb-post-caption-sub">WhatsApp <strong style="color:#050505;">+27 72 717 2572</strong> to order — minimum order applies.</p>
+                    </div>
+                    <div class="fb-post-engagement" aria-hidden="true">
+                        <span>👍 Like</span>
+                        <span>💬 Comment</span>
+                        <span>↗ Share</span>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+    <script>
+        (function () {
+            const EXPORT_PX = 1080;
+            /** Must match `.ad-canvas` / `.ad-canvas-scale-root` layout width in CSS */
+            const LOGICAL_STAGE_PX = 400;
+
+            /**
+             * html2canvas often renders live text as muddy grey. Rasterise the pill label to a PNG
+             * of pure #fff glyphs so exports match "white on screen".
+             */
+            function miwesuPillKickerDataUrl(text) {
+                var label = (text || '').trim() || 'MIWESU PREMIUM FIRE WOOD';
+                var dpr = 4;
+                var fontPx = 9 * dpr;
+                var letterExtra = 0.1 * 9 * dpr;
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                if (!ctx) return null;
+                var family = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+                ctx.font = '800 ' + fontPx + 'px ' + family;
+                var w = 0;
+                for (var i = 0; i < label.length; i++) {
+                    w += ctx.measureText(label[i]).width;
+                    if (i < label.length - 1) w += letterExtra;
+                }
+                var padX = 4 * dpr;
+                var h = Math.ceil(Math.max(14 * dpr, fontPx + 5 * dpr));
+                canvas.width = Math.ceil(w + padX * 2);
+                canvas.height = h;
+                ctx.font = '800 ' + fontPx + 'px ' + family;
+                ctx.fillStyle = '#ffffff';
+                ctx.textBaseline = 'middle';
+                var x = padX;
+                var midY = canvas.height / 2;
+                for (var j = 0; j < label.length; j++) {
+                    ctx.fillText(label[j], x, midY);
+                    x += ctx.measureText(label[j]).width + (j < label.length - 1 ? letterExtra : 0);
+                }
+                return {
+                    url: canvas.toDataURL('image/png'),
+                    cssW: canvas.width / dpr,
+                    cssH: canvas.height / dpr
+                };
+            }
+
+            /**
+             * Card 3 top pill: same html2canvas text bug as .pill-kicker; rasterise label.
+             * Matches .t-micro (10px / 700 / 2px letter-spacing / white).
+             */
+            function miwesuCard3PillLabelDataUrl(text) {
+                var label = (text || '').trim().toUpperCase() || 'FRIENDS & FAMILY';
+                var dpr = 4;
+                var fontPx = 10 * dpr;
+                var letterExtra = 2 * dpr;
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                if (!ctx) return null;
+                var family = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+                ctx.font = '700 ' + fontPx + 'px ' + family;
+                var w = 0;
+                for (var i = 0; i < label.length; i++) {
+                    w += ctx.measureText(label[i]).width;
+                    if (i < label.length - 1) w += letterExtra;
+                }
+                var padX = 2 * dpr;
+                var h = Math.ceil(Math.max(14 * dpr, fontPx + 4 * dpr));
+                canvas.width = Math.ceil(w + padX * 2);
+                canvas.height = h;
+                ctx.font = '700 ' + fontPx + 'px ' + family;
+                ctx.fillStyle = '#ffffff';
+                ctx.textBaseline = 'middle';
+                var x = padX;
+                var midY = canvas.height / 2;
+                for (var j = 0; j < label.length; j++) {
+                    ctx.fillText(label[j], x, midY);
+                    x += ctx.measureText(label[j]).width + (j < label.length - 1 ? letterExtra : 0);
+                }
+                return {
+                    url: canvas.toDataURL('image/png'),
+                    cssW: canvas.width / dpr,
+                    cssH: canvas.height / dpr
+                };
+            }
+
+            /** Card 5: html2canvas still mis-paints .glass-pill (tinted / wrong color). Draw the pill in canvas. */
+            function miwesuWaPillRasterDataUrl(text) {
+                var label = (text || '').trim() || 'WhatsApp 072 717 2572';
+                var dpr = 4;
+                var padX = 24 * dpr;
+                var padY = 12 * dpr;
+                var fontPx = 16 * dpr;
+                var family = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+                var canvas = document.createElement('canvas');
+                var ctx = canvas.getContext('2d');
+                if (!ctx) return null;
+                ctx.font = '800 ' + fontPx + 'px ' + family;
+                var tw = ctx.measureText(label).width;
+                var w = Math.ceil(padX * 2 + tw);
+                var h = Math.ceil(
+                    Math.max(fontPx * 1.35 + padY * 2 + 18 * dpr, 44 * dpr + 18 * dpr)
+                );
+                canvas.width = w;
+                canvas.height = h;
+                var r = h / 2;
+                ctx.fillStyle = '#25d366';
+                ctx.beginPath();
+                ctx.moveTo(r, 0);
+                ctx.lineTo(w - r, 0);
+                ctx.arc(w - r, r, r, -Math.PI / 2, Math.PI / 2, false);
+                ctx.lineTo(r, h);
+                ctx.arc(r, r, r, Math.PI / 2, -Math.PI / 2, false);
+                ctx.closePath();
+                ctx.fill();
+                ctx.font = '800 ' + fontPx + 'px ' + family;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                var cx = w / 2;
+                var cy = h / 2;
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,0.75)';
+                ctx.shadowBlur = 20 * dpr;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 6 * dpr;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(label, cx, cy);
+                ctx.restore();
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,0.95)';
+                ctx.shadowBlur = 8 * dpr;
+                ctx.shadowOffsetY = 3 * dpr;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(label, cx, cy);
+                ctx.restore();
+                ctx.fillStyle = 'rgba(0,0,0,0.85)';
+                ctx.fillText(label, cx + 3 * dpr, cy + 3 * dpr);
+                ctx.fillStyle = 'rgba(0,0,0,0.92)';
+                ctx.fillText(label, cx + 2 * dpr, cy + 2 * dpr);
+                ctx.fillStyle = 'rgba(0,0,0,0.98)';
+                ctx.fillText(label, cx + 1 * dpr, cy + 1 * dpr);
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(label, cx, cy);
+                return {
+                    url: canvas.toDataURL('image/png'),
+                    cssW: canvas.width / dpr,
+                    cssH: canvas.height / dpr
+                };
+            }
+
+            /** Same geometry as CSS background-size: cover; center */
+            function miwesuDrawCover(ctx, img, cw, ch) {
+                var iw = img.naturalWidth || img.width;
+                var ih = img.naturalHeight || img.height;
+                if (!iw || !ih) return;
+                var scale = Math.max(cw / iw, ch / ih);
+                var dw = iw * scale;
+                var dh = ih * scale;
+                var dx = (cw - dw) / 2;
+                var dy = (ch - dh) / 2;
+                ctx.drawImage(img, dx, dy, dw, dh);
+            }
+
+            /** Matches `.ad-canvas-image-shade` linear-gradient */
+            function miwesuDrawImageVignette(ctx, cw, ch) {
+                var g = ctx.createLinearGradient(0, 0, 0, ch);
+                g.addColorStop(0, 'rgba(0,0,0,0.4)');
+                g.addColorStop(0.4, 'rgba(0,0,0,0)');
+                g.addColorStop(0.6, 'rgba(0,0,0,0)');
+                g.addColorStop(1, 'rgba(0,0,0,0.8)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, cw, ch);
+            }
+
+            function miwesuLoadImage(src) {
+                return new Promise(function (resolve, reject) {
+                    var im = new Image();
+                    im.onload = function () {
+                        resolve(im);
+                    };
+                    im.onerror = function () {
+                        reject(new Error('Could not load image for export'));
+                    };
+                    im.src = src;
+                });
+            }
+
+            /**
+             * html2canvas tiles large captures; painting background-image + transforms in one pass
+             * often yields one “good” quadrant and darker wrong tiles. We draw photo + vignette on
+             * a real canvas, then html2canvas only the overlay subtree with a transparent background.
+             */
+            function miwesuRenderOverlayOnly(stage) {
+                return new Promise(function (resolve, reject) {
+                    var scaleRoot = stage.querySelector('.ad-canvas-scale-root');
+                    if (!scaleRoot) {
+                        reject(new Error('Missing overlay layer'));
+                        return;
+                    }
+                    var exportToken =
+                        'miwesu-e-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+                    var host = document.createElement('div');
+                    host.className = 'ad-canvas exporting miwesu-export-host';
+                    host.setAttribute('data-miwesu-export', exportToken);
+                    host.style.cssText = [
+                        'position:fixed',
+                        'left:-10000px',
+                        'top:0',
+                        'width:' + EXPORT_PX + 'px',
+                        'height:' + EXPORT_PX + 'px',
+                        'box-sizing:border-box',
+                        'background:transparent',
+                        'border:none',
+                        'box-shadow:none',
+                        'overflow:hidden',
+                        'margin:0',
+                        'padding:0'
+                    ].join(';');
+                    host.appendChild(scaleRoot.cloneNode(true));
+                    document.body.appendChild(host);
+
+                    html2canvas(host, {
+                        scale: 1,
+                        width: EXPORT_PX,
+                        height: EXPORT_PX,
+                        backgroundColor: null,
+                        useCORS: true,
+                        logging: false,
+                        onclone: function (doc) {
+                            var h2 = doc.querySelector('[data-miwesu-export="' + exportToken + '"]');
+                            if (h2) {
+                                var sr = h2.querySelector('.ad-canvas-scale-root');
+                                if (sr) {
+                                    sr.style.transform = 'scale(' + (EXPORT_PX / LOGICAL_STAGE_PX) + ')';
+                                    sr.style.transformOrigin = '0 0';
+                                }
+                            }
+                            var inj = doc.createElement('style');
+                            inj.setAttribute('data-miwesu-export-fix', '1');
+                            inj.textContent =
+                                '.glass-pill.glass-pill--solid{background:rgb(18,18,20)!important;}' +
+                                '.glass-pill.glass-pill--wa{background:#25d366!important;border:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important;}' +
+                                '.glass-panel.card-4-offer-panel{border-radius:0!important;background:rgb(18,18,20)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:4px 0 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)!important;}';
+                            doc.head.appendChild(inj);
+                            var c4panel = h2 && h2.querySelector('.glass-panel.card-4-offer-panel');
+                            if (c4panel) {
+                                c4panel.style.setProperty('background', 'rgb(18, 18, 20)', 'important');
+                                c4panel.style.setProperty('backdrop-filter', 'none', 'important');
+                                c4panel.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+                                c4panel.style.setProperty(
+                                    'box-shadow',
+                                    '4px 0 20px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
+                                    'important'
+                                );
+                            }
+                            var pk = h2 && h2.querySelector('.pill-kicker');
+                            if (pk) {
+                                var data = miwesuPillKickerDataUrl(pk.textContent);
+                                if (data && data.url) {
+                                    var img = doc.createElement('img');
+                                    img.src = data.url;
+                                    img.alt = '';
+                                    img.setAttribute('draggable', 'false');
+                                    img.style.display = 'inline-block';
+                                    img.style.verticalAlign = 'middle';
+                                    img.style.width = data.cssW + 'px';
+                                    img.style.height = data.cssH + 'px';
+                                    pk.textContent = '';
+                                    pk.appendChild(img);
+                                }
+                            }
+                            var c3l = h2 && h2.querySelector('.card-3-pill-label');
+                            if (c3l) {
+                                var data3 = miwesuCard3PillLabelDataUrl(c3l.textContent);
+                                if (data3 && data3.url) {
+                                    var img3 = doc.createElement('img');
+                                    img3.src = data3.url;
+                                    img3.alt = '';
+                                    img3.setAttribute('draggable', 'false');
+                                    img3.style.display = 'inline-block';
+                                    img3.style.verticalAlign = 'middle';
+                                    img3.style.width = data3.cssW + 'px';
+                                    img3.style.height = data3.cssH + 'px';
+                                    c3l.textContent = '';
+                                    c3l.appendChild(img3);
+                                }
+                            }
+                            var waPill = h2 && h2.querySelector('.glass-pill--wa');
+                            if (waPill) {
+                                var waSpan = waPill.querySelector('.card-5-wa-text');
+                                var waTxt = waSpan ? waSpan.textContent.trim() : '';
+                                var waData = miwesuWaPillRasterDataUrl(waTxt);
+                                if (waData && waData.url) {
+                                    var waImg = doc.createElement('img');
+                                    waImg.src = waData.url;
+                                    waImg.alt = '';
+                                    waImg.setAttribute('draggable', 'false');
+                                    waImg.style.cssText =
+                                        'display:inline-block;vertical-align:middle;width:' +
+                                        waData.cssW +
+                                        'px;height:' +
+                                        waData.cssH +
+                                        'px;margin-top:20px;';
+                                    waPill.parentNode.replaceChild(waImg, waPill);
+                                }
+                            }
+                        }
+                    })
+                        .then(function (canvas) {
+                            if (host.parentNode) host.parentNode.removeChild(host);
+                            resolve(canvas);
+                        })
+                        .catch(function (err) {
+                            if (host.parentNode) host.parentNode.removeChild(host);
+                            reject(err);
+                        });
+                });
+            }
+
+            function miwesuCompositeExport(stage) {
+                return new Promise(function (resolve, reject) {
+                    var w = EXPORT_PX;
+                    var h = EXPORT_PX;
+                    var out = document.createElement('canvas');
+                    out.width = w;
+                    out.height = h;
+                    var ctx = out.getContext('2d');
+                    if (!ctx) {
+                        reject(new Error('Canvas unsupported'));
+                        return;
+                    }
+
+                    ctx.fillStyle = '#111111';
+                    ctx.fillRect(0, 0, w, h);
+
+                    var bgUrl = stage.dataset.objectUrl;
+                    var hasPhoto = !!(bgUrl && stage.classList.contains('has-image'));
+
+                    function afterBase() {
+                        return miwesuRenderOverlayOnly(stage).then(function (overlayCv) {
+                            ctx.drawImage(overlayCv, 0, 0);
+                            return out;
+                        });
+                    }
+
+                    if (!hasPhoto) {
+                        afterBase().then(resolve).catch(reject);
+                        return;
+                    }
+
+                    miwesuLoadImage(bgUrl)
+                        .then(function (img) {
+                            miwesuDrawCover(ctx, img, w, h);
+                            miwesuDrawImageVignette(ctx, w, h);
+                            return afterBase();
+                        })
+                        .then(resolve)
+                        .catch(reject);
+                });
+            }
+
+            document.querySelectorAll('.carousel-item').forEach(function (item) {
+                var fileInput = item.querySelector('.js-card-upload');
+                var dlBtn = item.querySelector('.js-card-download');
+                var stage = item.querySelector('.carousel-item__stage');
+                if (!fileInput || !dlBtn || !stage) return;
+
+                var cardId = stage.getAttribute('data-card-id') || '1';
+
+                fileInput.addEventListener('change', function () {
+                    var file = fileInput.files && fileInput.files[0];
+                    if (!file) return;
+                    var prev = stage.dataset.objectUrl;
+                    if (prev) URL.revokeObjectURL(prev);
+                    var url = URL.createObjectURL(file);
+                    stage.dataset.objectUrl = url;
+                    stage.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
+                    stage.style.backgroundSize = 'cover';
+                    stage.style.backgroundPosition = 'center';
+                    stage.classList.add('has-image');
+                    fileInput.value = '';
+                });
+
+                dlBtn.addEventListener('click', function () {
+                    if (typeof html2canvas !== 'function') {
+                        alert('html2canvas did not load. Check your network and refresh the page.');
+                        return;
+                    }
+
+                    var w = stage.offsetWidth;
+                    if (!w) {
+                        alert('Card has no width; cannot export.');
+                        return;
+                    }
+
+                    var prevText = dlBtn.textContent;
+                    dlBtn.disabled = true;
+                    dlBtn.textContent = 'Rendering…';
+
+                    miwesuCompositeExport(stage)
+                        .then(function (canvas) {
+                            return new Promise(function (resolve, reject) {
+                                canvas.toBlob(function (blob) {
+                                    if (!blob) {
+                                        reject(new Error('Empty PNG'));
+                                        return;
+                                    }
+                                    var a = document.createElement('a');
+                                    var href = URL.createObjectURL(blob);
+                                    a.href = href;
+                                    a.download = 'miwesu-carousel-' + cardId + '-1080.png';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                    URL.revokeObjectURL(href);
+                                    resolve();
+                                }, 'image/png');
+                            });
+                        })
+                        .catch(function (err) {
+                            console.error(err);
+                            alert('Export failed. Try another image or browser.');
+                        })
+                        .finally(function () {
+                            dlBtn.disabled = false;
+                            dlBtn.textContent = prevText;
+                        });
+                });
+            });
+
+            var fbOverlay = document.getElementById('fbPreviewOverlay');
+            var fbScaler = document.getElementById('fbPreviewScaler');
+            var fbIndexEl = document.getElementById('fbPreviewIndex');
+            var fbTotalEl = document.getElementById('fbPreviewTotal');
+            var fbSecondsInput = document.getElementById('fbPreviewSeconds');
+            var fbHideChromeCheck = document.getElementById('fbPreviewHideChrome');
+            var fbPlayBtn = document.getElementById('fbPreviewPlay');
+            var fbStopBtn = document.getElementById('fbPreviewStop');
+            var fbCloseBtn = document.getElementById('fbPreviewClose');
+            var fbCloseMinimal = document.getElementById('fbPreviewCloseMinimal');
+            var fbPreviewTimer = null;
+            var fbPostScaleWrap = document.getElementById('fbPostScaleWrap');
+            var fbPostCard = document.getElementById('fbPostCard');
+
+            function getFbStages() {
+                return Array.prototype.slice.call(document.querySelectorAll('.carousel-item__stage'));
+            }
+
+            function buildFbDots(count, activeIndex) {
+                var el = document.getElementById('fbPreviewDots');
+                if (!el) return;
+                el.innerHTML = '';
+                for (var i = 0; i < count; i++) {
+                    var d = document.createElement('span');
+                    d.className = 'fb-post-dot' + (i === activeIndex ? ' is-active' : '');
+                    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+                    el.appendChild(d);
+                }
+            }
+
+            function setFbDotActive(index) {
+                var dots = document.querySelectorAll('#fbPreviewDots .fb-post-dot');
+                for (var i = 0; i < dots.length; i++) {
+                    dots[i].classList.toggle('is-active', i === index);
+                }
+            }
+
+            function updateFbPreviewScale() {
+                if (!fbScaler || !fbOverlay || fbOverlay.hidden) return;
+                var mediaEl = document.querySelector('.fb-post-media');
+                var mediaW = mediaEl ? mediaEl.clientWidth : 500;
+                if (mediaW < 100) mediaW = 500;
+                var innerScale = mediaW / 400;
+                fbScaler.style.transform = 'scale(' + innerScale + ')';
+
+                if (!fbPostScaleWrap || !fbPostCard) return;
+                var chromeEl = fbOverlay.querySelector('.fb-preview-chrome');
+                var chromeH = fbOverlay.classList.contains('fb-preview-overlay--minimal')
+                    ? 0
+                    : (chromeEl ? chromeEl.offsetHeight : 56);
+                var pad = 24;
+                var maxW = window.innerWidth - pad;
+                var maxH = window.innerHeight - chromeH - pad;
+                var cw = fbPostCard.offsetWidth || 500;
+                var ch = fbPostCard.offsetHeight || 700;
+                var s = Math.min(1, maxW / cw, maxH / ch);
+                fbPostScaleWrap.style.transform = 'scale(' + s + ')';
+            }
+
+            function showFbCard(index) {
+                var stages = getFbStages();
+                if (!stages.length || !fbScaler) return;
+                var idx = Math.max(0, Math.min(index, stages.length - 1));
+                fbScaler.innerHTML = '';
+                var clone = stages[idx].cloneNode(true);
+                clone.classList.add('exporting');
+                clone.removeAttribute('id');
+                fbScaler.appendChild(clone);
+                if (fbIndexEl) fbIndexEl.textContent = String(idx + 1);
+                setFbDotActive(idx);
+            }
+
+            function stopFbSequence() {
+                if (fbPreviewTimer !== null) {
+                    clearInterval(fbPreviewTimer);
+                    fbPreviewTimer = null;
+                }
+                if (fbPlayBtn) fbPlayBtn.disabled = false;
+                if (fbStopBtn) fbStopBtn.disabled = true;
+                if (fbOverlay) {
+                    fbOverlay.classList.remove('fb-preview-overlay--minimal');
+                }
+                if (fbCloseMinimal) fbCloseMinimal.hidden = true;
+            }
+
+            function openFbPreview() {
+                var stages = getFbStages();
+                if (!stages.length) return;
+                if (fbTotalEl) fbTotalEl.textContent = String(stages.length);
+                fbOverlay.hidden = false;
+                document.body.classList.add('fb-preview-open');
+                stopFbSequence();
+                buildFbDots(stages.length, 0);
+                showFbCard(0);
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(updateFbPreviewScale);
+                });
+            }
+
+            function closeFbPreview() {
+                stopFbSequence();
+                fbOverlay.hidden = true;
+                document.body.classList.remove('fb-preview-open');
+                fbScaler.innerHTML = '';
+            }
+
+            function startFbSequence() {
+                var stages = getFbStages();
+                if (!stages.length) return;
+                stopFbSequence();
+                var sec = parseFloat(fbSecondsInput && fbSecondsInput.value ? fbSecondsInput.value : '3');
+                if (isNaN(sec) || sec < 0.5) sec = 3;
+                var ms = Math.round(sec * 1000);
+                var i = 0;
+                showFbCard(0);
+                if (fbHideChromeCheck && fbHideChromeCheck.checked) {
+                    fbOverlay.classList.add('fb-preview-overlay--minimal');
+                    if (fbCloseMinimal) fbCloseMinimal.hidden = false;
+                } else {
+                    fbOverlay.classList.remove('fb-preview-overlay--minimal');
+                    if (fbCloseMinimal) fbCloseMinimal.hidden = true;
+                }
+                updateFbPreviewScale();
+                if (fbPlayBtn) fbPlayBtn.disabled = true;
+                if (fbStopBtn) fbStopBtn.disabled = false;
+                fbPreviewTimer = setInterval(function () {
+                    i += 1;
+                    if (i >= stages.length) {
+                        stopFbSequence();
+                        updateFbPreviewScale();
+                        return;
+                    }
+                    showFbCard(i);
+                }, ms);
+            }
+
+            document.getElementById('fbPreviewOpen').addEventListener('click', openFbPreview);
+            fbCloseBtn.addEventListener('click', closeFbPreview);
+            fbCloseMinimal.addEventListener('click', closeFbPreview);
+            fbPlayBtn.addEventListener('click', startFbSequence);
+            fbStopBtn.addEventListener('click', function () {
+                stopFbSequence();
+                updateFbPreviewScale();
+            });
+            window.addEventListener('resize', function () {
+                if (fbOverlay && !fbOverlay.hidden) updateFbPreviewScale();
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && fbOverlay && !fbOverlay.hidden) {
+                    closeFbPreview();
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

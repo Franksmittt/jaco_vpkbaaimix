@@ -4,34 +4,63 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
-const imagesDir = path.join(root, 'images');
-const indexPath = path.join(root, 'index.html');
+const publicDir = path.join(root, 'public');
+const imagesDir = path.join(publicDir, 'images');
+const indexPath = path.join(publicDir, 'index.html');
 const manifestPath = path.join(imagesDir, 'gallery-manifest.json');
+const MANIFEST_FILENAME = 'gallery-manifest.json';
 
-const IMAGE_EXT = new Set(['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.avif']);
+/** Anything in images/ except the manifest; browser-previewable types get a thumbnail. */
+const IMAGE_EXT = new Set([
+  '.jpg',
+  '.jpeg',
+  '.jpe',
+  '.jfif',
+  '.pjpeg',
+  '.png',
+  '.apng',
+  '.gif',
+  '.webp',
+  '.svg',
+  '.avif',
+  '.bmp',
+  '.ico',
+  '.tif',
+  '.tiff',
+]);
 
-function listImageFiles() {
+function listGalleryItems() {
   if (!fs.existsSync(imagesDir)) {
-    console.warn('images/ not found; using empty gallery.');
+    console.warn('public/images/ not found; using empty gallery.');
     return [];
   }
   return fs
     .readdirSync(imagesDir, { withFileTypes: true })
     .filter((d) => d.isFile())
     .map((d) => d.name)
-    .filter((name) => IMAGE_EXT.has(path.extname(name).toLowerCase()))
-    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    .filter((name) => name !== MANIFEST_FILENAME)
+    .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
+    .map((name) => ({
+      name,
+      type: IMAGE_EXT.has(path.extname(name).toLowerCase()) ? 'image' : 'file',
+    }));
 }
 
-const images = listImageFiles();
+const items = listGalleryItems();
 const payload = {
   generatedAt: new Date().toISOString(),
-  images,
+  items,
+  /** Kept for older pages; same names as image entries only */
+  images: items.filter((i) => i.type === 'image').map((i) => i.name),
 };
 
+fs.mkdirSync(publicDir, { recursive: true });
+fs.mkdirSync(publicDir, { recursive: true });
 fs.mkdirSync(imagesDir, { recursive: true });
 fs.writeFileSync(manifestPath, JSON.stringify(payload, null, 2), 'utf8');
-console.log(`Wrote images/gallery-manifest.json (${images.length} images).`);
+console.log(
+  `Wrote public/images/gallery-manifest.json (${items.length} files, ${payload.images.length} previewable as images).`,
+);
 
 let html = fs.readFileSync(indexPath, 'utf8');
 const re = /(<script id="gallery-manifest-data" type="application\/json">)([\s\S]*?)(<\/script>)/;

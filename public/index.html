@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Braai Mix - Overlay Studio Grid</title>
+    <style>
+        :root {
+            --apple-white: #f5f5f7;
+            --samsung-black: #000000;
+            --samsung-blue: #1428A0;
+            --galaxy-glow: #2b60ff;
+            --supernova-yellow: #FFC600;
+            /* Comma-separated R,G,B for rgba(var(--accent-rgb), a) — updated by accent picker */
+            --accent-rgb: 255, 198, 0;
+            --titanium-gray: #86868b;
+            --glass-bg: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            /* Default studio background (under public/images/) */
+            --canvas-default-bg: url('images/Gemini_Generated_Image_ctjuvhctjuvhctju.png');
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0a0a0a;
+            color: var(--apple-white);
+            margin: 0;
+            padding: 40px;
+        }
+
+        /* --- CONTROL PANEL --- */
+        .control-panel {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 {
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--apple-white);
+            color: var(--samsung-black);
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.1);
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.02);
+            background-color: var(--supernova-yellow);
+        }
+
+        /* --- GRID SYSTEM --- */
+        .studio-grid {
+            display: grid;
+            /* 3 vertical + 3 square per row when each pair is adjacent in the DOM */
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 40px 16px;
+            width: 100%;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+        @media (max-width: 1500px) {
+            .studio-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 1000px) {
+            .studio-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        @media (max-width: 520px) {
+            .studio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* --- IMAGE GALLERY (below studio grid) --- */
+        .asset-gallery {
+            max-width: 1920px;
+            margin: 56px auto 0;
+            padding: 32px 0 48px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .asset-gallery h2 {
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .gallery-lead {
+            margin: 0 0 24px;
+            color: var(--titanium-gray);
+            font-size: 14px;
+            line-height: 1.5;
+            max-width: 52rem;
+        }
+
+        .gallery-lead code {
+            font-size: 0.9em;
+            color: var(--apple-white);
+            background: rgba(255, 255, 255, 0.06);
+            padding: 2px 6px;
+            border-radius: 6px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 16px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .gallery-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            margin: 0;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+            transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-2px);
+            border-color: rgba(var(--accent-rgb), 0.45);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+        }
+
+        .gallery-item:focus-visible {
+            outline: 2px solid var(--supernova-yellow);
+            outline-offset: 3px;
+        }
+
+        .gallery-item.is-selected {
+            border-color: var(--supernova-yellow);
+            box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.35);
+        }
+
+        .gallery-item--file .gallery-file-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #1c1c1e 0%, #0d0d0f 100%);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: var(--titanium-gray);
+            text-transform: uppercase;
+            padding: 8px;
+            text-align: center;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-caption {
+            font-size: 10px;
+            letter-spacing: 0.03em;
+            color: var(--titanium-gray);
+            padding: 8px 10px;
+            line-height: 1.25;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .gallery-empty {
+            margin: 0;
+            color: var(--titanium-gray);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* --- GALLERY LIGHTBOX --- */
+        .gallery-lightbox[hidden] {
+            display: none !important;
+        }
+
+        .gallery-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+            box-sizing: border-box;
+        }
+
+        .gallery-lightbox-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .gallery-lightbox-panel {
+            position: relative;
+            z-index: 1;
+            max-width: min(96vw, 1200px);
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 14px;
+            pointer-events: none;
+        }
+
+        .gallery-lightbox-panel > * {
+            pointer-events: auto;
+        }
+
+        .gallery-lightbox-img {
+            max-width: 100%;
+            max-height: min(78vh, 920px);
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 14px;
+            box-shadow: 0 28px 72px rgba(0, 0, 0, 0.6);
+            background: #111;
+        }
+
+        .gallery-lightbox-title {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--titanium-gray);
+            text-align: center;
+            max-width: 100%;
+            line-height: 1.35;
+            word-break: break-word;
+            padding: 0 8px;
+        }
+
+        .gallery-lightbox-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .gallery-lightbox-apply {
+            background: var(--supernova-yellow);
+            color: #000;
+            font-weight: 800;
+            font-size: 15px;
+            padding: 14px 28px;
+            border-radius: 999px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+            transition: transform 0.15s ease, filter 0.15s ease;
+        }
+
+        .gallery-lightbox-apply:hover {
+            transform: scale(1.03);
+            filter: brightness(1.05);
+        }
+
+        .gallery-lightbox-apply:focus-visible {
+            outline: 2px solid var(--apple-white);
+            outline-offset: 3px;
+        }
+
+        .gallery-lightbox-close {
+            position: fixed;
+            top: max(12px, env(safe-area-inset-top));
+            right: max(12px, env(safe-area-inset-right));
+            z-index: 10001;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--apple-white);
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .gallery-lightbox-close:hover {
+            background: rgba(40, 40, 40, 0.85);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .gallery-lightbox-close:focus-visible {
+            outline: 2px solid var(--supernova-yellow);
+            outline-offset: 2px;
+        }
+
+        .template-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .template-name {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--titanium-gray);
+            margin-bottom: 10px;
+        }
+
+        /* --- CANVAS --- */
+        .ad-canvas {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background-color: #111;
+            background-image: var(--canvas-default-bg);
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #333;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            transition: background-image 0.3s ease;
+            container-type: inline-size;
+        }
+
+        /* Flat colour cards (no photo overlay gradient) */
+        .ad-canvas.ad-canvas--solid::after {
+            display: none;
+        }
+
+        /* Text readability over photo backgrounds */
+        .ad-canvas::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.8) 100%);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        /* Square (1:1) — photo-forward: strong vignette only at top/bottom edges (~80% frame stays clear) */
+        .ad-canvas.ad-canvas--square {
+            aspect-ratio: 1 / 1;
+        }
+        .ad-canvas.ad-canvas--square::after {
+            /* ~80% vertical band fully clear so the photo reads across most of the square */
+            background: linear-gradient(
+                to bottom,
+                rgba(0, 0, 0, 0.52) 0%,
+                rgba(0, 0, 0, 0.12) 7%,
+                transparent 10%,
+                transparent 90%,
+                rgba(0, 0, 0, 0.12) 93%,
+                rgba(0, 0, 0, 0.55) 100%
+            );
+        }
+        .ad-canvas.ad-canvas--square .layer {
+            padding: 10px 12px;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-line {
+            font-size: clamp(11px, 7.5cqw, 30px);
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.92), 0 1px 2px rgba(0, 0, 0, 0.98);
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-bottom {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 8px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-bottom__copy {
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-bottom__copy .specs,
+        .ad-canvas.ad-canvas--square .monolith-square-bottom__copy .body-text {
+            text-align: center;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-bottom__copy .badge {
+            display: inline-block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-woods {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-pill {
+            flex: 0 1 auto;
+            white-space: nowrap;
+            font-size: clamp(5px, 2.8cqw, 8px);
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 4px 6px;
+            border-radius: 999px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-squircle {
+            padding: 10px 12px;
+            max-width: 100%;
+            box-sizing: border-box;
+            border-radius: 12px;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-squircle .specs {
+            font-size: clamp(8px, 2.4cqw, 11px);
+            margin-bottom: 6px;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-squircle .body-text {
+            font-size: clamp(9px, 2.8cqw, 12px);
+            margin-bottom: 6px;
+        }
+        .ad-canvas.ad-canvas--square .monolith-square-squircle .badge {
+            font-size: clamp(8px, 2.5cqw, 11px);
+            padding: 3px 10px;
+        }
+
+        /* A2 — hero copy on photo (no glass panel behind title + woods) */
+        .ad-canvas--a2-vertical .a2-hero-stack,
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-stack {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            text-align: center;
+            background: none;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            padding: 2px 4px 0;
+        }
+        .ad-canvas--a2-vertical .a2-hero-stack {
+            padding: 4px 8px 0;
+        }
+        .ad-canvas--a2-vertical .a2-hero-title {
+            font-size: clamp(11px, 3.9cqw, 18px);
+            font-weight: 800;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow:
+                0 1px 3px rgba(0, 0, 0, 1),
+                0 2px 22px rgba(0, 0, 0, 0.95),
+                0 0 40px rgba(0, 0, 0, 0.55);
+            line-height: 1.2;
+            margin: 0;
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-title {
+            font-size: clamp(8px, 3.15cqw, 15px);
+            font-weight: 800;
+            letter-spacing: 0.055em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow:
+                0 1px 3px rgba(0, 0, 0, 1),
+                0 2px 18px rgba(0, 0, 0, 0.95),
+                0 0 32px rgba(0, 0, 0, 0.5);
+            line-height: 1.12;
+            margin: 0;
+        }
+        .ad-canvas--a2-vertical .a2-hero-divider,
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-divider {
+            height: 1px;
+            border: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(var(--accent-rgb), 0.5) 22%,
+                rgba(255, 255, 255, 0.28) 50%,
+                rgba(var(--accent-rgb), 0.5) 78%,
+                transparent 100%
+            );
+            opacity: 0.85;
+        }
+        .ad-canvas--a2-vertical .a2-hero-divider {
+            margin: 11px 12px 10px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-divider {
+            margin: 6px 6px 6px;
+        }
+        .ad-canvas--a2-vertical .a2-hero-woods,
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-woods {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 6px 8px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-woods {
+            gap: 4px 5px;
+        }
+        .ad-canvas--a2-vertical .a2-hero-pill {
+            font-size: clamp(7px, 2.35cqw, 10px);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 6px 10px;
+            border-radius: 999px;
+            white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 2px 12px rgba(0, 0, 0, 0.75);
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-hero-pill {
+            font-size: clamp(4px, 2.2cqw, 7px);
+            font-weight: 800;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            padding: 3px 6px;
+            border-radius: 999px;
+            white-space: nowrap;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 2px 10px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+        }
+
+        /* A2 Price Reveal — 1:1 square (compact chrome; uses global square vignette) */
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-price {
+            font-size: clamp(18px, 11.5cqw, 36px);
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+            color: var(--supernova-yellow);
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 4px 16px rgba(0, 0, 0, 0.7), 0 0 1px rgba(0, 0, 0, 1);
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-sub {
+            font-size: clamp(7px, 2.5cqw, 12px);
+            font-weight: 600;
+            color: var(--apple-white);
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.95), 0 2px 10px rgba(0, 0, 0, 0.75);
+            margin-top: 0;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .layer.t-top {
+            padding: 8px 10px 4px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .layer.t-bottom {
+            padding: 4px 10px 8px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-bottom-split {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer.a2-square-footer--left {
+            flex: 0 1 auto;
+            width: fit-content;
+            max-width: min(100%, 78%);
+            min-width: 0;
+            text-align: center;
+            padding: 6px 8px;
+            box-sizing: border-box;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer--left .a2-square-footer-tag,
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer--left .a2-square-footer-pack {
+            text-align: center;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer--left .a2-square-footer-divider {
+            margin-left: 0;
+            margin-right: 0;
+            max-width: 100%;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer--left .a2-square-footer-wa {
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-price-col {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: center;
+            width: max-content;
+            max-width: 100%;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-price-col .a2-square-price {
+            line-height: 0.88;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: right;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-price-col .a2-square-sub {
+            margin-top: 2px;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: right;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer {
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+            padding: 5px 7px 5px;
+            border-radius: 10px;
+            text-align: center;
+            border-color: rgba(var(--accent-rgb), 0.22);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-tag {
+            font-size: clamp(5px, 1.9cqw, 9px);
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(245, 245, 247, 0.72);
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+            margin: 0 0 3px;
+            line-height: 1.1;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-woods {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 2px 4px;
+            margin-bottom: 4px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-pill {
+            font-size: clamp(4px, 2.1cqw, 7px);
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            padding: 2px 5px;
+            border-radius: 999px;
+            white-space: nowrap;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+            box-shadow: 0 1px 6px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.65), transparent);
+            margin: 0 0 4px;
+            opacity: 0.85;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-pack {
+            font-size: clamp(7px, 2.4cqw, 11px);
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.85);
+            margin: 0 0 4px;
+            line-height: 1.1;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a2-price .a2-square-footer-wa {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            font-size: clamp(7px, 2.85cqw, 13px);
+            font-weight: 800;
+            padding: 5px 8px;
+            line-height: 1.2;
+        }
+
+        /* A3 Macro Detail — 1:1 square (compact chrome; global square vignette ~80% clear) */
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .layer.t-top {
+            padding: 10px 12px 6px;
+            text-align: left;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .layer.t-bottom {
+            padding: 6px 12px 10px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-headline {
+            font-size: clamp(13px, 7cqw, 26px);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -0.03em;
+            color: var(--apple-white);
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.95), 0 1px 3px rgba(0, 0, 0, 1), 0 4px 22px rgba(0, 0, 0, 0.55);
+            margin: 0 0 6px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-tagline {
+            font-size: clamp(8px, 2.85cqw, 13px);
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--apple-white);
+            letter-spacing: 0.02em;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.95), 0 2px 12px rgba(0, 0, 0, 0.75);
+            margin: 0;
+            max-width: 88%;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-price {
+            font-size: clamp(20px, 11cqw, 32px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.04em;
+            color: var(--supernova-yellow);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.92), 0 4px 18px rgba(0, 0, 0, 0.5);
+            margin: 0 0 4px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-specs {
+            font-size: clamp(6px, 2.3cqw, 10px);
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.92);
+            margin: 0 0 2px;
+            line-height: 1.3;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-specs-pre-wa {
+            margin-bottom: 7px;
+        }
+        .ad-canvas.ad-canvas--square.ad-canvas--a3-macro .a3-square-badge {
+            font-size: clamp(6px, 2.4cqw, 11px);
+            padding: 3px 9px;
+        }
+
+        /* Square A4–E4 — compact paired variants (global .ad-canvas--square .layer padding applies) */
+        .ad-canvas.ad-canvas--square.sq-a4 .squircle { padding: 11px 11px; border-radius: 16px; }
+        .ad-canvas.ad-canvas--square.sq-a4 .badge { font-size: clamp(6px, 2.1cqw, 10px); padding: 3px 8px; }
+        .ad-canvas.ad-canvas--square.sq-a4 .headline-large { font-size: clamp(13px, 4.8cqw, 21px); }
+        .ad-canvas.ad-canvas--square.sq-a4 .subhead { font-size: clamp(9px, 3.2cqw, 14px); }
+        .ad-canvas.ad-canvas--square.sq-a4 .body-text { font-size: clamp(8px, 2.6cqw, 12px); }
+        .ad-canvas.ad-canvas--square.sq-a4 .specs { font-size: clamp(7px, 2.2cqw, 10px); }
+
+        .ad-canvas.ad-canvas--square.sq-a5 .layer.t-bottom { padding: 8px 10px 10px; }
+        .ad-canvas.ad-canvas--square.sq-a5 .headline-large { font-size: clamp(14px, 5.5cqw, 22px); }
+        .ad-canvas.ad-canvas--square.sq-a5 .flex-row .specs { font-size: clamp(7px, 2cqw, 10px); }
+        .ad-canvas.ad-canvas--square.sq-a5 .sq-a5-phone-box { margin-top: 8px !important; padding: 10px 11px !important; border-radius: 14px !important; }
+        .ad-canvas.ad-canvas--square.sq-a5 .sq-a5-free-line { font-size: clamp(8px, 2.4cqw, 11px) !important; margin-bottom: 8px !important; }
+        .ad-canvas.ad-canvas--square.sq-a5 .sq-a5-phone-num { font-size: clamp(14px, 5cqw, 18px) !important; }
+
+        .ad-canvas.ad-canvas--square.sq-b3 .headline-large { font-size: clamp(12px, 4.2cqw, 18px); }
+        .ad-canvas.ad-canvas--square.sq-b3 .headline-massive { font-size: clamp(22px, 12cqw, 38px) !important; letter-spacing: -0.06em !important; }
+        .ad-canvas.ad-canvas--square.sq-b3 .badge { font-size: clamp(7px, 2.3cqw, 11px); padding: 3px 8px; }
+
+        .ad-canvas.ad-canvas--square.sq-b4 .layer.t-bottom {
+            padding-top: 12px !important;
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+            padding-bottom: 10px !important;
+        }
+        .ad-canvas.ad-canvas--square.sq-b4 .sq-b4-row.flex-row { padding: 8px 10px !important; border-radius: 12px !important; }
+        .ad-canvas.ad-canvas--square.sq-b4 .sq-b4-row.flex-row > div:first-child { font-size: clamp(7px, 2cqw, 10px) !important; }
+        .ad-canvas.ad-canvas--square.sq-b4 .sq-b4-row.flex-row > div:last-child { font-size: clamp(14px, 5.5cqw, 18px) !important; }
+        .ad-canvas.ad-canvas--square.sq-b4 .headline-large { font-size: clamp(13px, 4.5cqw, 19px); }
+        .ad-canvas.ad-canvas--square.sq-b4 .subhead { font-size: clamp(11px, 3.2cqw, 14px) !important; }
+
+        .ad-canvas.ad-canvas--square.sq-b5 .headline-massive { font-size: clamp(22px, 11cqw, 36px) !important; }
+        .ad-canvas.ad-canvas--square.sq-b5 .subhead { font-size: clamp(11px, 3.5cqw, 15px) !important; }
+        .ad-canvas.ad-canvas--square.sq-b5 .layer.t-bottom.squircle { padding: 11px 11px !important; border-radius: 14px !important; }
+        .ad-canvas.ad-canvas--square.sq-b5 .sq-b5-offer { font-size: clamp(9px, 2.8cqw, 12px) !important; margin-bottom: 8px !important; }
+        .ad-canvas.ad-canvas--square.sq-b5 .sq-b5-woods { font-size: clamp(8px, 2.4cqw, 11px) !important; }
+        .ad-canvas.ad-canvas--square.sq-b5 .sq-b5-tag { font-size: clamp(7px, 2cqw, 9px) !important; margin-bottom: 10px !important; }
+
+        .ad-canvas.ad-canvas--square.sq-c1 .specs { font-size: clamp(8px, 2.4cqw, 11px); }
+        .ad-canvas.ad-canvas--square.sq-c1 .sq-c1-num { width: 22px !important; height: 22px !important; font-size: 10px !important; margin-bottom: 5px !important; }
+        .ad-canvas.ad-canvas--square.sq-c1 .sq-c1-col { padding: 7px 2px !important; border-radius: 12px !important; }
+        .ad-canvas.ad-canvas--square.sq-c1 .sq-c1-wood { font-size: clamp(4px, 1.7cqw, 8px) !important; }
+        .ad-canvas.ad-canvas--square.sq-c1 .headline-large { font-size: clamp(12px, 4.8cqw, 20px); }
+        .ad-canvas.ad-canvas--square.sq-c1 .body-text.specs-read { font-size: clamp(8px, 2.5cqw, 11px); }
+
+        .ad-canvas.ad-canvas--square.sq-c4 .headline-large { font-size: clamp(13px, 5cqw, 20px); }
+        .ad-canvas.ad-canvas--square.sq-c4 .squircle { padding: 10px 11px; border-radius: 14px; }
+        .ad-canvas.ad-canvas--square.sq-c4 .subhead { font-size: clamp(10px, 3.2cqw, 14px); }
+        .ad-canvas.ad-canvas--square.sq-c4 .sq-c4-phone { font-size: clamp(14px, 4.8cqw, 18px) !important; }
+
+        .ad-canvas.ad-canvas--square.sq-d1 .layer.t-top { padding-bottom: 16px !important; }
+        .ad-canvas.ad-canvas--square.sq-d1 .layer.t-bottom { padding-top: 28px !important; }
+        .ad-canvas.ad-canvas--square.sq-d1 .sq-d1-cine { font-size: clamp(11px, 4.2cqw, 18px) !important; }
+        .ad-canvas.ad-canvas--square.sq-d1 .headline-large { font-size: clamp(11px, 5cqw, 22px) !important; }
+        .ad-canvas.ad-canvas--square.sq-d1 .body-text { font-size: clamp(9px, 2.6cqw, 12px); }
+
+        .ad-canvas.ad-canvas--square.sq-d2 .headline-large { font-size: clamp(16px, 6.5cqw, 26px); }
+        .ad-canvas.ad-canvas--square.sq-d2 .squircle { padding: 12px 12px !important; border-radius: 14px !important; }
+        .ad-canvas.ad-canvas--square.sq-d2 .sq-d2-sub { font-size: clamp(10px, 2.8cqw, 12px) !important; }
+        .ad-canvas.ad-canvas--square.sq-d2 .sq-d2-line { font-size: clamp(10px, 3cqw, 13px) !important; }
+        .ad-canvas.ad-canvas--square.sq-d2 .sq-d2-moq { font-size: clamp(9px, 2.5cqw, 11px) !important; }
+
+        .ad-canvas.ad-canvas--square.sq-d3 .sq-d3-bg { font-size: clamp(36px, 18cqw, 72px) !important; }
+        .ad-canvas.ad-canvas--square.sq-d3 .headline-large { font-size: clamp(14px, 5.5cqw, 22px); }
+        .ad-canvas.ad-canvas--square.sq-d3 .subhead { font-size: clamp(11px, 3.5cqw, 15px); }
+        .ad-canvas.ad-canvas--square.sq-d3 .sq-d3-copy { font-size: clamp(9px, 2.8cqw, 13px) !important; padding: 0 8px !important; }
+
+        .ad-canvas.ad-canvas--square.sq-e4 .sq-e4-hero { font-size: clamp(18px, 12cqw, 44px) !important; line-height: 0.88 !important; }
+        .ad-canvas.ad-canvas--square.sq-e4 .squircle { padding: 10px 11px; border-radius: 14px; }
+        .ad-canvas.ad-canvas--square.sq-e4 .sq-e4-wa { font-size: clamp(13px, 4.5cqw, 18px) !important; }
+
+        /* --- TEXT LAYERS --- */
+        .layer {
+            position: absolute;
+            z-index: 10;
+            box-sizing: border-box;
+            padding: 24px;
+            width: 100%;
+        }
+
+        .t-top { top: 0; left: 0; }
+        .t-bottom { bottom: 0; left: 0; }
+        .t-center { top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; text-align: center; }
+        .t-left { left: 0; text-align: left; }
+        .t-right { right: 0; text-align: right; }
+
+        .flex-row { display: flex; justify-content: space-between; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        
+        /* Typography */
+        .headline-massive { font-size: 48px; font-weight: 900; line-height: 0.9; letter-spacing: -2px; text-transform: uppercase; }
+        .headline-large { font-size: 32px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; }
+        .subhead { font-size: 18px; font-weight: 600; color: var(--titanium-gray); }
+        .body-text { font-size: 14px; font-weight: 400; line-height: 1.4; color: #ccc; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .specs { font-size: 12px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; color: var(--titanium-gray); }
+        
+        /* Accents */
+        .color-yellow { color: var(--supernova-yellow); }
+        .color-blue { color: var(--galaxy-glow); }
+        .color-white { color: var(--apple-white); }
+        
+        .squircle {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 16px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--supernova-yellow);
+            color: #000;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .divider { height: 1px; background: rgba(255,255,255,0.2); margin: 12px 0; }
+        /* High-contrast line for busy backgrounds (SKU / pack summary) */
+        .specs.specs-read,
+        .body-text.specs-read {
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--apple-white);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 2px 10px rgba(0,0,0,0.65);
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 16px; }
+
+        .accent-row {
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+        .accent-label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--titanium-gray);
+            margin-bottom: 14px;
+        }
+        .accent-tools {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 14px 18px;
+        }
+        .accent-swatches {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        .accent-swatch {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.25);
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.35);
+        }
+        .accent-swatch:hover {
+            transform: scale(1.08);
+        }
+        .accent-swatch[aria-pressed="true"] {
+            outline: 2px solid var(--apple-white);
+            outline-offset: 3px;
+        }
+        .accent-custom-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--titanium-gray);
+        }
+        #accentColorPicker {
+            width: 48px;
+            height: 38px;
+            padding: 0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            background: transparent;
+        }
+        #accentColorPicker::-webkit-color-swatch-wrapper { padding: 2px; }
+        #accentColorPicker::-webkit-color-swatch { border-radius: 8px; border: 2px solid rgba(255,255,255,0.25); }
+    </style>
+</head>
+<body>
+
+    <div class="control-panel">
+        <h1>Ultimate Braai Mix Studio</h1>
+        <label for="imageUpload" class="upload-btn">
+            <svg style="width:20px;height:20px;vertical-align:middle;margin-right:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Upload Background Image
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+        <div class="accent-row">
+            <div class="accent-label">Accent color (all templates)</div>
+            <div class="accent-tools">
+                <div class="accent-swatches" role="group" aria-label="Preset accent colors">
+                    <button type="button" class="accent-swatch" data-hex="#FFC600" style="background:#FFC600;" title="Gold" aria-pressed="true"></button>
+                    <button type="button" class="accent-swatch" data-hex="#2b60ff" style="background:#2b60ff;" title="Blue" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#e53935" style="background:#e53935;" title="Red" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#00c853" style="background:#00c853;" title="Green" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#ff6d00" style="background:#ff6d00;" title="Orange" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#9c27b0" style="background:#9c27b0;" title="Purple" aria-pressed="false"></button>
+                    <button type="button" class="accent-swatch" data-hex="#00bcd4" style="background:#00bcd4;" title="Cyan" aria-pressed="false"></button>
+                </div>
+                <div class="accent-custom-wrap">
+                    <span>Custom</span>
+                    <input type="color" id="accentColorPicker" value="#FFC600" aria-label="Pick custom accent color" title="Custom color">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="studio-grid">
+
+        <div class="template-wrapper">
+            <div class="template-name">A1: The Monolith</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="headline-massive mb-1" style="text-align:center;width:100%;text-shadow:0 2px 14px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.95);">ULTIMATE</div>
+                    <div class="headline-massive" style="text-align:center;width:100%;text-shadow:0 2px 14px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.95);">BRAAI MIX</div>
+                </div>
+                <div class="layer t-bottom text-center" style="left:0;right:0;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div style="width:100%;max-width:100%;display:flex;flex-wrap:nowrap;justify-content:center;align-items:center;gap:3px;padding:0 10px;box-sizing:border-box;min-width:0;margin-bottom:12px;">
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--apple-white);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.4);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 3px rgba(0,0,0,0.9);">Swarthaak</span>
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--supernova-yellow);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(255,255,255,0.18);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 4px rgba(0,0,0,0.85);">Geelhaak</span>
+                        <span style="flex:0 1 auto;white-space:nowrap;font-size:7.5px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--apple-white);padding:5px 7px;border-radius:999px;background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.4);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);text-shadow:0 1px 3px rgba(0,0,0,0.9);">Kameeldoring</span>
+                    </div>
+                    <div class="squircle" style="width:100%;max-width:100%;text-align:center;box-sizing:border-box;">
+                        <div class="specs mb-1" style="text-align:center;">10kg Bags | R25/bag | Min 50</div>
+                        <div class="body-text color-yellow mb-1" style="text-align:center;white-space:nowrap;font-size:clamp(8px,3.6cqw,14px);">R1250 Total + Free Gauteng Delivery</div>
+                        <div class="badge" style="display:inline-block;margin-left:auto;margin-right:auto;">WhatsApp 063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A1: The Monolith (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="monolith-square-line">ULTIMATE BRAAI MIX</div>
+                </div>
+                <div class="layer t-bottom" style="left:0;right:0;width:100%;box-sizing:border-box;">
+                    <div class="monolith-square-bottom">
+                        <div class="squircle monolith-square-squircle monolith-square-bottom__copy" style="max-width:100%;box-sizing:border-box;">
+                            <div class="specs mb-1">10kg Bags | R25/bag | Min 50</div>
+                            <div class="body-text color-yellow mb-1">R1250 Total + Free Gauteng Delivery</div>
+                            <div class="badge">WhatsApp 063 184 1939</div>
+                        </div>
+                        <div class="monolith-square-woods">
+                            <span class="monolith-square-pill" style="color:var(--apple-white);background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.45);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);">Swarthaak</span>
+                            <span class="monolith-square-pill" style="color:var(--supernova-yellow);background:rgba(12,12,12,0.5);border:1px solid rgba(255,255,255,0.18);">Geelhaak</span>
+                            <span class="monolith-square-pill" style="color:var(--apple-white);background:rgba(12,12,12,0.5);border:1px solid rgba(var(--accent-rgb),0.45);box-shadow:0 2px 14px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);">Kameeldoring</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A2: Price Reveal</div>
+            <div class="ad-canvas ad-canvas--a2-vertical">
+                <div class="layer t-top text-center" style="display:flex;justify-content:center;box-sizing:border-box;">
+                    <div class="a2-hero-stack">
+                        <div class="a2-hero-title">Vaalpenskraal Ultimate Braai Mix</div>
+                        <div class="a2-hero-divider" aria-hidden="true"></div>
+                        <div class="a2-hero-woods">
+                            <span class="a2-hero-pill" style="color:var(--apple-white);background:rgba(0,0,0,0.58);border:1px solid rgba(var(--accent-rgb),0.5);">Swarthaak</span>
+                            <span class="a2-hero-pill" style="color:var(--supernova-yellow);background:rgba(0,0,0,0.58);border:1px solid rgba(255,255,255,0.22);">Geelhaak</span>
+                            <span class="a2-hero-pill" style="color:var(--apple-white);background:rgba(0,0,0,0.58);border:1px solid rgba(var(--accent-rgb),0.5);">Kameeldoring</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layer t-center">
+                    <div class="headline-massive color-yellow" style="text-shadow:0 2px 6px rgba(0,0,0,0.95),0 4px 18px rgba(0,0,0,0.75),0 0 1px rgba(0,0,0,1),0 1px 0 rgba(0,0,0,0.5);">R1250</div>
+                    <div class="subhead color-white" style="text-shadow:0 1px 5px rgba(0,0,0,0.95),0 3px 14px rgba(0,0,0,0.8),0 0 1px rgba(0,0,0,0.9);">50 Bags. Delivered.</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge mb-1">50 x 10kg Bags</div>
+                    <div class="body-text">Order: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A2: Price Reveal (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--a2-price">
+                <div class="layer t-top text-center" style="display:flex;justify-content:center;box-sizing:border-box;">
+                    <div class="a2-hero-stack">
+                        <div class="a2-hero-title">Vaalpenskraal Ultimate Braai Mix</div>
+                        <div class="a2-hero-divider" aria-hidden="true"></div>
+                        <div class="a2-hero-woods">
+                            <span class="a2-hero-pill" style="color:var(--apple-white);background:rgba(0,0,0,0.58);border:1px solid rgba(var(--accent-rgb),0.5);">Swarthaak</span>
+                            <span class="a2-hero-pill" style="color:var(--supernova-yellow);background:rgba(0,0,0,0.58);border:1px solid rgba(255,255,255,0.22);">Geelhaak</span>
+                            <span class="a2-hero-pill" style="color:var(--apple-white);background:rgba(0,0,0,0.58);border:1px solid rgba(var(--accent-rgb),0.5);">Kameeldoring</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="layer t-bottom" style="box-sizing:border-box;">
+                    <div class="a2-square-bottom-split">
+                        <div class="squircle a2-square-footer a2-square-footer--left">
+                            <div class="a2-square-footer-tag">Ultimate hardwood braai mix</div>
+                            <div class="a2-square-footer-divider" aria-hidden="true"></div>
+                            <div class="a2-square-footer-pack">50 × 10kg bags</div>
+                            <div class="badge a2-square-footer-wa">WhatsApp 063 184 1939</div>
+                        </div>
+                        <div class="a2-square-footer-price-col">
+                            <div class="a2-square-price">R1250</div>
+                            <div class="a2-square-sub color-white">50 Bags. Delivered.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A3: Macro Detail</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="headline-large mb-1" style="color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 24px rgba(0,0,0,0.55);line-height:1.15;">Vaalpenskraal<br>Ultimate.</div>
+                    <div class="body-text" style="font-size:15px;font-weight:600;line-height:1.45;color:var(--apple-white);letter-spacing:0.02em;text-shadow:0 1px 8px rgba(0,0,0,0.95),0 2px 12px rgba(0,0,0,0.75);">Gauteng's finest mix.</div>
+                </div>
+                <div class="layer t-bottom text-right">
+                    <div class="headline-large color-yellow mb-1">R25</div>
+                    <div class="specs color-white">Per 10kg Bag</div>
+                    <div class="specs mb-2 color-white">Min Order: 50</div>
+                    <div class="badge" style="display:inline-block;text-align:center;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A3: Macro Detail (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square ad-canvas--a3-macro">
+                <div class="layer t-top">
+                    <div class="a3-square-headline">Vaalpenskraal<br>Ultimate.</div>
+                    <div class="a3-square-tagline">Gauteng's finest mix.</div>
+                </div>
+                <div class="layer t-bottom text-right">
+                    <div class="a3-square-price">R25</div>
+                    <div class="a3-square-specs">Per 10kg Bag</div>
+                    <div class="a3-square-specs a3-square-specs-pre-wa">Min Order: 50</div>
+                    <div class="badge a3-square-badge">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A4: Glass Overlay</div>
+            <div class="ad-canvas">
+                <div class="layer t-center squircle w-100">
+                    <div class="badge mb-2">FREE GAUTENG DELIVERY</div>
+                    <div class="headline-large mb-1">50x 10KG Bags</div>
+                    <div class="subhead color-yellow mb-2">R1250 Total</div>
+                    <div class="body-text mb-2">Swarthaak / Geelhaak / Kameeldoring</div>
+                    <div class="divider"></div>
+                    <div class="specs">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A4: Glass Overlay (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-a4">
+                <div class="layer t-center squircle w-100">
+                    <div class="badge mb-2">FREE GAUTENG DELIVERY</div>
+                    <div class="headline-large mb-1">50x 10KG Bags</div>
+                    <div class="subhead color-yellow mb-2">R1250 Total</div>
+                    <div class="body-text mb-2">Swarthaak / Geelhaak / Kameeldoring</div>
+                    <div class="divider"></div>
+                    <div class="specs">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A5: The Signature</div>
+            <div class="ad-canvas">
+                <div class="layer t-bottom">
+                    <div class="headline-large mb-1">Ultimate<br>Braai Mix.</div>
+                    <div class="flex-row mb-1">
+                        <div class="specs color-white">10kg</div>
+                        <div class="specs color-white">50 Bags</div>
+                        <div class="specs color-white">R1250</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="squircle" style="margin-top:10px;padding:16px 14px;text-align:center;border-color:rgba(var(--accent-rgb),0.32);box-shadow:0 8px 28px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);">
+                        <div style="font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;line-height:1.4;color:var(--apple-white);text-shadow:0 2px 12px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:12px;">
+                            <span style="color:var(--supernova-yellow);">Free</span> delivery in Gauteng
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.65),transparent);margin:0 0 12px 0;"></div>
+                        <div style="font-size:21px;font-weight:900;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.15;text-align:center;width:100%;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">A5: The Signature (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-a5">
+                <div class="layer t-bottom">
+                    <div class="headline-large mb-1">Ultimate<br>Braai Mix.</div>
+                    <div class="flex-row mb-1">
+                        <div class="specs color-white">10kg</div>
+                        <div class="specs color-white">50 Bags</div>
+                        <div class="specs color-white">R1250</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="squircle sq-a5-phone-box" style="margin-top:10px;padding:16px 14px;text-align:center;border-color:rgba(var(--accent-rgb),0.32);box-shadow:0 8px 28px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.08);">
+                        <div class="sq-a5-free-line" style="font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;line-height:1.4;color:var(--apple-white);text-shadow:0 2px 12px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:12px;">
+                            <span style="color:var(--supernova-yellow);">Free</span> delivery in Gauteng
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.65),transparent);margin:0 0 12px 0;"></div>
+                        <div class="sq-a5-phone-num" style="font-size:21px;font-weight:900;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.15;text-align:center;width:100%;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B3: Neon Contrast</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 2px 12px rgba(0,0,0,0.85),0 1px 2px rgba(0,0,0,0.9);">The Ultimate Braai Mix.</div>
+                </div>
+                <div class="layer t-center text-center" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+                    <div class="headline-massive" style="color: transparent; -webkit-text-stroke: 2px var(--supernova-yellow);">50</div>
+                    <div class="headline-massive mb-1">BAGS.</div>
+                    <div class="badge">R1250 DELIVERED (GP)</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B3: Neon Contrast (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-b3">
+                <div class="layer t-top text-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 2px 12px rgba(0,0,0,0.85),0 1px 2px rgba(0,0,0,0.9);">The Ultimate Braai Mix.</div>
+                </div>
+                <div class="layer t-center text-center" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;">
+                    <div class="headline-massive" style="color: transparent; -webkit-text-stroke: 2px var(--supernova-yellow);">50</div>
+                    <div class="headline-massive mb-1">BAGS.</div>
+                    <div class="badge">R1250 DELIVERED (GP)</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B4: Interaction Zone</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="headline-large mb-1" style="text-align:center;width:100%;color:var(--apple-white);text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 24px rgba(0,0,0,0.55);">Vaalpenskraal</div>
+                    <div class="subhead color-white" style="text-align:center;width:100%;font-weight:700;font-size:17px;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 12px rgba(0,0,0,0.95),0 2px 8px rgba(0,0,0,0.85);">The Ultimate Mix.</div>
+                </div>
+                <div class="layer t-bottom" style="background: rgba(0,0,0,0.85); padding-top: 28px; border-top: 1px solid #333; backdrop-filter: blur(10px);">
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--supernova-yellow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Price per 10kg</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--supernova-yellow);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R25</div>
+                        </div>
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid rgba(255,255,255,0.35);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">MOQ (50 Bags)</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--apple-white);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R1250</div>
+                        </div>
+                        <div class="flex-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--galaxy-glow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Gauteng Delivery</div>
+                            <div style="font-size:20px;font-weight:900;letter-spacing:0.06em;color:var(--galaxy-glow);line-height:1;text-shadow:0 0 18px rgba(43,96,255,0.35);">FREE</div>
+                        </div>
+                    </div>
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B4: Interaction Zone (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-b4">
+                <div class="layer t-top text-center" style="width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;box-sizing:border-box;">
+                    <div class="headline-large mb-1" style="text-align:center;width:100%;color:var(--apple-white);text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 24px rgba(0,0,0,0.55);">Vaalpenskraal</div>
+                    <div class="subhead color-white" style="text-align:center;width:100%;font-weight:700;font-size:17px;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 12px rgba(0,0,0,0.95),0 2px 8px rgba(0,0,0,0.85);">The Ultimate Mix.</div>
+                </div>
+                <div class="layer t-bottom" style="background: rgba(0,0,0,0.85); padding-top: 28px; border-top: 1px solid #333; backdrop-filter: blur(10px);">
+                    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
+                        <div class="flex-row sq-b4-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--supernova-yellow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Price per 10kg</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--supernova-yellow);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R25</div>
+                        </div>
+                        <div class="flex-row sq-b4-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid rgba(255,255,255,0.35);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">MOQ (50 Bags)</div>
+                            <div style="font-size:22px;font-weight:900;letter-spacing:-0.02em;color:var(--apple-white);line-height:1;text-shadow:0 1px 8px rgba(0,0,0,0.5);">R1250</div>
+                        </div>
+                        <div class="flex-row sq-b4-row" style="margin:0;padding:12px 14px;background:rgba(255,255,255,0.06);border-radius:14px;border:1px solid rgba(255,255,255,0.08);border-left:3px solid var(--galaxy-glow);align-items:center;box-sizing:border-box;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:0.11em;text-transform:uppercase;color:rgba(245,245,247,0.75);text-shadow:none;">Gauteng Delivery</div>
+                            <div style="font-size:20px;font-weight:900;letter-spacing:0.06em;color:var(--galaxy-glow);line-height:1;text-shadow:0 0 18px rgba(43,96,255,0.35);">FREE</div>
+                        </div>
+                    </div>
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B5: Motion Blur</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="headline-massive color-yellow" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FAST.</div>
+                    <div class="headline-massive" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FREE.</div>
+                    <div class="subhead mt-1 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Gauteng Delivery.</div>
+                </div>
+                <div class="layer t-bottom squircle" style="text-align:center;border-color:rgba(var(--accent-rgb),0.28);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);padding:18px 16px;">
+                    <div style="font-size:14px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);line-height:1.3;margin-bottom:12px;">
+                        50 x 10kg Bags = <span style="color:var(--supernova-yellow);">R1250</span>
+                    </div>
+                    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.75),transparent);margin:0 0 12px 0;opacity:0.95;"></div>
+                    <div style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.5;margin-bottom:6px;">
+                        <span>Swarthaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Geelhaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Kameeldoring</span>
+                    </div>
+                    <div style="font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--titanium-gray);margin-bottom:14px;text-shadow:0 1px 6px rgba(0,0,0,0.9);">ULTIMATE BRAAI MIX</div>
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">B5: Motion Blur (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-b5">
+                <div class="layer t-top">
+                    <div class="headline-massive color-yellow" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FAST.</div>
+                    <div class="headline-massive" style="font-style:italic;text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">FREE.</div>
+                    <div class="subhead mt-1 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Gauteng Delivery.</div>
+                </div>
+                <div class="layer t-bottom squircle" style="text-align:center;border-color:rgba(var(--accent-rgb),0.28);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);padding:18px 16px;">
+                    <div class="sq-b5-offer" style="font-size:14px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);line-height:1.3;margin-bottom:12px;">
+                        50 x 10kg Bags = <span style="color:var(--supernova-yellow);">R1250</span>
+                    </div>
+                    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.75),transparent);margin:0 0 12px 0;opacity:0.95;"></div>
+                    <div class="sq-b5-woods" style="font-size:12px;font-weight:700;letter-spacing:0.05em;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.5;margin-bottom:6px;">
+                        <span>Swarthaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Geelhaak</span><span style="color:var(--supernova-yellow);font-weight:800;">&nbsp;•&nbsp;</span><span>Kameeldoring</span>
+                    </div>
+                    <div class="sq-b5-tag" style="font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:var(--titanium-gray);margin-bottom:14px;text-shadow:0 1px 6px rgba(0,0,0,0.9);">ULTIMATE BRAAI MIX</div>
+                    <div class="badge" style="display:block;text-align:center;margin:0 auto;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C1: The Trifecta</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="specs mb-2 text-center color-white">THE FORMULA</div>
+                    <div style="display:flex;justify-content:center;align-items:stretch;gap:5px;margin-bottom:12px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:0 4px;">
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">1</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Swarthaak</div>
+                        </div>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">2</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Geelhaak</div>
+                        </div>
+                        <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">3</div>
+                            <div style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Kameeldoring</div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="headline-large text-center mt-2" style="line-height:1.15;padding:0 6px;">The Ultimate Braai Mix</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="body-text specs-read mb-1">10kg Bags • Min 50 • R25/bag</div>
+                    <div class="badge mb-2">R1250 Delivered in Gauteng</div>
+                    <div class="specs color-white">Order: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C1: The Trifecta (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-c1">
+                <div class="layer t-top">
+                    <div class="specs mb-2 text-center color-white">THE FORMULA</div>
+                    <div style="display:flex;justify-content:center;align-items:stretch;gap:5px;margin-bottom:12px;width:100%;max-width:100%;min-width:0;box-sizing:border-box;padding:0 4px;">
+                        <div class="sq-c1-col" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div class="sq-c1-num" style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">1</div>
+                            <div class="sq-c1-wood" style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Swarthaak</div>
+                        </div>
+                        <div class="sq-c1-col" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div class="sq-c1-num" style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">2</div>
+                            <div class="sq-c1-wood" style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Geelhaak</div>
+                        </div>
+                        <div class="sq-c1-col" style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;padding:10px 3px;background:rgba(10,10,10,0.5);border:1px solid rgba(var(--accent-rgb),0.4);border-radius:16px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,0.35),inset 0 1px 0 rgba(255,255,255,0.06);">
+                            <div class="sq-c1-num" style="width:28px;height:28px;border-radius:50%;background:var(--supernova-yellow);color:#000;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,0.4);flex-shrink:0;">3</div>
+                            <div class="sq-c1-wood" style="font-size:clamp(5px,1.95cqw,9px);font-weight:800;letter-spacing:0.02em;text-transform:uppercase;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95);line-height:1.1;white-space:nowrap;width:100%;text-align:center;">Kameeldoring</div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="headline-large text-center mt-2" style="line-height:1.15;padding:0 6px;">The Ultimate Braai Mix</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="body-text specs-read mb-1">10kg Bags • Min 50 • R25/bag</div>
+                    <div class="badge mb-2">R1250 Delivered in Gauteng</div>
+                    <div class="specs color-white">Order: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C4: Composition</div>
+            <div class="ad-canvas">
+                <div class="layer t-center w-100">
+                    <div class="badge mb-2">VAALPENSKRAAL</div>
+                    <div class="headline-large mb-2">The Ultimate Braai Mix.</div>
+                    <div class="squircle text-left mb-2">
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Swarthaak</div>
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Geelhaak</div>
+                        <div class="body-text" style="text-shadow: none;">✓ Kameeldoring</div>
+                    </div>
+                    <div class="subhead color-white">R1250 / 50x 10kg Bags</div>
+                </div>
+                <div class="layer t-bottom text-center" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                    <div class="specs color-white" style="text-shadow:0 1px 8px rgba(0,0,0,0.9);">Free Gauteng Delivery</div>
+                    <div style="font-size:20px;font-weight:900;letter-spacing:0.04em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.2;">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">C4: Composition (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-c4">
+                <div class="layer t-center w-100">
+                    <div class="badge mb-2">VAALPENSKRAAL</div>
+                    <div class="headline-large mb-2">The Ultimate Braai Mix.</div>
+                    <div class="squircle text-left mb-2">
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Swarthaak</div>
+                        <div class="body-text mb-1" style="text-shadow: none;">✓ Geelhaak</div>
+                        <div class="body-text" style="text-shadow: none;">✓ Kameeldoring</div>
+                    </div>
+                    <div class="subhead color-white">R1250 / 50x 10kg Bags</div>
+                </div>
+                <div class="layer t-bottom text-center" style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+                    <div class="specs color-white" style="text-shadow:0 1px 8px rgba(0,0,0,0.9);">Free Gauteng Delivery</div>
+                    <div class="sq-c4-phone" style="font-size:20px;font-weight:900;letter-spacing:0.04em;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.95),0 1px 2px rgba(0,0,0,1);line-height:1.2;">063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D1: The Cinema</div>
+            <div class="ad-canvas">
+                <div class="layer t-top text-center" style="background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); padding-bottom: 40px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding-top:6px;">
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                        <div style="font-size:clamp(15px,5.2cqw,24px);font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:var(--apple-white);line-height:1.25;text-shadow:0 2px 14px rgba(0,0,0,0.96),0 1px 2px rgba(0,0,0,1),0 4px 30px rgba(0,0,0,0.6),0 0 40px rgba(var(--accent-rgb),0.12);">VAALPENSKRAAL</div>
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                    </div>
+                </div>
+                <div class="layer t-bottom text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding-top: 60px;">
+                    <div class="mb-1" style="width:100%;max-width:100%;display:flex;justify-content:center;box-sizing:border-box;">
+                        <span class="headline-large" style="white-space:nowrap;font-size:clamp(12px,6.5cqw,32px);line-height:1.15;">Ultimate Braai Mix</span>
+                    </div>
+                    <div class="body-text mb-2">Swarthaak. Geelhaak. Kameeldoring.</div>
+                    <div class="flex-row">
+                        <div class="specs color-white">50x 10kg Bags</div>
+                        <div class="specs color-yellow">R1250 Total</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="body-text">Free GP Delivery | WA: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D1: The Cinema (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-d1">
+                <div class="layer t-top text-center" style="background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); padding-bottom: 40px;">
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:14px;width:100%;box-sizing:border-box;padding-top:6px;">
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                        <div class="sq-d1-cine" style="font-size:clamp(15px,5.2cqw,24px);font-weight:900;letter-spacing:0.22em;text-transform:uppercase;color:var(--apple-white);line-height:1.25;text-shadow:0 2px 14px rgba(0,0,0,0.96),0 1px 2px rgba(0,0,0,1),0 4px 30px rgba(0,0,0,0.6),0 0 40px rgba(var(--accent-rgb),0.12);">VAALPENSKRAAL</div>
+                        <div style="width:min(220px,72%);height:2px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.85),transparent);border-radius:1px;opacity:0.95;"></div>
+                    </div>
+                </div>
+                <div class="layer t-bottom text-center" style="background: linear-gradient(to top, rgba(0,0,0,0.95), transparent); padding-top: 60px;">
+                    <div class="mb-1" style="width:100%;max-width:100%;display:flex;justify-content:center;box-sizing:border-box;">
+                        <span class="headline-large" style="white-space:nowrap;font-size:clamp(12px,6.5cqw,32px);line-height:1.15;">Ultimate Braai Mix</span>
+                    </div>
+                    <div class="body-text mb-2">Swarthaak. Geelhaak. Kameeldoring.</div>
+                    <div class="flex-row">
+                        <div class="specs color-white">50x 10kg Bags</div>
+                        <div class="specs color-yellow">R1250 Total</div>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="body-text">Free GP Delivery | WA: 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D2: Location Focus</div>
+            <div class="ad-canvas">
+                <div class="layer t-top">
+                    <div class="badge mb-2" style="background:var(--supernova-yellow); color:#000;">GAUTENG EXCLUSIVE</div>
+                    <div class="headline-large" style="text-shadow:0 2px 8px rgba(0,0,0,0.95),0 4px 22px rgba(0,0,0,0.75),0 0 2px rgba(0,0,0,1),0 1px 0 rgba(0,0,0,0.45);">Free<br>Delivery.</div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle" style="text-align:center;padding:18px 16px;border-color:rgba(var(--accent-rgb),0.3);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);">
+                        <div style="width:fit-content;max-width:100%;margin:0 auto 12px auto;text-align:center;box-sizing:border-box;">
+                            <div class="subhead color-white" style="font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.9);margin:0;line-height:1.2;">Vaalpenskraal</div>
+                            <div style="font-size:13px;font-weight:600;letter-spacing:0.07em;line-height:1.35;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.88);margin-top:8px;text-transform:none;">Ultimate Braai Mix</div>
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.55),transparent);margin:0 0 14px 0;"></div>
+                        <div style="font-size:14px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;line-height:1.35;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:14px;">
+                            10kg Bags @ <span style="color:var(--supernova-yellow);">R25</span> each.
+                        </div>
+                        <div style="font-size:12px;font-weight:800;letter-spacing:0.05em;line-height:1.4;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95),0 2px 6px rgba(0,0,0,0.75);margin-bottom:16px;">
+                            Minimum Order: 50 Bags <span style="color:var(--supernova-yellow);">(R1250)</span>
+                        </div>
+                        <div class="badge w-100 text-center" style="display:block;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D2: Location Focus (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-d2">
+                <div class="layer t-top">
+                    <div class="badge mb-2" style="background:var(--supernova-yellow); color:#000;">GAUTENG EXCLUSIVE</div>
+                    <div class="headline-large" style="text-shadow:0 2px 8px rgba(0,0,0,0.95),0 4px 22px rgba(0,0,0,0.75),0 0 2px rgba(0,0,0,1),0 1px 0 rgba(0,0,0,0.45);">Free<br>Delivery.</div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle" style="text-align:center;padding:18px 16px;border-color:rgba(var(--accent-rgb),0.3);box-shadow:0 10px 36px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.1);">
+                        <div style="width:fit-content;max-width:100%;margin:0 auto 12px auto;text-align:center;box-sizing:border-box;">
+                            <div class="subhead sq-d2-sub color-white" style="font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-shadow:0 2px 12px rgba(0,0,0,0.9);margin:0;line-height:1.2;">Vaalpenskraal</div>
+                            <div style="font-size:13px;font-weight:600;letter-spacing:0.07em;line-height:1.35;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.88);margin-top:8px;text-transform:none;">Ultimate Braai Mix</div>
+                        </div>
+                        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(var(--accent-rgb),0.55),transparent);margin:0 0 14px 0;"></div>
+                        <div class="sq-d2-line" style="font-size:14px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;line-height:1.35;color:var(--apple-white);text-shadow:0 2px 14px rgba(0,0,0,0.92),0 1px 2px rgba(0,0,0,1);margin-bottom:14px;">
+                            10kg Bags @ <span style="color:var(--supernova-yellow);">R25</span> each.
+                        </div>
+                        <div class="sq-d2-moq" style="font-size:12px;font-weight:800;letter-spacing:0.05em;line-height:1.4;color:var(--apple-white);text-shadow:0 1px 10px rgba(0,0,0,0.95),0 2px 6px rgba(0,0,0,0.75);margin-bottom:16px;">
+                            Minimum Order: 50 Bags <span style="color:var(--supernova-yellow);">(R1250)</span>
+                        </div>
+                        <div class="badge w-100 text-center" style="display:block;max-width:100%;box-sizing:border-box;">WhatsApp 063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D3: Heavy Weight</div>
+            <div class="ad-canvas">
+                <div class="layer t-center">
+                    <div class="headline-massive" style="font-size: 100px; color: rgba(255,255,255,0.2); line-height: 0.8; mix-blend-mode: overlay;">10KG</div>
+                </div>
+                <div class="layer t-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">Heavy Duty.</div>
+                    <div class="subhead mb-2 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Ultimate Mix.</div>
+                    <div style="font-size:17px;font-weight:600;line-height:1.55;letter-spacing:0.02em;color:var(--apple-white);text-align:center;max-width:100%;padding:0 12px;box-sizing:border-box;text-shadow:0 1px 5px rgba(0,0,0,0.95),0 2px 14px rgba(0,0,0,0.8),0 0 1px rgba(0,0,0,1);">Order 50 bags for <span style="font-weight:800;color:var(--supernova-yellow);">R1250</span> and we deliver for <span style="font-weight:800;color:var(--supernova-yellow);">free</span> in Gauteng.</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">D3: Heavy Weight (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-d3">
+                <div class="layer t-center">
+                    <div class="headline-massive sq-d3-bg" style="font-size: 100px; color: rgba(255,255,255,0.2); line-height: 0.8; mix-blend-mode: overlay;">10KG</div>
+                </div>
+                <div class="layer t-center">
+                    <div class="headline-large mb-1" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 12px rgba(0,0,0,0.95),0 4px 28px rgba(0,0,0,0.75),0 0 40px rgba(0,0,0,0.45);">Heavy Duty.</div>
+                    <div class="subhead mb-2 color-white" style="text-shadow:0 1px 2px rgba(0,0,0,1),0 2px 10px rgba(0,0,0,0.92),0 4px 22px rgba(0,0,0,0.7);">Ultimate Mix.</div>
+                    <div class="sq-d3-copy" style="font-size:17px;font-weight:600;line-height:1.55;letter-spacing:0.02em;color:var(--apple-white);text-align:center;max-width:100%;padding:0 12px;box-sizing:border-box;text-shadow:0 1px 5px rgba(0,0,0,0.95),0 2px 14px rgba(0,0,0,0.8),0 0 1px rgba(0,0,0,1);">Order 50 bags for <span style="font-weight:800;color:var(--supernova-yellow);">R1250</span> and we deliver for <span style="font-weight:800;color:var(--supernova-yellow);">free</span> in Gauteng.</div>
+                </div>
+                <div class="layer t-bottom text-center">
+                    <div class="badge w-100 text-center" style="display:block;">WhatsApp 063 184 1939</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">E4: Audacious Bleed</div>
+            <div class="ad-canvas">
+                <div class="layer" style="top:50%;left:0;right:0;width:100%;max-width:100%;min-width:0;transform:translateY(-50%);padding:12px 14px;box-sizing:border-box;text-align:center;display:flex;justify-content:center;align-items:center;">
+                    <div style="font-size:clamp(28px,21cqw,76px);font-weight:900;line-height:0.86;letter-spacing:-0.02em;text-transform:uppercase;text-align:center;color:rgba(255,255,255,0.92);max-width:100%;box-sizing:border-box;margin:0;overflow-wrap:anywhere;">
+                        ULTI<br>MATE<br>MIX.
+                    </div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle">
+                        <div class="flex-row mb-1">
+                            <div class="subhead color-white">10kg</div>
+                            <div class="subhead color-white">50 Min</div>
+                            <div class="subhead color-yellow">R1250</div>
+                        </div>
+                        <div class="body-text mb-1" style="text-shadow: none;text-align:center;width:100%;box-sizing:border-box;">Free Delivery Gauteng</div>
+                        <div style="font-size:clamp(17px,5.5cqw,24px);font-weight:900;letter-spacing:0.08em;color:var(--apple-white);text-align:center;width:100%;text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 20px rgba(0,0,0,0.65);line-height:1.2;margin-top:4px;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">E4: Audacious Bleed (1:1 Square)</div>
+            <div class="ad-canvas ad-canvas--square sq-e4">
+                <div class="layer" style="top:50%;left:0;right:0;width:100%;max-width:100%;min-width:0;transform:translateY(-50%);padding:12px 14px;box-sizing:border-box;text-align:center;display:flex;justify-content:center;align-items:center;">
+                    <div class="sq-e4-hero" style="font-size:clamp(28px,21cqw,76px);font-weight:900;line-height:0.86;letter-spacing:-0.02em;text-transform:uppercase;text-align:center;color:rgba(255,255,255,0.92);max-width:100%;box-sizing:border-box;margin:0;overflow-wrap:anywhere;">
+                        ULTI<br>MATE<br>MIX.
+                    </div>
+                </div>
+                <div class="layer t-bottom">
+                    <div class="squircle">
+                        <div class="flex-row mb-1">
+                            <div class="subhead color-white">10kg</div>
+                            <div class="subhead color-white">50 Min</div>
+                            <div class="subhead color-yellow">R1250</div>
+                        </div>
+                        <div class="body-text mb-1" style="text-shadow: none;text-align:center;width:100%;box-sizing:border-box;">Free Delivery Gauteng</div>
+                        <div class="sq-e4-wa" style="font-size:clamp(17px,5.5cqw,24px);font-weight:900;letter-spacing:0.08em;color:var(--apple-white);text-align:center;width:100%;text-shadow:0 2px 16px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,1),0 4px 20px rgba(0,0,0,0.65);line-height:1.2;margin-top:4px;">063 184 1939</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <section class="asset-gallery" aria-labelledby="gallery-heading">
+        <h2 id="gallery-heading">Image gallery</h2>
+        <p class="gallery-lead">Everything in <code>public/images</code> (except the auto-generated manifest). Click a picture to open it large; use <strong>Use for all templates</strong> in the popup to apply it. Other file types still open in a new tab. Run <code>npm run build</code> after adding or removing files.</p>
+        <div id="galleryGrid" class="gallery-grid" role="list"></div>
+        <p id="galleryEmpty" class="gallery-empty" hidden>No files found in <code>images/</code>. Add files there, then run <code>npm run build</code>.</p>
+    </section>
+
+    <div id="galleryLightbox" class="gallery-lightbox" hidden aria-modal="true" role="dialog" aria-labelledby="galleryLightboxTitle">
+        <div class="gallery-lightbox-backdrop" data-lightbox-dismiss tabindex="-1" aria-hidden="true"></div>
+        <button type="button" class="gallery-lightbox-close" id="galleryLightboxClose" aria-label="Close preview">×</button>
+        <div class="gallery-lightbox-panel">
+            <img id="galleryLightboxImg" class="gallery-lightbox-img" alt="" />
+            <p id="galleryLightboxTitle" class="gallery-lightbox-title"></p>
+            <div class="gallery-lightbox-actions">
+                <button type="button" class="gallery-lightbox-apply" id="galleryLightboxApply">Use for all templates</button>
+            </div>
+        </div>
+    </div>
+
+    <script id="gallery-manifest-data" type="application/json">{"generatedAt":"2026-04-10T08:19:42.684Z","items":[{"name":"5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","type":"image"},{"name":"AI Image Prompts for Firewood (1).txt","type":"file"},{"name":"Gemini_Generated_Image_11sqhg11sqhg11sq.png","type":"image"},{"name":"Gemini_Generated_Image_1uh0g51uh0g51uh0.png","type":"image"},{"name":"Gemini_Generated_Image_24m5pv24m5pv24m5.png","type":"image"},{"name":"Gemini_Generated_Image_437ou5437ou5437o.png","type":"image"},{"name":"Gemini_Generated_Image_5vce3m5vce3m5vce.png","type":"image"},{"name":"Gemini_Generated_Image_6c5p416c5p416c5p.png","type":"image"},{"name":"Gemini_Generated_Image_9g9i89g9i89g9i89.png","type":"image"},{"name":"Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","type":"image"},{"name":"Gemini_Generated_Image_clsjlfclsjlfclsj.png","type":"image"},{"name":"Gemini_Generated_Image_ctjuvhctjuvhctju.png","type":"image"},{"name":"Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","type":"image"},{"name":"Gemini_Generated_Image_dvepp4dvepp4dvep.png","type":"image"},{"name":"Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","type":"image"},{"name":"Gemini_Generated_Image_hg4dzchg4dzchg4d.png","type":"image"},{"name":"Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","type":"image"},{"name":"Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","type":"image"},{"name":"Gemini_Generated_Image_l11q7cl11q7cl11q.png","type":"image"},{"name":"Gemini_Generated_Image_lqb22elqb22elqb2.png","type":"image"},{"name":"Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","type":"image"},{"name":"Gemini_Generated_Image_nv4jianv4jianv4j.png","type":"image"},{"name":"Gemini_Generated_Image_p59fq4p59fq4p59f.png","type":"image"},{"name":"Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","type":"image"},{"name":"Gemini_Generated_Image_t2oulnt2oulnt2ou.png","type":"image"},{"name":"Gemini_Generated_Image_tgz6vftgz6vftgz6.png","type":"image"},{"name":"Gemini_Generated_Image_u5tv38u5tv38u5tv.png","type":"image"},{"name":"Gemini_Generated_Image_xqvej3xqvej3xqve.png","type":"image"},{"name":"Generated Image April 09, 2026 - 1_06PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_27PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 1_31PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_39AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_43AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM - Copy.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_51AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 10_54AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_04AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_05AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_58AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 11_59AM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 12_39PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 4_51PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_00PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 5_55PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_01PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_04PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 6_57PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 7_05PM.jpg","type":"image"},{"name":"Generated Image April 09, 2026 - 9_10PM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_08AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (1).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM (2).jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 8_11AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_03AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_06AM.jpg","type":"image"},{"name":"Generated Image April 10, 2026 - 9_09AM.jpg","type":"image"}],"images":["5bfd0dde-e800-4a5b-b9ee-fa5b20ccbc2f23222.jpg","Gemini_Generated_Image_11sqhg11sqhg11sq.png","Gemini_Generated_Image_1uh0g51uh0g51uh0.png","Gemini_Generated_Image_24m5pv24m5pv24m5.png","Gemini_Generated_Image_437ou5437ou5437o.png","Gemini_Generated_Image_5vce3m5vce3m5vce.png","Gemini_Generated_Image_6c5p416c5p416c5p.png","Gemini_Generated_Image_9g9i89g9i89g9i89.png","Gemini_Generated_Image_bk0cdnbk0cdnbk0c.png","Gemini_Generated_Image_clsjlfclsjlfclsj.png","Gemini_Generated_Image_ctjuvhctjuvhctju.png","Gemini_Generated_Image_cxgz0xcxgz0xcxgz.png","Gemini_Generated_Image_dvepp4dvepp4dvep.png","Gemini_Generated_Image_gu3d6bgu3d6bgu3d.png","Gemini_Generated_Image_hg4dzchg4dzchg4d.png","Gemini_Generated_Image_i8k7w9i8k7w9i8k7.png","Gemini_Generated_Image_k4z5f1k4z5f1k4z5.png","Gemini_Generated_Image_l11q7cl11q7cl11q.png","Gemini_Generated_Image_lqb22elqb22elqb2.png","Gemini_Generated_Image_mfk0q1mfk0q1mfk0.png","Gemini_Generated_Image_nv4jianv4jianv4j.png","Gemini_Generated_Image_p59fq4p59fq4p59f.png","Gemini_Generated_Image_rn6hpwrn6hpwrn6h.png","Gemini_Generated_Image_t2oulnt2oulnt2ou.png","Gemini_Generated_Image_tgz6vftgz6vftgz6.png","Gemini_Generated_Image_u5tv38u5tv38u5tv.png","Gemini_Generated_Image_xqvej3xqvej3xqve.png","Generated Image April 09, 2026 - 1_06PM.jpg","Generated Image April 09, 2026 - 1_27PM.jpg","Generated Image April 09, 2026 - 1_31PM.jpg","Generated Image April 09, 2026 - 10_39AM.jpg","Generated Image April 09, 2026 - 10_43AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_43AM - Copy.jpg","Generated Image April 09, 2026 - 10_43AM.jpg","Generated Image April 09, 2026 - 10_51AM - Copy (2).jpg","Generated Image April 09, 2026 - 10_51AM - Copy.jpg","Generated Image April 09, 2026 - 10_51AM.jpg","Generated Image April 09, 2026 - 10_54AM.jpg","Generated Image April 09, 2026 - 11_04AM.jpg","Generated Image April 09, 2026 - 11_05AM.jpg","Generated Image April 09, 2026 - 11_58AM.jpg","Generated Image April 09, 2026 - 11_59AM.jpg","Generated Image April 09, 2026 - 12_01PM.jpg","Generated Image April 09, 2026 - 12_39PM.jpg","Generated Image April 09, 2026 - 4_51PM.jpg","Generated Image April 09, 2026 - 5_00PM.jpg","Generated Image April 09, 2026 - 5_55PM.jpg","Generated Image April 09, 2026 - 6_01PM.jpg","Generated Image April 09, 2026 - 6_04PM.jpg","Generated Image April 09, 2026 - 6_57PM.jpg","Generated Image April 09, 2026 - 7_05PM.jpg","Generated Image April 09, 2026 - 9_10PM.jpg","Generated Image April 10, 2026 - 8_08AM.jpg","Generated Image April 10, 2026 - 8_11AM (1).jpg","Generated Image April 10, 2026 - 8_11AM (2).jpg","Generated Image April 10, 2026 - 8_11AM.jpg","Generated Image April 10, 2026 - 9_03AM.jpg","Generated Image April 10, 2026 - 9_06AM.jpg","Generated Image April 10, 2026 - 9_09AM.jpg"]}</script>
+
+    <script>
+        const imageUpload = document.getElementById('imageUpload');
+        const canvases = document.querySelectorAll('.ad-canvas');
+
+        function applyStudioBackgroundFromUrl(url) {
+            const safe = typeof url === 'string' ? url : '';
+            if (!safe) return;
+            canvases.forEach((canvas) => {
+                canvas.style.backgroundImage = 'url(' + JSON.stringify(safe) + ')';
+                canvas.style.backgroundSize = 'cover';
+                canvas.style.backgroundPosition = 'center';
+            });
+        }
+
+        let galleryLightboxUrl = '';
+        let galleryLightboxButton = null;
+
+        function openGalleryLightbox(url, displayName, thumbButton) {
+            galleryLightboxUrl = url || '';
+            galleryLightboxButton = thumbButton || null;
+            const lb = document.getElementById('galleryLightbox');
+            const img = document.getElementById('galleryLightboxImg');
+            const title = document.getElementById('galleryLightboxTitle');
+            if (!lb || !img || !title) return;
+            img.src = galleryLightboxUrl;
+            img.alt = displayName || '';
+            title.textContent = displayName || '';
+            lb.hidden = false;
+            document.body.style.overflow = 'hidden';
+            try {
+                document.getElementById('galleryLightboxClose').focus();
+            } catch (e) {}
+        }
+
+        function closeGalleryLightbox() {
+            const lb = document.getElementById('galleryLightbox');
+            const img = document.getElementById('galleryLightboxImg');
+            if (lb) lb.hidden = true;
+            document.body.style.overflow = '';
+            if (img) {
+                img.removeAttribute('src');
+                img.alt = '';
+            }
+            galleryLightboxUrl = '';
+            galleryLightboxButton = null;
+        }
+
+        (function initGalleryLightboxControls() {
+            const lb = document.getElementById('galleryLightbox');
+            const closeBtn = document.getElementById('galleryLightboxClose');
+            const applyBtn = document.getElementById('galleryLightboxApply');
+            if (!lb) return;
+            lb.addEventListener('click', function (e) {
+                if (e.target.closest('[data-lightbox-dismiss]')) closeGalleryLightbox();
+            });
+            if (closeBtn) closeBtn.addEventListener('click', closeGalleryLightbox);
+            if (applyBtn) {
+                applyBtn.addEventListener('click', function () {
+                    if (galleryLightboxUrl) {
+                        document.querySelectorAll('.gallery-item.is-selected').forEach(function (el) {
+                            el.classList.remove('is-selected');
+                        });
+                        if (galleryLightboxButton) galleryLightboxButton.classList.add('is-selected');
+                        applyStudioBackgroundFromUrl(galleryLightboxUrl);
+                    }
+                    closeGalleryLightbox();
+                });
+            }
+            document.addEventListener('keydown', function (e) {
+                if (e.key !== 'Escape') return;
+                if (lb.hidden) return;
+                closeGalleryLightbox();
+            });
+        })();
+
+        imageUpload.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                applyStudioBackgroundFromUrl(imageUrl);
+            }
+        });
+
+        (function initGallery() {
+            const grid = document.getElementById('galleryGrid');
+            const empty = document.getElementById('galleryEmpty');
+            const dataEl = document.getElementById('gallery-manifest-data');
+            if (!grid || !dataEl) return;
+            let data;
+            try {
+                data = JSON.parse(dataEl.textContent.trim());
+            } catch (e) {
+                console.warn('Gallery manifest parse error', e);
+                if (empty) {
+                    empty.hidden = false;
+                    empty.textContent = 'Gallery manifest could not be read. Run npm run build.';
+                }
+                return;
+            }
+            let items = [];
+            if (Array.isArray(data.items) && data.items.length) {
+                items = data.items;
+            } else if (Array.isArray(data.images)) {
+                items = data.images.map(function (name) { return { name: name, type: 'image' }; });
+            }
+            if (items.length === 0) {
+                if (empty) empty.hidden = false;
+                return;
+            }
+            if (empty) empty.hidden = true;
+            const base = new URL('images/', window.location.href);
+            items.forEach(function (entry) {
+                const name = entry && entry.name ? entry.name : '';
+                if (!name) return;
+                const isImage = entry.type === 'image';
+                const itemUrl = new URL(encodeURIComponent(name), base).href;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'gallery-item' + (isImage ? '' : ' gallery-item--file');
+                btn.setAttribute('role', 'listitem');
+                btn.setAttribute('aria-label', isImage ? ('Open large preview: ' + name) : ('Open ' + name + ' in a new tab'));
+                if (isImage) {
+                    const img = document.createElement('img');
+                    img.src = itemUrl;
+                    img.alt = '';
+                    img.loading = 'lazy';
+                    img.decoding = 'async';
+                    btn.appendChild(img);
+                } else {
+                    const ph = document.createElement('div');
+                    ph.className = 'gallery-file-placeholder';
+                    const dot = name.lastIndexOf('.');
+                    ph.textContent = dot > 0 ? name.slice(dot + 1).toUpperCase() : 'FILE';
+                    btn.appendChild(ph);
+                }
+                const cap = document.createElement('span');
+                cap.className = 'gallery-caption';
+                cap.textContent = name;
+                cap.title = name;
+                btn.appendChild(cap);
+                btn.addEventListener('click', function () {
+                    if (isImage) {
+                        openGalleryLightbox(itemUrl, name, btn);
+                    } else {
+                        window.open(itemUrl, '_blank', 'noopener,noreferrer');
+                    }
+                });
+                grid.appendChild(btn);
+            });
+        })();
+
+        function hexToRgbString(hex) {
+            let h = hex.replace('#', '').trim();
+            if (h.length === 3) h = h.split('').map(c => c + c).join('');
+            const n = parseInt(h, 16);
+            if (Number.isNaN(n) || h.length !== 6) return '255, 198, 0';
+            return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(', ');
+        }
+
+        function setStudioAccent(hex) {
+            if (!hex || !hex.startsWith('#')) return;
+            const root = document.documentElement;
+            root.style.setProperty('--supernova-yellow', hex);
+            root.style.setProperty('--accent-rgb', hexToRgbString(hex));
+            try { localStorage.setItem('studioAccentHex', hex); } catch (e) {}
+
+            const picker = document.getElementById('accentColorPicker');
+            if (picker) picker.value = hex;
+
+            document.querySelectorAll('.accent-swatch').forEach(btn => {
+                btn.setAttribute('aria-pressed', btn.getAttribute('data-hex').toLowerCase() === hex.toLowerCase() ? 'true' : 'false');
+            });
+        }
+
+        document.querySelectorAll('.accent-swatch').forEach(btn => {
+            btn.addEventListener('click', () => setStudioAccent(btn.getAttribute('data-hex')));
+        });
+
+        const accentPicker = document.getElementById('accentColorPicker');
+        if (accentPicker) {
+            accentPicker.addEventListener('input', () => setStudioAccent(accentPicker.value));
+        }
+
+        try {
+            const saved = localStorage.getItem('studioAccentHex');
+            if (saved && /^#[0-9A-Fa-f]{6}$/.test(saved)) setStudioAccent(saved);
+        } catch (e) {}
+    </script>
+</body>
+</html>

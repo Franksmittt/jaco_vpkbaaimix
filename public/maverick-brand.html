@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maverick Painting — Brand &amp; Studio Guide</title>
+    <style>
+        :root {
+            --mav-shell: 1200px;
+            --charcoal: #15181C;
+            --charcoal-mid: #1a1f24;
+            --charcoal-light: #23282E;
+            --turquoise: #00D2D3;
+            --bright-green: #00E676;
+            --white: #ffffff;
+            --titanium: #A1A1A6;
+            --muted: rgba(255, 255, 255, 0.72);
+            --border: rgba(255, 255, 255, 0.08);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: var(--font-main);
+            background: #08090a;
+            color: var(--white);
+            line-height: 1.6;
+            font-size: 16px;
+            padding: 40px 24px 80px;
+        }
+
+        .site-nav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 20px;
+            font-size: 14px;
+        }
+        .site-nav a {
+            color: var(--titanium);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(161, 161, 166, 0.35);
+        }
+        .site-nav a:hover {
+            color: var(--white);
+            border-bottom-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .mav-subnav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 28px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            background: rgba(20, 24, 28, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .mav-subnav a {
+            color: var(--titanium);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .mav-subnav a:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .mav-subnav a.is-active {
+            color: #000;
+            background: var(--turquoise);
+        }
+        .mav-subnav__soon {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--titanium);
+            opacity: 0.55;
+            padding: 10px 14px;
+            cursor: default;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .wrap {
+            max-width: var(--mav-shell);
+            margin: 0 auto;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 48px 32px 40px;
+            margin-bottom: 48px;
+            background:
+                linear-gradient(180deg, rgba(0, 210, 211, 0.06) 0%, transparent 45%),
+                linear-gradient(rgba(0, 210, 211, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 210, 211, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 24px 24px, 24px 24px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--turquoise), var(--bright-green));
+            opacity: 0.9;
+        }
+        .hero-kicker {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--turquoise);
+            margin-bottom: 12px;
+        }
+        .hero h1 {
+            margin: 0 0 12px;
+            font-size: clamp(1.75rem, 4vw, 2.35rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            text-transform: uppercase;
+        }
+        .hero h1 span { color: var(--turquoise); }
+        .hero-lead {
+            margin: 0 auto;
+            max-width: 52ch;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.55;
+        }
+
+        section {
+            margin-bottom: 44px;
+            padding: 28px 28px 32px;
+            background: rgba(21, 24, 28, 0.55);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--bright-green);
+            margin-bottom: 8px;
+        }
+        section h2 {
+            margin: 0 0 16px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        section p {
+            margin: 0 0 14px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+        section p:last-child { margin-bottom: 0; }
+        strong { color: rgba(255, 255, 255, 0.95); font-weight: 700; }
+
+        .archetype {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 8px 14px;
+            background: rgba(0, 210, 211, 0.12);
+            border: 1px solid rgba(0, 210, 211, 0.35);
+            border-radius: 8px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--turquoise);
+        }
+
+        .taglines {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+        .tagline {
+            margin: 0;
+            padding: 16px 18px;
+            border-left: 3px solid var(--turquoise);
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 0 10px 10px 0;
+            font-size: 15px;
+            font-weight: 600;
+            font-style: italic;
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.45;
+        }
+
+        .audience-list {
+            margin: 16px 0 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+        .audience-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 14px;
+        }
+        .audience-list li::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            margin-top: 6px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: var(--bright-green);
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.45);
+        }
+
+        .swatches {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+            margin-top: 20px;
+        }
+        .swatch {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .swatch-color {
+            height: 72px;
+        }
+        .swatch-meta {
+            padding: 12px 14px;
+            background: rgba(0, 0, 0, 0.35);
+        }
+        .swatch-name {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .swatch-hex {
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--titanium);
+        }
+
+        .type-note {
+            margin-top: 18px;
+            padding: 14px 16px;
+            background: rgba(0, 230, 118, 0.06);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+        .type-note code {
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--bright-green);
+        }
+
+        .pillars {
+            display: grid;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        @media (min-width: 640px) {
+            .pillars { grid-template-columns: 1fr 1fr; }
+        }
+        .pillar {
+            padding: 18px 18px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: linear-gradient(145deg, rgba(26, 31, 36, 0.9) 0%, rgba(15, 18, 22, 0.95) 100%);
+        }
+        .pillar-num {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--turquoise);
+            letter-spacing: 0.12em;
+            margin-bottom: 8px;
+        }
+        .pillar h3 {
+            margin: 0 0 10px;
+            font-size: 15px;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+        }
+        .pillar p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.55;
+            color: var(--muted);
+        }
+
+        .usp-intro {
+            font-size: 15px;
+            color: var(--muted);
+            margin-bottom: 20px !important;
+        }
+        .steps {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .step {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 16px;
+            align-items: start;
+            padding: 16px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.22);
+        }
+        .step-n {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            font-weight: 800;
+            color: #000;
+            background: var(--turquoise);
+            border-radius: 8px;
+        }
+        .step h3 {
+            margin: 0 0 6px;
+            font-size: 14px;
+            font-weight: 800;
+        }
+        .step p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .badges {
+            margin-top: 20px;
+        }
+        .badges h3 {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--titanium);
+            margin: 0 0 12px;
+        }
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .badge-row:last-child { margin-bottom: 0; }
+        .badge {
+            display: inline-block;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 210, 211, 0.35);
+            background: rgba(0, 210, 211, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .badge--green {
+            border-color: rgba(0, 230, 118, 0.4);
+            background: rgba(0, 230, 118, 0.08);
+            color: var(--bright-green);
+        }
+
+        .contact-card {
+            margin-top: 8px;
+            padding: 24px 22px;
+            border-radius: 14px;
+            border: 1px solid rgba(0, 210, 211, 0.25);
+            background: linear-gradient(135deg, rgba(0, 210, 211, 0.08) 0%, rgba(0, 0, 0, 0.35) 100%);
+        }
+        .contact-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        .contact-role {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            color: var(--turquoise);
+            margin-bottom: 18px;
+        }
+        .contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+        .contact-row:last-child { margin-bottom: 0; }
+        .contact-row dt {
+            margin: 0;
+            font-family: var(--font-mono);
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--titanium);
+            width: 100%;
+        }
+        .contact-row dd {
+            margin: 0;
+        }
+        .contact-row a {
+            color: var(--white);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(0, 210, 211, 0.45);
+        }
+        .contact-row a:hover {
+            color: var(--turquoise);
+            border-bottom-color: var(--turquoise);
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--titanium);
+            max-width: var(--mav-shell);
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav"><a href="index.html">← Home</a></nav>
+
+    <nav class="mav-subnav" aria-label="Maverick studios">
+        <a href="maverick-studio.html">Business cards</a>
+        <a href="maverick-social.html">Social templates</a>
+        <a href="maverick-brand.html" class="is-active" aria-current="page">Brand guide</a>
+        <a href="maverick-flyer.html">Flyers &amp; brochures</a>
+        <a href="maverick-corporate.html">Corporate</a>
+    </nav>
+
+    <div class="wrap">
+        <header class="hero">
+            <p class="hero-kicker">Internal reference · Creative studio</p>
+            <h1><span>Maverick</span> Painting</h1>
+            <p class="hero-lead">Brand positioning, visual system, services, USP, and contact — use this sheet when designing templates, social posts, and print in the Maverick studios.</p>
+        </header>
+
+        <section id="positioning" aria-labelledby="h-positioning">
+            <p class="section-label">01 · Positioning</p>
+            <h2 id="h-positioning">Brand positioning and identity</h2>
+            <p>Maverick is <strong>not</strong> a general painting contractor. They are <strong>structural remediation specialists</strong>, <strong>approved applicators</strong>, and <strong>advanced coating experts</strong>. The identity should feel like <strong>engineering precision</strong>, <strong>architectural authority</strong>, and <strong>clinical trust</strong> — never generic “bakkie-and-brush” energy.</p>
+            <p class="archetype">Archetype · The Engineer / The Protector</p>
+            <ul class="taglines">
+                <li class="tagline">“Beyond Paint. Specialized Contractor Services.”</li>
+                <li class="tagline">“The Turn-Key Asset Solution.”</li>
+                <li class="tagline">“De-Risking Your Multi-Million Rand Asset.”</li>
+            </ul>
+            <p style="margin-top: 24px;"><strong>Who we speak to</strong></p>
+            <ul class="audience-list">
+                <li>Developers</li>
+                <li>Consulting engineers</li>
+                <li>Body corporates and trustees</li>
+                <li>Facility managers</li>
+                <li>High-net-worth homeowners</li>
+            </ul>
+        </section>
+
+        <section id="visual" aria-labelledby="h-visual">
+            <p class="section-label">02 · Visual system</p>
+            <h2 id="h-visual">Visual style and colour</h2>
+            <p>Industrial-chic, technical, and modern. Lean into <strong>blueprint</strong> and <strong>data-terminal</strong> cues — grids, mono labels, sharp accents — to separate Maverick from commodity painters.</p>
+
+            <div class="swatches">
+                <div class="swatch">
+                    <div class="swatch-color" style="background: linear-gradient(135deg, #15181C, #23282E);"></div>
+                    <div class="swatch-meta">
+                        <div class="swatch-name">Charcoal / obsidian</div>
+                        <div class="swatch-hex">#15181C → #23282E</div>
+                    </div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-color" style="background: #00D2D3;"></div>
+                    <div class="swatch-meta">
+                        <div class="swatch-name">Turquoise · Primary accent</div>
+                        <div class="swatch-hex">#00D2D3</div>
+                    </div>
+                </div>
+                <div class="swatch">
+                    <div class="swatch-color" style="background: #00E676;"></div>
+                    <div class="swatch-meta">
+                        <div class="swatch-name">Bright green · Trust / QA</div>
+                        <div class="swatch-hex">#00E676</div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 22px;"><strong>How to use colour</strong></p>
+            <p>Charcoal grounds everything (premium, serious, dark-mode canvas). Turquoise drives <strong>highlights, technical lines, UI borders, and primary callouts</strong> — technology and cleanliness. Green is for <strong>verification, guarantees, QA, and “approved”</strong> moments — a quick read for safety and trust.</p>
+
+            <div class="type-note">
+                <strong>Typography</strong> — Pair clean geometric sans (e.g. system UI stack / SF-style) with <code>monospace</code> for specs, labels, dates, and reporting lines so communications feel documented and accountable.
+            </div>
+        </section>
+
+        <section id="pillars" aria-labelledby="h-pillars">
+            <p class="section-label">03 · Offer</p>
+            <h2 id="h-pillars">Core services — the four pillars</h2>
+            <p>All marketing should ladder to these four. Maverick solves problems <strong>from the structure up</strong>.</p>
+            <div class="pillars">
+                <article class="pillar">
+                    <p class="pillar-num">Pillar 01</p>
+                    <h3>Structural &amp; remedial repairs</h3>
+                    <p>The foundation: concrete spalling repair, structural crack injection, expansion joint sealing, rising damp treatment.</p>
+                </article>
+                <article class="pillar">
+                    <p class="pillar-num">Pillar 02</p>
+                    <h3>Specialized coating systems</h3>
+                    <p>High-performance systems: epoxy and polyurethane flooring, hygienic food-grade floors, Marmoran application, industrial corrosion control.</p>
+                </article>
+                <article class="pillar">
+                    <p class="pillar-num">Pillar 03</p>
+                    <h3>Advanced waterproofing</h3>
+                    <p>High-stakes ingress: flat concrete roofs, leaking balconies (under-tile), torch-on and liquid membranes, basement waterproofing.</p>
+                </article>
+                <article class="pillar">
+                    <p class="pillar-num">Pillar 04</p>
+                    <h3>Commercial &amp; high-access painting</h3>
+                    <p>Volume and scale: body corporate painting, industrial and factory sites, rope access, roof restoration, stucco and wall coatings.</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="usp" aria-labelledby="h-usp">
+            <p class="section-label">04 · Differentiator</p>
+            <h2 id="h-usp">Unique selling proposition — Independent QA</h2>
+            <p class="usp-intro">This is Maverick’s strongest marketing proof point: <strong>independent third-party QA</strong> — not self-marked homework.</p>
+            <ol class="steps">
+                <li class="step">
+                    <span class="step-n" aria-hidden="true">1</span>
+                    <div>
+                        <h3>Substrate specification and assessment</h3>
+                        <p>Scope and document the substrate before work is sold or applied.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-n" aria-hidden="true">2</span>
+                    <div>
+                        <h3>Continuous application inspection</h3>
+                        <p>Prep, primer, and film thickness checked through the job — not only at handover.</p>
+                    </div>
+                </li>
+                <li class="step">
+                    <span class="step-n" aria-hidden="true">3</span>
+                    <div>
+                        <h3>Verifiable bi-weekly reporting</h3>
+                        <p>Recorded history trustees and asset owners can file — builds long-term trust.</p>
+                    </div>
+                </li>
+            </ol>
+        </section>
+
+        <section id="trust" aria-labelledby="h-trust">
+            <p class="section-label">05 · Proof</p>
+            <h2 id="h-trust">Trust signals and accreditations</h2>
+            <p>When building any asset (slides, ads, cards), keep these <strong>visible and legible</strong> where appropriate.</p>
+            <div class="badges">
+                <h3>Approved applicators</h3>
+                <div class="badge-row">
+                    <span class="badge">Sika</span>
+                    <span class="badge">Plascon</span>
+                    <span class="badge">Dulux</span>
+                    <span class="badge">a.b.e.</span>
+                    <span class="badge">Marmoran</span>
+                </div>
+                <h3>Registrations &amp; compliance</h3>
+                <div class="badge-row">
+                    <span class="badge badge--green">MBA registered</span>
+                    <span class="badge badge--green">NAMA registered</span>
+                    <span class="badge badge--green">Fully OHS compliant</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" aria-labelledby="h-contact">
+            <p class="section-label">06 · Contact</p>
+            <h2 id="h-contact">Official contact and digital footprint</h2>
+            <div class="contact-card">
+                <div class="contact-name">Lawrence Brooks</div>
+                <div class="contact-role">Director · Specialist</div>
+                <dl>
+                    <div class="contact-row">
+                        <dt>Phone / WhatsApp</dt>
+                        <dd><a href="tel:+27826277082">+27 82 627 7082</a></dd>
+                    </div>
+                    <div class="contact-row">
+                        <dt>Email</dt>
+                        <dd><a href="mailto:maverickpainters1984@gmail.com">maverickpainters1984@gmail.com</a></dd>
+                    </div>
+                    <div class="contact-row">
+                        <dt>Website</dt>
+                        <dd><a href="https://www.maverickpainting.co.za/" target="_blank" rel="noopener noreferrer">maverickpainting.co.za</a></dd>
+                    </div>
+                    <div class="contact-row">
+                        <dt>Region</dt>
+                        <dd>Gauteng, South Africa</dd>
+                    </div>
+                </dl>
+            </div>
+        </section>
+    </div>
+
+    <p class="footer-note">Maverick Painting · Brand &amp; studio overview · For internal and client creative alignment</p>
+</body>
+</html>

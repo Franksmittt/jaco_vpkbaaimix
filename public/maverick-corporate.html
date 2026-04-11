@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maverick | Corporate Operations Bundle</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        :root {
+            --mav-shell: 1200px;
+            --charcoal: #111418;
+            --charcoal-light: #1A1E24;
+            --turquoise: #00D2D3;
+            --bright-green: #00E676;
+            --white: #ffffff;
+            --titanium: #A1A1A6;
+            --glass-bg: rgba(17, 20, 24, 0.85);
+            --glass-border: rgba(0, 210, 211, 0.3);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #050607;
+            color: var(--white);
+            margin: 0;
+            padding: 40px 24px;
+        }
+
+        .site-nav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 20px;
+            font-size: 14px;
+        }
+        .site-nav a {
+            color: var(--titanium);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(161, 161, 166, 0.35);
+        }
+        .site-nav a:hover {
+            color: var(--white);
+            border-bottom-color: rgba(255, 255, 255, 0.35);
+        }
+
+        .mav-subnav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 28px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            background: rgba(20, 24, 28, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+        }
+        .mav-subnav a {
+            color: var(--titanium);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .mav-subnav a:hover {
+            color: var(--white);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .mav-subnav a.is-active {
+            color: #000;
+            background: var(--turquoise);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 50px;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: var(--mav-shell);
+            width: 100%;
+            padding: 30px;
+            background: rgba(20, 24, 28, 0.8);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 { font-weight: 800; margin-top: 0; margin-bottom: 10px; letter-spacing: -0.5px; text-transform: uppercase;}
+        h1 span { color: var(--turquoise); }
+        .subtitle { color: var(--titanium); font-size: 14px; margin-bottom: 24px; font-weight: 400; max-width: 680px; margin-left: auto; margin-right: auto;}
+
+        .upload-btn {
+            display: inline-block;
+            background-color: var(--turquoise);
+            color: #000;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 210, 211, 0.4);
+        }
+        .upload-btn:hover { background-color: var(--bright-green); transform: translateY(-2px); }
+
+        .studio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+            gap: 60px 16px;
+            width: 100%;
+            max-width: var(--mav-shell);
+            margin: 0 auto;
+            align-items: start;
+        }
+
+        .template-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+        .template-name { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--titanium); margin-bottom: 16px; text-align: center; font-weight: 600;}
+        .format-badge { background: #222; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 8px; }
+
+        .ad-canvas {
+            width: 100%;
+            background-color: var(--charcoal);
+            border: 1px solid #1f252b;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        .is-a4 { aspect-ratio: 1 / 1.414; max-width: 600px; }
+        .is-16x9 { aspect-ratio: 16 / 9; max-width: 800px; }
+        .is-4x5 { aspect-ratio: 4 / 5; max-width: 500px; }
+        .is-signature { width: 100%; max-width: 600px; height: 180px; }
+
+        .ad-canvas::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(0, 210, 211, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 210, 211, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 0;
+        }
+        .ad-canvas.has-image::before { display: none; }
+        .ad-canvas.has-image::after {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
+            background: linear-gradient(to bottom, rgba(17,20,24,0.4) 0%, rgba(17,20,24,0.85) 100%);
+            z-index: 1; pointer-events: none;
+        }
+
+        .layout-layer {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 32px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .flex-center-block { margin: auto 0; width: 100%; }
+
+        .h-mega { font-size: clamp(36px, 6vw, 56px); font-weight: 800; line-height: 0.95; letter-spacing: -1.5px; text-transform: uppercase; margin-bottom: 12px; word-wrap: break-word;}
+        .h-mid { font-size: clamp(20px, 4vw, 32px); font-weight: 700; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; word-wrap: break-word;}
+        .h-small { font-size: clamp(14px, 2.5vw, 18px); font-weight: 600; line-height: 1.2; margin-bottom: 4px;}
+
+        .t-body { font-size: 13px; font-weight: 400; color: #d1d5db; line-height: 1.5; margin-bottom: 0;}
+        .t-mono { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--turquoise); margin-bottom: 6px;}
+        .t-brand { font-size: 20px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; color: #fff;}
+
+        .color-turq { color: var(--turquoise); }
+        .color-green { color: var(--bright-green); }
+        .color-titanium { color: var(--titanium); }
+        .shadow-txt { text-shadow: 0 4px 20px rgba(0,0,0,0.95); }
+
+        .glass-panel {
+            background: rgba(17, 20, 24, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+        }
+        .line-accent { width: 50px; height: 3px; background-color: var(--bright-green); margin-bottom: 16px; }
+        .line-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.1); margin: 16px 0; }
+
+        .flex-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .flex-col { display: flex; flex-direction: column; width: 100%; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+
+        .qa-form-row { display: flex; justify-content: space-between; border-bottom: 1px solid #333; padding: 8px 0; }
+        .qa-box { width: 20px; height: 20px; border: 2px solid var(--turquoise); border-radius: 3px; display: inline-block; flex-shrink: 0; }
+
+        .mb-1 { margin-bottom: 4px; }
+        .mb-2 { margin-bottom: 12px; }
+        .mb-3 { margin-bottom: 16px; }
+        .mt-2 { margin-top: 8px; }
+    </style>
+</head>
+<body>
+
+    <nav class="site-nav"><a href="index.html">← Home</a></nav>
+
+    <nav class="mav-subnav" aria-label="Maverick studios">
+        <a href="maverick-studio.html">Business cards</a>
+        <a href="maverick-social.html">Social templates</a>
+        <a href="maverick-brand.html">Brand guide</a>
+        <a href="maverick-flyer.html">Flyers &amp; brochures</a>
+        <a href="maverick-corporate.html" class="is-active" aria-current="page">Corporate</a>
+    </nav>
+
+    <div class="control-panel">
+        <h1><span>Maverick</span> Corporate Operations</h1>
+        <div class="subtitle">B2B assets: case studies, pitch decks, reports, and signatures.</div>
+        <label for="imageUpload" class="upload-btn">Upload Branding / Texture</label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+    </div>
+
+    <div class="studio-grid">
+
+        <div class="template-wrapper">
+            <div class="template-name">1. Project Case Study <span class="format-badge">A4</span></div>
+            <div class="ad-canvas is-a4">
+                <div class="layout-layer">
+                    <div class="flex-row shadow-txt">
+                        <div class="t-brand">MAVERICK</div>
+                        <div class="t-mono color-green" style="margin:0;">PROJECT PROFILE</div>
+                    </div>
+
+                    <div class="flex-center-block shadow-txt">
+                        <div class="line-accent"></div>
+                        <div class="h-mega">Estate<br><span class="color-turq">Remediation.</span></div>
+                        <div class="t-body mb-3">Complete structural spalling repair and advanced waterproofing system applied to a 12-block residential complex in Sandton.</div>
+                    </div>
+
+                    <div class="glass-panel">
+                        <div class="flex-row" style="align-items: flex-start; gap: 20px;">
+                            <div class="flex-col">
+                                <div class="t-mono color-turq">THE CHALLENGE</div>
+                                <div class="t-body" style="font-size: 11px;">Severe concrete cancer on load-bearing pillars and active water ingress on top-floor balconies causing interior damage.</div>
+                            </div>
+                            <div class="flex-col">
+                                <div class="t-mono color-green">THE SOLUTION</div>
+                                <div class="t-body" style="font-size: 11px;">High-pressure crack injection, Sika-approved structural patching, and torch-on membrane application under independent QA.</div>
+                            </div>
+                        </div>
+                        <div class="line-divider"></div>
+                        <div class="flex-row">
+                            <div class="t-mono" style="color: #fff; margin:0;">DURATION: 8 WEEKS</div>
+                            <div class="t-mono color-turq text-right" style="margin:0;">WARRANTY: 10 YEARS</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">2. Official QA Report <span class="format-badge">A4</span></div>
+            <div class="ad-canvas is-a4">
+                <div class="layout-layer">
+                    <div class="text-center shadow-txt">
+                        <div class="t-brand mb-1">MAVERICK</div>
+                        <div class="t-mono color-turq">INDEPENDENT QA VERIFICATION</div>
+                        <div class="line-divider"></div>
+                    </div>
+
+                    <div class="flex-center-block">
+                        <div class="glass-panel" style="background: rgba(0,0,0,0.8);">
+                            <div class="qa-form-row">
+                                <span class="t-mono color-titanium">PROJECT ID:</span>
+                                <span class="t-mono" style="color: #fff;">MAV-2026-04</span>
+                            </div>
+                            <div class="qa-form-row">
+                                <span class="t-mono color-titanium">DATE OF INSPECTION:</span>
+                                <span class="t-mono" style="color: #fff;">14 NOV 2026</span>
+                            </div>
+                            <div class="qa-form-row">
+                                <span class="t-mono color-titanium">SUBSTRATE MOISTURE:</span>
+                                <span class="t-mono color-green">PASSED (&lt; 5%)</span>
+                            </div>
+
+                            <div class="t-mono color-turq" style="margin-top: 24px; margin-bottom: 12px;">STAGE VERIFICATION</div>
+
+                            <div class="flex-row" style="margin-bottom: 16px;">
+                                <div class="t-body" style="color:#fff;">1. Surface Prep &amp; Grinding</div>
+                                <div class="qa-box" style="background: var(--bright-green);"></div>
+                            </div>
+                            <div class="flex-row" style="margin-bottom: 16px;">
+                                <div class="t-body" style="color:#fff;">2. Primer Application (DFT Check)</div>
+                                <div class="qa-box" style="background: var(--bright-green);"></div>
+                            </div>
+                            <div class="flex-row" style="margin-bottom: 16px;">
+                                <div class="t-body" style="color:#fff;">3. Final Polyurethane Top Coat</div>
+                                <div class="qa-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-row">
+                        <div class="flex-col">
+                            <div style="border-bottom: 1px solid var(--turquoise); width: 150px; height: 30px;"></div>
+                            <div class="t-mono color-titanium mt-2">INSPECTOR SIGNATURE</div>
+                        </div>
+                        <div class="flex-col text-right">
+                            <div class="t-brand" style="color: rgba(255,255,255,0.2);">APPROVED</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">3. Boardroom Pitch Deck <span class="format-badge">16:9</span></div>
+            <div class="ad-canvas is-16x9">
+                <div class="layout-layer" style="padding: 40px 60px;">
+                    <div class="t-brand shadow-txt">MAVERICK</div>
+
+                    <div class="flex-center-block shadow-txt">
+                        <div class="line-accent"></div>
+                        <div class="h-mega" style="font-size: clamp(40px, 5vw, 64px);">De-Risking Your<br><span class="color-turq">Multi-Million Rand Asset.</span></div>
+                    </div>
+
+                    <div class="flex-row shadow-txt" style="align-items: flex-end;">
+                        <div class="t-body" style="max-width: 50%;">A turn-key approach to structural remediation and protective coatings for Body Corporates.</div>
+                        <div class="t-mono color-green text-right">LAWRENCE BROOKS | 2026</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">4. LinkedIn B2B Carousel <span class="format-badge">4:5</span></div>
+            <div class="ad-canvas is-4x5">
+                <div class="layout-layer">
+                    <div class="glass-panel" style="padding: 10px; width: auto; align-self: flex-start; border-left: 3px solid var(--turquoise);">
+                        <span class="t-mono color-turq" style="margin:0;">ASSET MANAGEMENT INSIGHTS</span>
+                    </div>
+
+                    <div class="flex-center-block shadow-txt">
+                        <div class="h-mega">5 Signs of<br><span class="color-green">Concrete Cancer.</span></div>
+                        <div class="t-body" style="font-size: 15px;">Why spalling is destroying your basement pillars and how to fix it permanently.</div>
+                    </div>
+
+                    <div class="flex-row shadow-txt">
+                        <div class="t-brand">MAVERICK</div>
+                        <div class="t-mono" style="color:#fff; border: 1px solid #fff; padding: 6px 12px; border-radius: 20px;">SWIPE TO LEARN &rarr;</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">5. High-Converting Email Signature <span class="format-badge">Responsive</span></div>
+            <div class="ad-canvas is-signature">
+                <div class="layout-layer" style="padding: 24px; justify-content: center;">
+                    <div class="flex-row" style="gap: 24px;">
+
+                        <div style="width: 100px; height: 100px; background: var(--charcoal); border: 2px solid var(--turquoise); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <div class="t-brand" style="font-size: 14px;">MAV</div>
+                        </div>
+
+                        <div class="flex-col" style="justify-content: center; width: 100%;">
+                            <div class="h-mid" style="margin-bottom: 2px; font-size: 22px;">Lawrence Brooks</div>
+                            <div class="t-mono color-green mb-2" style="font-size: 10px;">DIRECTOR | STRUCTURAL COATING SPECIALIST</div>
+
+                            <div class="t-body" style="font-size: 11px; margin-bottom: 2px;"><b>M:</b> +27 82 627 7082 | <b>E:</b> maverickpainters1984@gmail.com</div>
+                            <div class="t-body" style="font-size: 11px; color: var(--turquoise);">www.maverickpainting.co.za</div>
+
+                            <div class="line-divider" style="margin: 8px 0;"></div>
+
+                            <div class="t-mono" style="color: #fff; font-size: 9px;">&rarr; Download our <span class="color-turq">Independent QA Guarantee</span> Guide</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        (function () {
+            var imageUpload = document.getElementById('imageUpload');
+            var canvases = document.querySelectorAll('.ad-canvas');
+            if (!imageUpload || !canvases.length) return;
+            imageUpload.addEventListener('change', function (event) {
+                var file = event.target.files && event.target.files[0];
+                if (!file) return;
+                var imageUrl = URL.createObjectURL(file);
+                canvases.forEach(function (canvas) {
+                    canvas.style.backgroundImage = 'url(' + imageUrl + ')';
+                    canvas.style.backgroundSize = 'cover';
+                    canvas.style.backgroundPosition = 'center';
+                    canvas.classList.add('has-image');
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

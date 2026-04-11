@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Miwesu — Facebook Carousel Studio</title>
+    <title>Miwesu Facebook Carousel Studio</title>
     <style>
         :root {
             --apple-white: #f5f5f7;
@@ -60,6 +60,26 @@
             margin-left: auto;
             margin-right: auto;
             line-height: 1.5;
+        }
+
+        .carousel-studio {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            width: 100%;
+            max-width: 100%;
+        }
+        .carousel-series__title {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--titanium);
+            text-align: center;
+            margin: 0 0 16px;
+        }
+        .carousel-series__title span {
+            color: var(--miwesu-amber);
         }
 
         .carousel-wrapper {
@@ -226,6 +246,17 @@
         .card-1-bottom .card-1-swipe-line {
             margin-top: 2px;
         }
+        .z-content.card-1-bottom.pos-bottom {
+            padding-left: 16px;
+            padding-right: 16px;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        .card-1-bottom .h-massive {
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
 
         /* Card 3: hard dark drop shadow for headline + subcopy on busy photos */
         .card-3-bottom .h-massive {
@@ -252,6 +283,22 @@
                 1px 1px 0 rgba(0, 0, 0, 0.95),
                 0 2px 6px rgba(0, 0, 0, 0.92),
                 0 4px 14px rgba(0, 0, 0, 0.85);
+        }
+        .z-content.card-3-bottom {
+            padding-left: 14px;
+            padding-right: 14px;
+            box-sizing: border-box;
+            max-width: 100%;
+        }
+        .card-3-bottom .h-massive {
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .z-content.pos-top.text-right.w-100 {
+            padding-left: 14px;
+            padding-right: 14px;
+            box-sizing: border-box;
         }
         .card-3-pill-label.t-micro {
             color: #ffffff;
@@ -288,18 +335,17 @@
                 0 2px 6px rgba(0, 0, 0, 0.92),
                 0 4px 14px rgba(0, 0, 0, 0.85);
         }
-
-        /* Card 4: background watermark — stronger than old 0.15 + dark stroke for shape on busy photos */
-        .card-4-bags-mark {
-            font-size: 80px;
-            line-height: 0.8;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            color: rgba(255, 255, 255, 0.5);
-            -webkit-text-stroke-width: 2px;
-            -webkit-text-stroke-color: rgba(255, 255, 255, 0.9);
-            paint-order: stroke fill;
+        .z-content.card-5-copy.pos-center {
+            width: calc(100% - 28px);
+            max-width: 100%;
+            padding-left: 8px;
+            padding-right: 8px;
+            box-sizing: border-box;
+        }
+        .z-content.card-5-copy .t-body {
+            max-width: 100%;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .glass-pill {
@@ -313,7 +359,7 @@
             align-items: center;
         }
 
-        /* Card 1: solid pill — html2canvas mishandles backdrop-filter; must follow .glass-pill */
+        /* Card 1: solid pill (html2canvas: no backdrop-filter on this variant) */
         .glass-pill.glass-pill--solid {
             background: rgba(12, 12, 14, 0.94);
             backdrop-filter: none;
@@ -322,7 +368,7 @@
             box-shadow: 0 2px 14px rgba(0, 0, 0, 0.5);
         }
 
-        /* Card 5: opaque WhatsApp pill — same blur/export issues as other glass-pill; must stay solid */
+        /* Card 5: opaque WhatsApp pill (export-safe, no frosted blur) */
         .glass-pill.glass-pill--wa {
             background: #25d366;
             backdrop-filter: none;
@@ -332,23 +378,29 @@
         }
 
         /* PNG export: strip blur so panels match on-screen solids as closely as possible */
-        .ad-canvas.exporting .glass-pill:not(.glass-pill--solid):not(.glass-pill--wa) {
+        .ad-canvas.exporting .glass-pill:not(.glass-pill--solid):not(.glass-pill--wa):not(.glass-pill--light-cta) {
             background: rgba(15, 15, 15, 0.94) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
+        }
+        .ad-canvas.exporting .glass-pill--light-cta {
+            background: #f5f5f7 !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none !important;
         }
         .ad-canvas.exporting .glass-panel {
             background: rgba(10, 10, 10, 0.94) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
         }
-        /* Card 4 rail: opaque fill + no amber inset shadow — html2canvas tiles + photo bleed read as orange otherwise */
-        .ad-canvas.exporting .glass-panel.card-4-offer-panel {
+        /* Card 4 dock: opaque panel for PNG export */
+        .ad-canvas.exporting .glass-panel.card-4-dock-panel {
             background: rgb(18, 18, 20) !important;
             backdrop-filter: none !important;
             -webkit-backdrop-filter: none !important;
             box-shadow:
-                4px 0 20px rgba(0, 0, 0, 0.55),
+                0 -8px 32px rgba(0, 0, 0, 0.55),
                 inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
         }
 
@@ -361,122 +413,240 @@
             padding: 16px;
         }
 
-        /* Card 4: full-height left rail (overlay on image) */
-        .card-4-left-rail {
+        /* Card 4: bottom dock (photo on top, offer bar across the width) */
+        .card-4-offer-dock {
             position: absolute;
             left: 0;
-            top: 0;
-            width: 32%;
-            height: 100%;
-            z-index: 6;
+            right: 0;
+            bottom: 0;
+            z-index: 8;
+            pointer-events: none;
+            padding: 0 10px 0;
             box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            background: linear-gradient(
+                to top,
+                rgba(4, 4, 5, 0.97) 0%,
+                rgba(8, 7, 9, 0.78) 48%,
+                rgba(14, 12, 15, 0.2) 85%,
+                transparent 100%
+            );
+        }
+        .glass-panel.card-4-dock-panel {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 12px 12px 14px;
+            border-radius: 14px 14px 0 0;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-bottom: none;
+            box-sizing: border-box;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            box-shadow:
+                0 -10px 40px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.07);
+        }
+        .card-4-dock-kicker {
+            font-size: 7.5px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--miwesu-amber);
+            line-height: 1.35;
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+        .card-4-dock-grid {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 22px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .card-4-dock-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1px;
+        }
+        .card-4-dock-cell-label {
+            font-size: 6.5px;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.48);
+        }
+        .card-4-dock-qty {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+        }
+        .card-4-dock-qty-sub {
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.78);
+            margin-top: 1px;
+        }
+        .card-4-dock-price {
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.06em;
+            color: #ffffff;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.65);
+        }
+        .card-4-dock-foot {
+            margin: 4px 0 0;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.3;
+            letter-spacing: -0.02em;
+            color: #f0f0f3;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+            max-width: 100%;
+        }
+
+        /* Sekelbos row 2 — Sekelbos Carousel Studio (scoped) */
+        .carousel-series--sekelbos-studio {
+            --sekelbos-gold: #FFB300;
+            --flame-orange: #FF3D00;
+        }
+        .carousel-series--sekelbos-studio .carousel-series__title span {
+            color: var(--sekelbos-gold);
+        }
+        .carousel-series--sekelbos-studio .carousel-item__stage.ad-canvas::before {
+            content: '';
+            position: absolute;
+            top: 14%;
+            left: 0;
+            right: 0;
+            bottom: 20%;
+            border-top: 1px dashed rgba(255, 255, 255, 0.08);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            z-index: 6;
             pointer-events: none;
         }
-        .glass-panel.card-4-offer-panel {
-            box-sizing: border-box;
-            width: 100%;
-            height: 100%;
-            min-width: 0;
-            max-width: none;
-            margin: 0;
-            padding: 10px 6px 12px;
-            border-radius: 0;
-            border-left: none;
-            border-color: rgba(255, 255, 255, 0.14);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: stretch;
-            text-align: center;
-            box-shadow:
-                4px 0 24px rgba(0, 0, 0, 0.45),
-                inset 0 1px 0 rgba(255, 255, 255, 0.06),
-                inset -1px 0 0 rgba(255, 107, 0, 0.15);
+        .carousel-series--sekelbos-studio .carousel-item__stage.ad-canvas {
+            background-color: #0a0a0a;
+            border-color: #222;
         }
-        .glass-panel.card-4-offer-panel .t-micro {
-            margin-bottom: 0;
-            line-height: 1.2;
-            letter-spacing: 0.08em;
+        .carousel-series--sekelbos-studio .h-massive {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+            text-transform: none;
         }
-        .card-4-offer-panel-upper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .card-4-offer-panel-lower {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            gap: 5px;
-        }
-        .card-4-min-banner {
-            margin: 0 0 8px;
-            padding: 0 2px 6px;
-            border-bottom: 1px solid rgba(255, 107, 0, 0.45);
-            font-size: 7px;
+        .carousel-series--sekelbos-studio .h-mid {
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            text-align: center;
-            color: var(--miwesu-amber);
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+            text-transform: none;
+        }
+        .carousel-series--sekelbos-studio .t-body {
+            font-size: 13px;
+            font-weight: 500;
+            color: #e5e5ea;
+            margin-top: 8px;
             line-height: 1.4;
         }
-        .card-4-offer-stack {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-        }
-        .card-4-price-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0;
-            line-height: 1;
-            margin: 0;
-        }
-        .card-4-price-main {
-            font-size: 19px;
-            font-weight: 900;
-            letter-spacing: -0.04em;
-            color: #fff;
-            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
-        }
-        .card-4-price-sub {
-            font-size: 7px;
-            font-weight: 700;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.52);
-            margin-top: 2px;
-        }
-        .glass-panel.card-4-offer-panel .t-body.card-4-free-delivery {
-            margin-top: 0;
-            font-size: 12px;
+        .carousel-series--sekelbos-studio .t-micro {
+            font-size: 10px;
             font-weight: 800;
-            line-height: 1.15;
-            letter-spacing: -0.02em;
-            color: #f5f5f7;
-            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.45);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--sekelbos-gold);
+            margin-bottom: 6px;
         }
-        .card-4-bags-rail-slot {
-            flex: 1 1 auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 40px;
-            overflow: visible;
+        .carousel-series--sekelbos-studio .color-gold { color: var(--sekelbos-gold); }
+        .carousel-series--sekelbos-studio .color-flame { color: var(--flame-orange); }
+        .carousel-series--sekelbos-studio .shadow-txt {
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.95);
         }
-        .card-4-bags-mark.card-4-bags-mark--rail {
-            font-size: 46px;
-            line-height: 0.85;
-            letter-spacing: -0.02em;
-            transform: rotate(-90deg);
-            transform-origin: center center;
-            white-space: nowrap;
+        .carousel-series--sekelbos-studio .glass-pill:not(.glass-pill--light-cta):not(.glass-pill--solid) {
+            background: rgba(12, 12, 12, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+        .carousel-series--sekelbos-studio .glass-panel.sb-export-panel {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 18px;
+        }
+        .carousel-series--sekelbos-studio .glass-pill--light-cta {
+            background: var(--apple-white);
+            border: none;
+            padding: 14px 28px;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .carousel-series--sekelbos-studio .glass-pill--light-cta .sb-v2-wa-line {
+            color: var(--samsung-black);
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.5px;
+        }
+        .carousel-series--sekelbos-studio .sb-v2-sear-watermark {
+            font-size: 85px;
+            font-weight: 900;
+            line-height: 0.8;
+            letter-spacing: -4px;
+            opacity: 0.1;
+            text-align: center;
+        }
+        .carousel-series--sekelbos-studio .sb-v2-footer-micro {
+            margin-top: 20px;
+            color: #fff;
+        }
+        .carousel-series--sekelbos-studio .mb-1 { margin-bottom: 4px; }
+        .carousel-series--sekelbos-studio .mb-3 { margin-bottom: 12px; }
+        .carousel-series--sekelbos-studio .sb-v2-gold-bar {
+            width: 40px;
+            height: 2px;
+            background: var(--sekelbos-gold);
+            margin: 12px 0;
+        }
+        .carousel-series--sekelbos-studio .sb-v2-card2-panel {
+            width: 85%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .carousel-series--sekelbos-studio .sb-v2-card2-panel .t-body {
+            margin-top: 0;
+        }
+        .carousel-series--sekelbos-studio .pill-kicker.sb-v2-pill-miwesu {
+            color: #ffffff;
+            -webkit-text-fill-color: #ffffff;
+        }
+        .carousel-series--sekelbos-studio .t-micro.sb-v2-pill-flame {
+            margin: 0;
+            color: var(--flame-orange);
+        }
+
+        .ad-canvas.exporting .glass-panel.sb-export-panel {
+            background: rgb(18, 18, 20) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
 
         .flex-row { display: flex; justify-content: space-between; align-items: center; }
@@ -510,22 +680,39 @@
         /* Card 2: panel stays centred on canvas; kicker centred, species list left-aligned */
         .card-2-mix-panel {
             text-align: left;
+            width: calc(100% - 32px) !important;
+            max-width: 100%;
+            padding: 10px 11px !important;
+            box-sizing: border-box;
+            overflow: hidden;
         }
         .card-2-mix-header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
-        /* Same spec as former "THE BRAAI MIX" line (12px / 900 / tracking / uppercase) */
+        .card-2-mix-body {
+            border-left: 2px solid var(--miwesu-amber);
+            padding-left: 8px;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+        /* Tighter tracking so the kicker fits 400×400; list uses smaller type + wrap */
         .card-2-mix-panel .card-2-mix-headline {
             display: block;
             width: 100%;
+            max-width: 100%;
             margin: 0;
+            padding: 0 1px;
+            box-sizing: border-box;
             color: var(--miwesu-amber);
-            font-size: 12px;
+            font-size: 10.5px;
             font-weight: 900;
-            letter-spacing: 0.22em;
+            letter-spacing: 0.11em;
             text-transform: uppercase;
-            line-height: 1.25;
+            line-height: 1.35;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            hyphens: auto;
         }
         .card-2-mix-panel .card-2-mix-headline .card-2-mix-headline-accent {
             color: #ffffff;
@@ -533,17 +720,26 @@
         }
         .card-2-mix-panel .mix-two-col {
             justify-content: flex-start;
+            gap: 8px;
+        }
+        .card-2-mix-panel .mix-col {
+            min-width: 0;
         }
         .card-2-mix-panel .mix-col .mix-wood-line {
             position: relative;
             text-align: left;
-            padding-left: 13px;
+            padding-left: 11px;
+            font-size: 9px;
+            line-height: 1.32;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            hyphens: auto;
         }
         .card-2-mix-panel .mix-col .mix-wood-line::before {
             content: '';
             position: absolute;
             left: 0;
-            top: 4px;
+            top: 3px;
             width: 5px;
             height: 5px;
             border-radius: 50%;
@@ -666,7 +862,7 @@
             font-size: 11px;
             padding: 8px 14px;
         }
-        /* Override page dark-theme buttons — white bar needs dark text */
+        /* Override page dark-theme buttons (white bar needs dark text) */
         .fb-preview-chrome .toolbar-btn--secondary {
             background: #e4e6eb;
             color: #050505;
@@ -830,7 +1026,7 @@
 
     <div class="control-panel">
         <h1><span>Miwesu</span> Facebook Carousel Studio</h1>
-        <p class="subtitle">Five 1:1 cards (400px preview). <strong>Download PNG</strong> renders at <strong>1080×1080</strong> using your image at full resolution (not a blurry upscale from the preview). Very heavy blurs may still differ slightly in the PNG.</p>
+        <p class="subtitle">Two carousel sets · <strong>10</strong> square cards (400px preview). <strong>Download PNG</strong> renders each card at <strong>1080×1080</strong> from your upload. Very heavy blurs may still differ slightly in the PNG.</p>
         <div class="fb-recording-tools">
             <label>
                 <span>Seconds per card</span>
@@ -844,7 +1040,10 @@
         </div>
     </div>
 
-    <div class="carousel-wrapper">
+    <div class="carousel-studio">
+    <section class="carousel-series" aria-labelledby="miwesu-series-mix">
+        <h2 id="miwesu-series-mix" class="carousel-series__title">Braai mix · <span>estate line</span></h2>
+        <div class="carousel-wrapper">
         <div class="carousel-track">
 
             <div class="carousel-item">
@@ -877,11 +1076,11 @@
                 <div class="carousel-item__stage ad-canvas" data-card-id="2">
                     <div class="ad-canvas-image-shade" aria-hidden="true"></div>
                     <div class="ad-canvas-scale-root">
-                        <div class="z-content pos-center glass-panel w-100 card-2-mix-panel" style="width: 92%; padding: 12px 14px;">
+                        <div class="z-content pos-center glass-panel w-100 card-2-mix-panel">
                             <div class="card-2-mix-header">
                                 <div class="card-2-mix-headline">The <span class="card-2-mix-headline-accent">Perfect</span> Handpicked Recipe</div>
                             </div>
-                            <div style="border-left: 2px solid var(--miwesu-amber); padding-left: 10px;">
+                            <div class="card-2-mix-body">
                                 <div class="mix-two-col">
                                     <div class="mix-col">
                                         <div class="mix-wood-line">Scented thorn (Snuifpeul)</div>
@@ -929,25 +1128,21 @@
                 <div class="carousel-item__stage ad-canvas" data-card-id="4">
                     <div class="ad-canvas-image-shade" aria-hidden="true"></div>
                     <div class="ad-canvas-scale-root">
-                        <div class="card-4-left-rail">
-                            <div class="glass-panel card-4-offer-panel">
-                                <div class="card-4-offer-panel-upper">
-                                    <div class="card-4-min-banner">Minimum order · 50 bags</div>
-                                    <div class="card-4-offer-stack">
-                                        <div class="t-micro">10KG BAGS</div>
-                                        <div class="card-4-price-block">
-                                            <span class="card-4-price-main">R1750</span>
-                                            <span class="card-4-price-sub">total</span>
-                                        </div>
+                        <div class="card-4-offer-dock">
+                            <div class="glass-panel card-4-dock-panel">
+                                <div class="card-4-dock-kicker">10kg bags · 50 bag minimum · Gauteng only</div>
+                                <div class="card-4-dock-grid">
+                                    <div class="card-4-dock-cell">
+                                        <span class="card-4-dock-cell-label">Load size</span>
+                                        <span class="card-4-dock-qty">50</span>
+                                        <span class="card-4-dock-qty-sub">bags</span>
+                                    </div>
+                                    <div class="card-4-dock-cell">
+                                        <span class="card-4-dock-cell-label">Your price</span>
+                                        <span class="card-4-dock-price">R1750</span>
                                     </div>
                                 </div>
-                                <div class="card-4-bags-rail-slot">
-                                    <span class="card-4-bags-mark card-4-bags-mark--rail">50 BAGS</span>
-                                </div>
-                                <div class="card-4-offer-panel-lower">
-                                    <div class="t-micro color-amber">GAUTENG ONLY</div>
-                                    <div class="t-body card-4-free-delivery">Free Delivery</div>
-                                </div>
+                                <div class="t-body card-4-dock-foot" style="margin-top: 6px;">Free delivery on this order.</div>
                             </div>
                         </div>
                     </div>
@@ -974,12 +1169,126 @@
             </div>
 
         </div>
+        </div>
+    </section>
+
+    <section class="carousel-series carousel-series--sekelbos-studio" aria-labelledby="miwesu-series-sekel">
+        <h2 id="miwesu-series-sekel" class="carousel-series__title">Sekelbos carousel studio · <span>20kg premium sequence</span></h2>
+        <div class="carousel-wrapper">
+        <div class="carousel-track">
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="sb1">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-top">
+                            <div class="glass-pill glass-pill--solid shadow-txt" style="border-left: 3px solid var(--sekelbos-gold);">
+                                <span class="pill-kicker sb-v2-pill-miwesu">MIWESU PREMIUM WOOD</span>
+                            </div>
+                        </div>
+                        <div class="z-content pos-bottom shadow-txt">
+                            <div class="h-massive">The Braai<br><span class="color-gold">Favorite.</span></div>
+                            <div class="t-body">Premium 20kg Sekelbos. High Heat, Zero Hassle.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="sb2">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-center glass-panel sb-export-panel sb-v2-card2-panel">
+                            <div class="t-micro">THE SICKLE BUSH</div>
+                            <div class="h-mid mb-2">Naturally Baked<br>In The Sun.</div>
+                            <div class="sb-v2-gold-bar" aria-hidden="true"></div>
+                            <div class="t-body">Distinctive two-tone wood, naturally cured with incredibly low moisture content for a perfectly clean burn.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="sb3">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-top text-right w-100">
+                            <div class="glass-pill shadow-txt" style="border-color: var(--flame-orange);">
+                                <span class="t-micro sb-v2-pill-flame">CLEAN &amp; SMOKELESS</span>
+                            </div>
+                        </div>
+                        <div class="z-content pos-bottom shadow-txt text-right">
+                            <div class="h-massive">High-Energy<br><span class="color-flame">Burn.</span></div>
+                            <div class="t-body">Rich in natural oils. Catches easily and burns with a beautiful, hot orange and yellow flame.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="sb4">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-center w-100">
+                            <div class="h-massive text-center sb-v2-sear-watermark">SEAR</div>
+                        </div>
+                        <div class="z-content pos-bottom w-100 p-0" style="padding: 0 20px;">
+                            <div class="glass-panel sb-export-panel" style="border-left: 4px solid var(--flame-orange);">
+                                <div class="t-micro">BEST FOR</div>
+                                <div class="h-mid">The Ultimate Crust.</div>
+                                <div class="t-body">Built for frequent braaiers, camping trips, and achieving that signature high-heat sear on your steaks.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="carousel-item">
+                <div class="carousel-item__toolbar">
+                    <label class="toolbar-btn">Upload<input type="file" class="js-card-upload" accept="image/*" hidden></label>
+                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-card-download">Download PNG (1080)</button>
+                </div>
+                <div class="carousel-item__stage ad-canvas" data-card-id="sb5">
+                    <div class="ad-canvas-image-shade" aria-hidden="true"></div>
+                    <div class="ad-canvas-scale-root">
+                        <div class="z-content pos-center text-center w-100">
+                            <div class="t-micro color-gold mb-1">BULK ORDER ECONOMICS</div>
+                            <div class="h-massive shadow-txt mb-1">40 Bags.<br>R2800.</div>
+                            <div class="t-body shadow-txt mb-3">20kg Premium Sekelbos. (R70/bag)</div>
+                            <div class="glass-pill glass-pill--light-cta">
+                                <span class="sb-v2-wa-line">WA: +27 72 717 2572</span>
+                            </div>
+                            <div class="t-micro shadow-txt sb-v2-footer-micro">FREE DELIVERY IN GAUTENG</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </section>
     </div>
 
     <div id="fbPreviewOverlay" class="fb-preview-overlay" hidden>
         <div class="fb-preview-chrome">
             <div class="fb-preview-chrome-meta">
-                <strong>Preview</strong> — carousel card <span id="fbPreviewIndex">1</span> / <span id="fbPreviewTotal">5</span> · Start recorder, then play
+                <strong>Preview</strong> · card <span id="fbPreviewIndex">1</span> / <span id="fbPreviewTotal">10</span> · Start recorder, then play
             </div>
             <div class="fb-preview-actions">
                 <button type="button" class="toolbar-btn toolbar-btn--secondary" id="fbPreviewPlay">▶ Start sequence</button>
@@ -1003,8 +1312,8 @@
                     </div>
                     <div class="fb-post-dots" id="fbPreviewDots" role="tablist" aria-label="Carousel position"></div>
                     <div class="fb-post-caption">
-                        <p><strong>Miwesu Premium Fire Wood</strong> — The ultimate braai mix, estate delivery in Gauteng. <strong>50 × 10kg bags · R1750 total · free delivery.</strong> Swipe through the photos above to see the full story.</p>
-                        <p class="fb-post-caption-sub">WhatsApp <strong style="color:#050505;">+27 72 717 2572</strong> to order — minimum order applies.</p>
+                        <p><strong>Miwesu Premium Fire Wood.</strong> The ultimate braai mix, estate delivery in Gauteng. <strong>50 × 10kg bags · R1750 total · free delivery.</strong> Swipe through the photos above to see the full story.</p>
+                        <p class="fb-post-caption-sub">WhatsApp <strong style="color:#050505;">+27 72 717 2572</strong> to order. Minimum order applies.</p>
                     </div>
                     <div class="fb-post-engagement" aria-hidden="true">
                         <span>👍 Like</span>
@@ -1259,19 +1568,26 @@
                             inj.setAttribute('data-miwesu-export-fix', '1');
                             inj.textContent =
                                 '.glass-pill.glass-pill--solid{background:rgb(18,18,20)!important;}' +
+                                '.glass-pill.glass-pill--light-cta{background:#f5f5f7!important;border:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}' +
                                 '.glass-pill.glass-pill--wa{background:#25d366!important;border:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;opacity:1!important;}' +
-                                '.glass-panel.card-4-offer-panel{border-radius:0!important;background:rgb(18,18,20)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:4px 0 20px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)!important;}';
+                                '.glass-panel.card-4-dock-panel,.glass-panel.sb-export-panel{border-radius:0!important;background:rgb(18,18,20)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}' +
+                                '.glass-panel.card-4-dock-panel{box-shadow:0 -8px 32px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.06)!important;}' +
+                                '.glass-panel.sb-export-panel{box-shadow:0 4px 20px rgba(0,0,0,.45)!important;}';
                             doc.head.appendChild(inj);
-                            var c4panel = h2 && h2.querySelector('.glass-panel.card-4-offer-panel');
-                            if (c4panel) {
-                                c4panel.style.setProperty('background', 'rgb(18, 18, 20)', 'important');
-                                c4panel.style.setProperty('backdrop-filter', 'none', 'important');
-                                c4panel.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
-                                c4panel.style.setProperty(
-                                    'box-shadow',
-                                    '4px 0 20px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06)',
-                                    'important'
-                                );
+                            var glassPanels = h2 && h2.querySelectorAll('.glass-panel.card-4-dock-panel, .glass-panel.sb-export-panel');
+                            if (glassPanels && glassPanels.length) {
+                                glassPanels.forEach(function (gp) {
+                                    gp.style.setProperty('background', 'rgb(18, 18, 20)', 'important');
+                                    gp.style.setProperty('backdrop-filter', 'none', 'important');
+                                    gp.style.setProperty('-webkit-backdrop-filter', 'none', 'important');
+                                    var sh;
+                                    if (gp.classList.contains('card-4-dock-panel')) {
+                                        sh = '0 -8px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.06)';
+                                    } else {
+                                        sh = '0 4px 20px rgba(0, 0, 0, 0.45)';
+                                    }
+                                    gp.style.setProperty('box-shadow', sh, 'important');
+                                });
                             }
                             var pk = h2 && h2.querySelector('.pill-kicker');
                             if (pk) {

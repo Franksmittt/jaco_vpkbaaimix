@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On The Move Again — Ad Studio</title>
+    <style>
+        :root {
+            --apple-white: #ffffff;
+            --samsung-black: #000000;
+            --otma-blue: #0284c7;
+            --otma-blue-light: #38bdf8;
+            --rec-red: #ff3b30;
+            --titanium: #86868b;
+            --glass-bg: rgba(15, 18, 25, 0.75);
+            --glass-border: rgba(2, 132, 199, 0.3);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #050505;
+            color: var(--apple-white);
+            margin: 0;
+            padding: 40px;
+        }
+
+        .site-nav {
+            max-width: 1920px;
+            margin: 0 auto 24px;
+            font-size: 14px;
+        }
+        .site-nav a {
+            color: var(--titanium);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(134, 134, 139, 0.35);
+        }
+        .site-nav a:hover {
+            color: var(--apple-white);
+            border-bottom-color: rgba(245, 245, 247, 0.4);
+        }
+
+        .control-panel {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(10, 15, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        h1 {
+            font-weight: 800;
+            margin-top: 0;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        h1 span { color: var(--otma-blue-light); }
+        .subtitle {
+            color: var(--titanium);
+            font-size: 14px;
+            margin-bottom: 0;
+            font-weight: 400;
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+        }
+
+        /* One row = square, story, square, story, square, story (400:225 ≈ 1.75:1 column weights) */
+        .studio-grid {
+            display: grid;
+            grid-template-columns: 1.75fr 1fr 1.75fr 1fr 1.75fr 1fr;
+            gap: 40px 16px;
+            width: 100%;
+            max-width: 1920px;
+            margin: 0 auto;
+            align-items: start;
+            justify-items: center;
+        }
+        @media (max-width: 1500px) {
+            .studio-grid {
+                grid-template-columns: 1.75fr 1fr 1.75fr 1fr;
+            }
+        }
+        @media (max-width: 1000px) {
+            .studio-grid {
+                grid-template-columns: 1.75fr 1fr;
+            }
+        }
+        @media (max-width: 560px) {
+            .studio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Second row: only 4 tiles — center them in the 6-column layout */
+        @media (min-width: 1501px) {
+            .studio-grid .template-wrapper:nth-child(7) { grid-column: 2; }
+            .studio-grid .template-wrapper:nth-child(8) { grid-column: 3; }
+            .studio-grid .template-wrapper:nth-child(9) { grid-column: 4; }
+            .studio-grid .template-wrapper:nth-child(10) { grid-column: 5; }
+        }
+
+        .template-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .template-name {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--titanium);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .format-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #222;
+            color: #fff;
+            font-size: 9px;
+            margin-left: 6px;
+        }
+
+        .otma-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .toolbar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-family: inherit;
+        }
+        .toolbar-btn:disabled { opacity: 0.55; cursor: wait; }
+        label.toolbar-btn {
+            background-color: var(--otma-blue);
+            color: #fff;
+        }
+        label.toolbar-btn:hover {
+            background-color: var(--otma-blue-light);
+        }
+        .toolbar-btn--secondary {
+            background: transparent;
+            color: var(--apple-white);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .toolbar-btn--secondary:hover {
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* --- STAGE (matches logical pixel size for export) --- */
+        .otma-stage {
+            position: relative;
+            background-color: #0f172a;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .otma-stage.otma-canvas--square {
+            width: 400px;
+            height: 400px;
+            border-radius: 0;
+        }
+        .otma-stage.otma-canvas--vertical {
+            width: 225px;
+            height: 400px;
+            border-radius: 16px;
+        }
+        .otma-scale-root.otma-scale-root--blue-frame {
+            border: 4px solid var(--otma-blue);
+            border-radius: 12px;
+        }
+
+        .otma-grid-faux {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(2, 132, 199, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(2, 132, 199, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .otma-stage.has-image .otma-grid-faux { display: none; }
+
+        .otma-inset-shade {
+            display: none;
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.9);
+        }
+        .otma-stage.has-image .otma-inset-shade { display: block; }
+
+        .otma-scale-root {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform-origin: 0 0;
+            z-index: 5;
+            box-sizing: border-box;
+        }
+
+        .z-content { position: absolute; z-index: 10; box-sizing: border-box; }
+        .pos-top { top: 0; left: 0; width: 100%; padding: 16px; }
+        .pos-bottom { bottom: 0; left: 0; width: 100%; padding: 16px; }
+        .pos-tl { top: 16px; left: 16px; }
+        .pos-tr { top: 16px; right: 16px; text-align: right; }
+        .pos-bl { bottom: 16px; left: 16px; }
+        .pos-br { bottom: 16px; right: 16px; text-align: right; }
+        .pos-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            text-align: center;
+        }
+        .otma-route-rail {
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            padding-left: 16px;
+            max-width: 78%;
+        }
+
+        .h-mega {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+        .otma-stage.otma-canvas--vertical .h-mega {
+            font-size: 22px;
+            letter-spacing: -0.5px;
+        }
+        .h-mid {
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+        .otma-stage.otma-canvas--vertical .h-mid {
+            font-size: 15px;
+        }
+        .t-body {
+            font-size: 12px;
+            font-weight: 500;
+            color: #f1f5f9;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .otma-stage.otma-canvas--vertical .t-body {
+            font-size: 10px;
+        }
+        .t-mono {
+            font-family: var(--font-mono);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--otma-blue-light);
+        }
+        .otma-stage.otma-canvas--vertical .t-mono {
+            font-size: 8px;
+            letter-spacing: 0.06em;
+        }
+        .t-legal { font-size: 9px; color: rgba(255, 255, 255, 0.5); margin-top: 6px; }
+
+        .color-blue { color: var(--otma-blue-light); }
+        .color-red { color: var(--rec-red); }
+        .color-titanium { color: var(--titanium); }
+        .shadow-txt { text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9); }
+
+        .glass-pill {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .glass-panel {
+            background: rgba(10, 15, 25, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px;
+        }
+
+        .rec-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--rec-red);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px var(--rec-red);
+            animation: otma-blink 1.5s infinite;
+        }
+        @keyframes otma-blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .flex-row { display: flex; justify-content: space-between; align-items: center; }
+        .flex-col { display: flex; flex-direction: column; }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .w-100 { width: 100%; }
+        .p-0 { padding: 0; }
+        .mb-1 { margin-bottom: 4px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mt-1 { margin-top: 4px; }
+        .mt-2 { margin-top: 8px; }
+        .my-1 { margin-top: 4px; margin-bottom: 4px; }
+        .m-3 { margin: 16px; }
+
+        .otma-stage.exporting .glass-pill,
+        .otma-stage.exporting .glass-panel {
+            background: rgba(18, 24, 36, 0.94) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        .otma-gps-bar {
+            position: absolute;
+            background: var(--otma-blue);
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            padding: 4px 8px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        .otma-gps-bar .t-mono { color: #fff; }
+
+        .otma-corporate-bar {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 12px 16px;
+        }
+
+        .otma-national-band {
+            background: var(--otma-blue);
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav"><a href="index.html">← Home</a></nav>
+
+    <div class="control-panel">
+        <h1><span>On The Move Again</span> Logistics Studio</h1>
+        <p class="subtitle">Secure, monitored, GPS-tracked relocations. Hybrid <strong>9:16</strong> and <strong>1:1</strong> layouts. Grid: <strong>square · story · square · story · square · story</strong> per row. Per-template upload; <strong>Download PNG</strong> exports at <strong>1080×1920</strong> (story) or <strong>1080×1080</strong> (square).</p>
+    </div>
+
+    <div class="studio-grid">
+
+        <div class="template-wrapper">
+            <div class="template-name">2: Tracking UI <span class="format-badge">1:1</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--square js-otma-stage" data-card-id="otma-2" data-logic-w="400" data-logic-h="400" data-export-w="1080" data-export-h="1080">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:400px;height:400px;">
+                    <div class="z-content pos-top text-right shadow-txt w-100">
+                        <div class="t-mono">SECURE RELOCATION</div>
+                    </div>
+                    <div class="z-content pos-bottom p-0">
+                        <div class="glass-panel m-3">
+                            <div class="flex-row">
+                                <div class="flex-col">
+                                    <span class="t-mono color-blue">STATUS</span>
+                                    <span class="h-mid">In Transit</span>
+                                </div>
+                                <div class="flex-col text-right">
+                                    <span class="t-mono">ASSET PROTECTION</span>
+                                    <span class="t-body" style="margin:0;">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">1: The REC Hook <span class="format-badge">9:16</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--vertical js-otma-stage" data-card-id="otma-1" data-logic-w="225" data-logic-h="400" data-export-w="1080" data-export-h="1920">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:225px;height:400px;">
+                    <div class="z-content pos-tl glass-pill">
+                        <span class="rec-dot" aria-hidden="true"></span><span class="t-mono color-red" style="margin:0;">LIVE FEED</span>
+                    </div>
+                    <div class="z-content pos-bottom shadow-txt">
+                        <div class="h-mega">Smile! You're<br>on <span class="color-blue">Camera.</span></div>
+                        <div class="t-body">No blind trucks. Every move is GPS tracked and monitored live.</div>
+                        <div class="t-mono mt-2" style="color:#fff;">OTMA.CO.ZA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">4: Goods-in-Transit <span class="format-badge">1:1</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--square js-otma-stage" data-card-id="otma-4" data-logic-w="400" data-logic-h="400" data-export-w="1080" data-export-h="1080">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:400px;height:400px;">
+                    <div class="z-content pos-tl shadow-txt" style="border-left:3px solid var(--otma-blue);padding-left:12px;">
+                        <div class="t-mono">INSURANCE INCLUDED</div>
+                        <div class="h-mid">Goods-in-Transit</div>
+                        <div class="t-body">Total asset protection.</div>
+                    </div>
+                    <div class="z-content pos-br text-right shadow-txt">
+                        <div class="t-mono color-blue">ON THE MOVE AGAIN</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">3: GPS Map Overlay <span class="format-badge">9:16</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--vertical js-otma-stage" data-card-id="otma-3" data-logic-w="225" data-logic-h="400" data-export-w="1080" data-export-h="1920">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root otma-scale-root--blue-frame" style="width:225px;height:400px;box-sizing:border-box;">
+                    <div class="z-content otma-gps-bar shadow-txt">
+                        <span class="t-mono">GPS MONITORED</span>
+                    </div>
+                    <div class="z-content pos-center text-center w-100 shadow-txt">
+                        <div style="width:44px;height:44px;border:2px dashed var(--otma-blue-light);border-radius:50%;margin:0 auto 10px auto;display:flex;justify-content:center;align-items:center;">
+                            <span class="rec-dot" aria-hidden="true"></span>
+                        </div>
+                        <div class="h-mega">Track Your<br>Assets.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">6: Accredited <span class="format-badge">1:1</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--square js-otma-stage" data-card-id="otma-6" data-logic-w="400" data-logic-h="400" data-export-w="1080" data-export-h="1080">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:400px;height:400px;">
+                    <div class="z-content pos-center text-center shadow-txt w-100">
+                        <div class="t-mono mb-2">PMA &amp; AMOSA ACCREDITED</div>
+                        <div class="h-mega">Alberton's<br>Finest.</div>
+                        <div class="t-body">Secure furniture removals.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">5: Accountability <span class="format-badge">9:16</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--vertical js-otma-stage" data-card-id="otma-5" data-logic-w="225" data-logic-h="400" data-export-w="1080" data-export-h="1920">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:225px;height:400px;">
+                    <div class="z-content pos-tr text-right shadow-txt">
+                        <div class="h-mega">Zero<br><span class="color-blue">Risk.</span></div>
+                    </div>
+                    <div class="z-content pos-bl glass-panel" style="width:85%;">
+                        <div class="t-mono color-blue mb-1">THE SERVICE RECOVERY PARADOX</div>
+                        <div class="t-body" style="margin:0;">Why accountability is the most important metric for moving companies.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">8: Corporate Relocation <span class="format-badge">1:1</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--square js-otma-stage" data-card-id="otma-8" data-logic-w="400" data-logic-h="400" data-export-w="1080" data-export-h="1080">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:400px;height:400px;">
+                    <div class="z-content pos-top shadow-txt w-100 p-0">
+                        <div class="otma-corporate-bar">
+                        <div class="flex-row">
+                            <span class="t-mono">B2B RELOCATION</span>
+                            <span class="t-mono color-blue">ALRODE NODE</span>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="z-content pos-bl shadow-txt">
+                        <div class="h-mega">Minimize<br>Downtime.</div>
+                        <div class="t-body">Corporate &amp; Office Removals.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">7: Eco Estate Moves <span class="format-badge">9:16</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--vertical js-otma-stage" data-card-id="otma-7" data-logic-w="225" data-logic-h="400" data-export-w="1080" data-export-h="1920">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:225px;height:400px;">
+                    <div class="z-content pos-tl shadow-txt">
+                        <div class="t-mono color-blue">ESTATE RELOCATION</div>
+                        <div class="h-mid">Meyersdal<br>Eco Estate.</div>
+                    </div>
+                    <div class="z-content pos-br text-right shadow-txt">
+                        <div class="t-body">Approved Movers.</div>
+                        <div class="t-mono mt-1">OTMA.CO.ZA</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">10: Long Distance <span class="format-badge">1:1</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--square js-otma-stage" data-card-id="otma-10" data-logic-w="400" data-logic-h="400" data-export-w="1080" data-export-h="1080">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:400px;height:400px;">
+                    <div class="z-content pos-top w-100 p-0 text-center" style="padding:0;">
+                        <div class="otma-national-band shadow-txt">
+                            <div class="t-mono" style="color:#fff;">NATIONAL TRANSPORT</div>
+                            <div class="h-mid" style="color:#fff;">Gauteng to Anywhere.</div>
+                        </div>
+                    </div>
+                    <div class="z-content pos-bottom text-center shadow-txt w-100">
+                        <div class="t-body">Long-Distance &amp; Vehicle Transport.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="template-wrapper">
+            <div class="template-name">9: Suburb Routing <span class="format-badge">9:16</span></div>
+            <div class="otma-toolbar">
+                <label class="toolbar-btn">Upload<input type="file" class="js-otma-upload" accept="image/*" hidden></label>
+                <button type="button" class="toolbar-btn toolbar-btn--secondary js-otma-download">Download PNG</button>
+            </div>
+            <div class="otma-stage otma-canvas--vertical js-otma-stage" data-card-id="otma-9" data-logic-w="225" data-logic-h="400" data-export-w="1080" data-export-h="1920">
+                <div class="otma-grid-faux" aria-hidden="true"></div>
+                <div class="otma-inset-shade" aria-hidden="true"></div>
+                <div class="otma-scale-root" style="width:225px;height:400px;">
+                    <div class="z-content otma-route-rail text-left shadow-txt" style="border-left:2px solid var(--otma-blue);">
+                        <div class="t-mono color-titanium">ROUTE ACTIVE</div>
+                        <div class="h-mid mt-1">Brackenhurst</div>
+                        <div class="t-mono color-titanium my-1">TO</div>
+                        <div class="h-mid">New Redruth</div>
+                    </div>
+                    <div class="z-content pos-br glass-pill">
+                        <span class="t-mono" style="color:#fff;">BOOK NOW</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+    <script>
+        (function () {
+            function otmaNum(el, name, fallback) {
+                var v = parseInt(el && el.getAttribute(name), 10);
+                return isNaN(v) ? fallback : v;
+            }
+
+            function otmaDrawCover(ctx, img, cw, ch) {
+                var iw = img.naturalWidth || img.width;
+                var ih = img.naturalHeight || img.height;
+                if (!iw || !ih) return;
+                var scale = Math.max(cw / iw, ch / ih);
+                var dw = iw * scale;
+                var dh = ih * scale;
+                var dx = (cw - dw) / 2;
+                var dy = (ch - dh) / 2;
+                ctx.drawImage(img, dx, dy, dw, dh);
+            }
+
+            function otmaDrawInsetVignette(ctx, cw, ch) {
+                ctx.save();
+                var g = ctx.createRadialGradient(
+                    cw / 2, ch / 2, Math.min(cw, ch) * 0.15,
+                    cw / 2, ch / 2, Math.max(cw, ch) * 0.72
+                );
+                g.addColorStop(0, 'rgba(0,0,0,0)');
+                g.addColorStop(1, 'rgba(0,0,0,0.82)');
+                ctx.fillStyle = g;
+                ctx.fillRect(0, 0, cw, ch);
+                ctx.restore();
+            }
+
+            function otmaLoadImage(src) {
+                return new Promise(function (resolve, reject) {
+                    var im = new Image();
+                    im.onload = function () { resolve(im); };
+                    im.onerror = function () { reject(new Error('Could not load image for export')); };
+                    im.src = src;
+                });
+            }
+
+            function otmaRenderOverlayOnly(stage) {
+                return new Promise(function (resolve, reject) {
+                    var logicW = otmaNum(stage, 'data-logic-w', 400);
+                    var logicH = otmaNum(stage, 'data-logic-h', 400);
+                    var exportW = otmaNum(stage, 'data-export-w', 1080);
+                    var exportH = otmaNum(stage, 'data-export-h', 1080);
+                    var sx = exportW / logicW;
+                    var sy = exportH / logicH;
+                    if (Math.abs(sx - sy) > 0.001) {
+                        reject(new Error('Export aspect mismatch'));
+                        return;
+                    }
+                    var scaleRoot = stage.querySelector('.otma-scale-root');
+                    if (!scaleRoot) {
+                        reject(new Error('Missing scale root'));
+                        return;
+                    }
+                    var exportToken = 'otma-e-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+                    var host = document.createElement('div');
+                    host.className = 'otma-stage exporting otma-export-host';
+                    host.setAttribute('data-otma-export', exportToken);
+                    host.style.cssText = [
+                        'position:fixed',
+                        'left:-10000px',
+                        'top:0',
+                        'width:' + exportW + 'px',
+                        'height:' + exportH + 'px',
+                        'box-sizing:border-box',
+                        'background:transparent',
+                        'border:none',
+                        'box-shadow:none',
+                        'overflow:hidden',
+                        'margin:0',
+                        'padding:0',
+                        'border-radius:0'
+                    ].join(';');
+                    host.appendChild(scaleRoot.cloneNode(true));
+                    document.body.appendChild(host);
+
+                    html2canvas(host, {
+                        scale: 1,
+                        width: exportW,
+                        height: exportH,
+                        backgroundColor: null,
+                        useCORS: true,
+                        logging: false,
+                        onclone: function (doc) {
+                            var h2 = doc.querySelector('[data-otma-export="' + exportToken + '"]');
+                            if (h2) {
+                                var sr = h2.querySelector('.otma-scale-root');
+                                if (sr) {
+                                    sr.style.transform = 'scale(' + sx + ')';
+                                    sr.style.transformOrigin = '0 0';
+                                }
+                            }
+                        }
+                    })
+                        .then(function (canvas) {
+                            if (host.parentNode) host.parentNode.removeChild(host);
+                            resolve(canvas);
+                        })
+                        .catch(function (err) {
+                            if (host.parentNode) host.parentNode.removeChild(host);
+                            reject(err);
+                        });
+                });
+            }
+
+            function otmaCompositeExport(stage) {
+                return new Promise(function (resolve, reject) {
+                    var exportW = otmaNum(stage, 'data-export-w', 1080);
+                    var exportH = otmaNum(stage, 'data-export-h', 1080);
+                    var out = document.createElement('canvas');
+                    out.width = exportW;
+                    out.height = exportH;
+                    var ctx = out.getContext('2d');
+                    if (!ctx) {
+                        reject(new Error('Canvas unsupported'));
+                        return;
+                    }
+
+                    ctx.fillStyle = '#0f172a';
+                    ctx.fillRect(0, 0, exportW, exportH);
+
+                    var bgUrl = stage.dataset.objectUrl;
+                    var hasPhoto = !!(bgUrl && stage.classList.contains('has-image'));
+
+                    function afterBase() {
+                        return otmaRenderOverlayOnly(stage).then(function (overlayCv) {
+                            ctx.drawImage(overlayCv, 0, 0);
+                            return out;
+                        });
+                    }
+
+                    if (!hasPhoto) {
+                        afterBase().then(resolve).catch(reject);
+                        return;
+                    }
+
+                    otmaLoadImage(bgUrl)
+                        .then(function (img) {
+                            otmaDrawCover(ctx, img, exportW, exportH);
+                            otmaDrawInsetVignette(ctx, exportW, exportH);
+                            return afterBase();
+                        })
+                        .then(resolve)
+                        .catch(reject);
+                });
+            }
+
+            document.querySelectorAll('.template-wrapper').forEach(function (wrap) {
+                var fileInput = wrap.querySelector('.js-otma-upload');
+                var dlBtn = wrap.querySelector('.js-otma-download');
+                var stage = wrap.querySelector('.js-otma-stage');
+                if (!fileInput || !dlBtn || !stage) return;
+
+                var cardId = stage.getAttribute('data-card-id') || 'otma';
+                var ew = otmaNum(stage, 'data-export-w', 1080);
+                var eh = otmaNum(stage, 'data-export-h', 1080);
+
+                fileInput.addEventListener('change', function () {
+                    var file = fileInput.files && fileInput.files[0];
+                    if (!file) return;
+                    var prev = stage.dataset.objectUrl;
+                    if (prev) URL.revokeObjectURL(prev);
+                    var url = URL.createObjectURL(file);
+                    stage.dataset.objectUrl = url;
+                    stage.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
+                    stage.style.backgroundSize = 'cover';
+                    stage.style.backgroundPosition = 'center';
+                    stage.classList.add('has-image');
+                    fileInput.value = '';
+                });
+
+                dlBtn.addEventListener('click', function () {
+                    if (typeof html2canvas !== 'function') {
+                        alert('html2canvas did not load. Check your network and refresh the page.');
+                        return;
+                    }
+                    var lw = otmaNum(stage, 'data-logic-w', 400);
+                    if (!lw) {
+                        alert('Template has no logical width; cannot export.');
+                        return;
+                    }
+
+                    var prevText = dlBtn.textContent;
+                    dlBtn.disabled = true;
+                    dlBtn.textContent = 'Rendering…';
+
+                    otmaCompositeExport(stage)
+                        .then(function (canvas) {
+                            return new Promise(function (resolve, reject) {
+                                canvas.toBlob(function (blob) {
+                                    if (!blob) {
+                                        reject(new Error('Empty PNG'));
+                                        return;
+                                    }
+                                    var a = document.createElement('a');
+                                    var href = URL.createObjectURL(blob);
+                                    a.href = href;
+                                    a.download = cardId + '-' + ew + 'x' + eh + '.png';
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    a.remove();
+                                    URL.revokeObjectURL(href);
+                                    resolve();
+                                }, 'image/png');
+                            });
+                        })
+                        .catch(function (err) {
+                            console.error(err);
+                            alert('Export failed. Try another image or browser.');
+                        })
+                        .finally(function () {
+                            dlBtn.disabled = false;
+                            dlBtn.textContent = prevText;
+                        });
+                });
+            });
+        })();
+    </script>
+</body>
+</html>

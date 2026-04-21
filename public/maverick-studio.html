@@ -2,25 +2,33 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Maverick Painting — Business Card Studio</title>
+    <link rel="stylesheet" href="assets/maverick-mobile.css">
     <style>
         :root {
-            --mav-shell: 1200px;
-            --charcoal: #15181C;
-            --charcoal-light: #23282E;
-            --turquoise: #00D2D3;
-            --bright-green: #00E676;
-            --white: #FFFFFF;
-            --titanium: #A1A1A6;
-            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-mono: "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+            --mav-shell: 1600px;
+            --charcoal: #111418;
+            --obsidian: #1a1d24;
+            --turq: #00d2d3;
+            --turquoise: #00d2d3;
+            --green: #00e676;
+            --bright-green: #00e676;
+            --font-main: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Roboto, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, "Roboto Mono", monospace;
+            --glass-bg: rgba(17, 20, 24, 0.75);
+            --glass-border: rgba(0, 210, 211, 0.4);
+            --card-width: 840px;
+            --card-height: 480px;
+            --white: #ffffff;
+            --titanium: #a1a1a6;
         }
 
+        * { box-sizing: border-box; }
         body {
             font-family: var(--font-main);
-            background-color: #08090A;
-            color: var(--white);
+            background: #050608;
+            color: #fff;
             margin: 0;
             padding: 40px 24px;
         }
@@ -62,7 +70,6 @@
             letter-spacing: 0.08em;
             padding: 10px 18px;
             border-radius: 8px;
-            transition: background 0.15s ease, color 0.15s ease;
         }
         .mav-subnav a:hover {
             color: var(--white);
@@ -72,308 +79,296 @@
             color: #000;
             background: var(--turquoise);
         }
-        .mav-subnav__soon {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--titanium);
-            opacity: 0.55;
-            padding: 10px 14px;
-            cursor: default;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
 
         .control-panel {
             text-align: center;
-            margin-bottom: 40px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto 40px;
             max-width: var(--mav-shell);
-            width: 100%;
-            padding: 30px;
-            background: var(--charcoal);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 28px 24px;
+            background: #0c0e12;
+            border: 1px solid #1a1f26;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
-
-        h1 {
-            font-weight: 800;
-            margin-top: 0;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
+        .control-panel h1 {
+            font-weight: 900;
+            font-size: clamp(22px, 4vw, 32px);
+            letter-spacing: -0.5px;
+            margin: 0 0 10px;
+            color: var(--turq);
             text-transform: uppercase;
         }
-        h1 span { color: var(--turquoise); }
-        .subtitle {
-            color: var(--titanium);
+        .control-panel .subtitle {
+            color: #888;
+            font-family: var(--font-mono);
             font-size: 14px;
-            margin-bottom: 0;
-            font-weight: 400;
-            max-width: 680px;
-            margin-left: auto;
-            margin-right: auto;
-            line-height: 1.5;
+            line-height: 1.55;
+            margin: 0 auto;
+            max-width: 720px;
         }
 
-        .studio-grid {
+        .grid {
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 48px;
-            width: 100%;
+            grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+            gap: 40px;
             max-width: var(--mav-shell);
             margin: 0 auto;
         }
 
-        .card-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 32px;
-            align-items: start;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 28px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        @media (max-width: 900px) {
-            .card-row {
-                grid-template-columns: 1fr;
-            }
-            .row-header { grid-column: span 1 !important; }
-        }
-
-        .row-header {
-            grid-column: span 2;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--titanium);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-            margin-bottom: 4px;
-        }
-
-        .mav-card-slot {
+        .card-container {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .card-label {
-            font-size: 10px;
-            color: var(--titanium);
-            text-transform: uppercase;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
+            gap: 15px;
+            background: #0c0e12;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1a1f26;
         }
 
-        .mav-toolbar {
+        .card-actions-top {
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
-            margin-bottom: 12px;
         }
-        .toolbar-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+        .card-label {
+            font-family: var(--font-mono);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .btn-upload,
+        .btn-download {
+            background: var(--obsidian);
+            border: 1px solid var(--turq);
+            color: var(--turq);
             padding: 10px 16px;
-            border-radius: 4px;
-            font-size: 11px;
+            font-family: var(--font-main);
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
-            border: none;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            border-radius: 6px;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            font-family: inherit;
         }
-        .toolbar-btn:disabled { opacity: 0.55; cursor: wait; }
-        label.toolbar-btn {
-            background-color: var(--turquoise);
-            color: #000;
+        .btn-upload:hover,
+        .btn-download:hover {
+            background: var(--turq);
+            color: var(--charcoal);
         }
-        label.toolbar-btn:hover {
-            background-color: var(--bright-green);
+        .btn-upload input[type="file"] { display: none; }
+        .btn-download {
+            width: 100%;
+            margin-top: 4px;
+            background: var(--turq);
+            color: var(--charcoal);
+            font-size: 15px;
+            padding: 14px;
+            border: none;
         }
-        .toolbar-btn--secondary {
-            background: transparent;
-            color: var(--white);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .toolbar-btn--secondary:hover {
-            border-color: rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.06);
+        .btn-download:hover { background: #fff; color: var(--charcoal); }
+        .btn-download:disabled {
+            opacity: 0.55;
+            cursor: wait;
         }
 
-        .mav-stage {
+        .scale-wrapper {
             width: 100%;
-            max-width: 700px;
-            height: 400px;
-            background-color: var(--charcoal);
+            aspect-ratio: 7 / 4;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-            box-sizing: border-box;
-            border: 1px solid #333;
-            flex-shrink: 0;
-        }
-        .mav-stage.mav-stage--turq {
-            border-color: rgba(0, 210, 211, 0.5);
+            border: 1px solid #222;
+            border-radius: 4px;
+            background: #000;
         }
 
-        .mav-grid-faux {
+        .biz-card {
+            width: var(--card-width);
+            height: var(--card-height);
             position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            background-image:
-                linear-gradient(rgba(0, 210, 211, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 210, 211, 0.03) 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        .mav-stage.has-image .mav-grid-faux { display: none; }
-
-        .mav-readability-shade {
-            display: none;
-            position: absolute;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
-            background: linear-gradient(to right, rgba(21, 24, 28, 0.95) 0%, rgba(21, 24, 28, 0.7) 100%);
-        }
-        .mav-stage.has-image .mav-readability-shade { display: block; }
-        .mav-stage.mav-stage--turq.has-image .mav-readability-shade {
-            background: linear-gradient(to right, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.1) 100%);
+            top: 0;
+            left: 0;
+            background-color: var(--charcoal);
+            background-size: cover;
+            background-position: center;
+            transform-origin: top left;
+            overflow: hidden;
         }
 
-        .mav-scale-root {
+        .mono { font-family: var(--font-mono); }
+        .sans { font-family: var(--font-main); }
+        .txt-turq { color: var(--turq); }
+        .txt-green { color: var(--green); }
+        .txt-white { color: #fff; }
+
+        .txt-harsh {
+            text-shadow:
+                -1.5px -1.5px 0 #000,
+                1.5px -1.5px 0 #000,
+                -1.5px 1.5px 0 #000,
+                1.5px 1.5px 0 #000,
+                0 6px 15px rgba(0, 0, 0, 0.9),
+                0 0 25px rgba(0, 0, 0, 0.95);
+        }
+
+        .h-logo { font-size: 48px; font-weight: 900; letter-spacing: 2px; line-height: 1; }
+        .h-tag { font-size: 20px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-top: 8px; color: var(--turq); }
+        .h-name { font-size: 40px; font-weight: 800; letter-spacing: -1px; color: #fff; }
+        .h-title { font-size: 22px; font-weight: 500; color: var(--turq); margin-bottom: 25px; }
+
+        .data-list { font-size: 20px; line-height: 1.6; color: #f0f0f0; font-weight: 500; }
+        .data-list span { color: var(--turq); margin-right: 12px; font-weight: 800; }
+
+        .qa-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid var(--green);
+            padding: 8px 16px;
+            font-family: var(--font-mono);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--green);
+            text-transform: uppercase;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+        }
+        .qa-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            box-shadow: 0 0 5px var(--green);
+        }
+
+        .t1-panel {
             position: absolute;
             left: 0;
             top: 0;
-            transform-origin: 0 0;
-            z-index: 5;
-            box-sizing: border-box;
-        }
-
-        .z-content { position: absolute; z-index: 10; box-sizing: border-box; }
-        .pos-top { top: 0; left: 0; width: 100%; padding: 24px; }
-        .pos-bottom { bottom: 0; left: 0; width: 100%; padding: 24px; }
-        .pos-tl { top: 24px; left: 24px; }
-        .pos-tr { top: 24px; right: 24px; text-align: right; }
-        .pos-bl { bottom: 24px; left: 24px; }
-        .pos-br { bottom: 24px; right: 24px; text-align: right; }
-        .pos-center {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 85%;
-            text-align: center;
-        }
-        .pos-fill {
-            top: 0;
-            left: 0;
-            width: 100%;
+            width: 45%;
             height: 100%;
-            padding: 24px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-right: 2px solid var(--glass-border);
+            padding: 50px 40px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
 
-        .logo-txt { font-size: 22px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 0; line-height: 1; }
-        .name-txt { font-size: 16px; font-weight: 700; margin: 0 0 2px 0; color: var(--white); letter-spacing: 0.5px; }
-        .title-txt { font-size: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--turquoise); margin-bottom: 12px; }
-        .info-txt { font-size: 10px; font-weight: 400; color: #ccc; margin: 2px 0; display: flex; align-items: center; gap: 8px; }
-        .service-list { font-size: 9px; font-weight: 500; color: #eee; line-height: 1.6; }
-        .t-mono {
-            font-family: var(--font-mono);
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--bright-green);
-        }
-
-        .color-turq { color: var(--turquoise); }
-        .color-green { color: var(--bright-green); }
-
-        .flex-row { display: flex; justify-content: space-between; align-items: center; }
-        .flex-col { display: flex; flex-direction: column; }
-        .text-right { text-align: right; }
-        .text-center { text-align: center; }
-        .w-100 { width: 100%; }
-        .mb-1 { margin-bottom: 4px; }
-        .line-divider { height: 1px; background: rgba(255, 255, 255, 0.1); margin: 12px 0; }
-        .vertical-line { width: 2px; background: var(--turquoise); align-self: stretch; min-height: 80px; margin-right: 12px; flex-shrink: 0; }
-
-        .icon-box {
-            width: 14px;
-            height: 14px;
-            background: rgba(0, 210, 211, 0.1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 3px;
-            color: var(--turquoise);
-            font-size: 8px;
-            flex-shrink: 0;
-        }
-
-        .mav-watermark {
+        .t2-box {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 36px;
-            font-weight: 900;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.06);
-            margin: 0;
-            line-height: 1;
-            pointer-events: none;
-            z-index: 1;
-        }
-        .mav-front-stack {
-            position: relative;
-            z-index: 2;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(21, 24, 28, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid var(--turq);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            width: 60%;
+            max-width: calc(100% - 60px);
+            box-sizing: border-box;
         }
 
-        .mav-s2-turq-bar {
+        .t3-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--obsidian);
+            border-top: 4px solid var(--green);
+            padding: 30px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.7);
+            box-sizing: border-box;
+        }
+
+        .t4-right {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 55%;
+            max-width: 100%;
+            background: linear-gradient(90deg, rgba(17, 20, 24, 0) 0%, rgba(17, 20, 24, 0.9) 20%, rgba(17, 20, 24, 1) 100%);
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            text-align: right;
+            box-sizing: border-box;
+        }
+
+        .t5-frame {
+            position: absolute;
+            inset: 25px;
+            border: 4px solid var(--charcoal);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+        .t5-header {
+            background: var(--charcoal);
+            padding: 20px 30px;
+            width: fit-content;
+            max-width: calc(100% - 20px);
+            border-bottom-right-radius: 12px;
+            pointer-events: auto;
+        }
+        .t5-footer {
+            background: var(--charcoal);
+            padding: 20px 30px;
+            display: flex;
+            gap: 24px 40px;
+            flex-wrap: wrap;
+            border-top-left-radius: 12px;
+            align-self: flex-end;
+            pointer-events: auto;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .t6-top {
+            position: absolute;
             top: 0;
             left: 0;
-            width: 40%;
-            height: 100%;
-            background: var(--turquoise);
-            z-index: 5;
-        }
-        .mav-s2-front-inner {
-            display: flex;
-            align-items: center;
             width: 100%;
-            padding: 0 30px;
+            padding: 40px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
             box-sizing: border-box;
         }
-        .mav-s2-logo-vertical {
-            width: 40%;
-            text-align: left;
-        }
-        .mav-s2-logo-vertical .logo-txt {
-            color: #000;
-            writing-mode: vertical-rl;
-            transform: rotate(180deg);
-            margin: 0 auto;
-        }
-        .mav-s2-front-copy {
-            width: 60%;
-            text-align: left;
-            padding-left: 20px;
+        .t6-bot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--turq);
+            color: var(--charcoal);
+            padding: 30px 40px;
+            border-top-left-radius: 30px;
+            box-shadow: -10px -10px 30px rgba(0, 0, 0, 0.6);
+            max-width: 100%;
             box-sizing: border-box;
         }
 
-        .mav-stage.exporting .mav-s2-turq-bar,
-        .mav-stage.exporting .z-content[style*="background: var(--turquoise)"] {
-            background: #00d2d3 !important;
+        /* html2canvas: flatten glass (export clone gets .mav-exporting) */
+        .biz-card.mav-exporting .t1-panel,
+        .biz-card.mav-exporting .qa-badge {
+            background: rgba(22, 26, 32, 0.92) !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
         }
     </style>
 </head>
@@ -386,519 +381,256 @@
         <a href="maverick-brand.html">Brand guide</a>
         <a href="maverick-flyer.html">Flyers &amp; brochures</a>
         <a href="maverick-corporate.html">Corporate</a>
+        <a href="maverick-gallery.html">Gallery</a>
     </nav>
 
     <div class="control-panel">
-        <h1><span>Maverick</span> Business Card Studio</h1>
-        <p class="subtitle">Structural remediation and advanced coating experts. <strong>1.75∶1</strong> card ratio (85×55mm style). Each front/back has its own texture upload and <strong>PNG export</strong> at <strong>2100×1200</strong>.</p>
+        <h1>Maverick Print Studio</h1>
+        <p class="subtitle">Six pro layouts at <strong>840×480</strong> (3.5″×2″ @ 300&nbsp;DPI). Upload a background per card. Download <strong>2520×1440</strong> PNG (3×) for print.</p>
     </div>
 
-    <div class="studio-grid">
-
-        <div class="card-row">
-            <div class="row-header">Set 1: The Executive Minimalist</div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Front</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s1-front" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-center">
-                            <div class="logo-txt"><span class="color-turq">MAV</span>ERICK</div>
-                            <div class="t-mono" style="margin-top: 6px;">Asset Maintenance Partner</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Back</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s1-back" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-fill">
-                            <div class="flex-row">
-                                <div>
-                                    <div class="name-txt">Lawrence Brooks</div>
-                                    <div class="title-txt">Structural Remediation Specialist</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="t-mono color-green" style="border: 1px solid var(--bright-green); padding: 4px 8px; border-radius: 2px;">Independent QA</div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="info-txt"><span class="icon-box">WA</span> +27 82 627 7082</div>
-                                <div class="info-txt"><span class="icon-box">@</span> maverickpainters1984@gmail.com</div>
-                                <div class="line-divider"></div>
-                                <div class="flex-row service-list">
-                                    <span>✓ Structural Repairs</span>
-                                    <span>✓ Advanced Coatings</span>
-                                    <span>✓ Waterproofing</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-row">
-            <div class="row-header">Set 2: The Asset Protector</div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Front</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s2-front" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content mav-s2-turq-bar"></div>
-                        <div class="z-content pos-center mav-s2-front-inner">
-                            <div class="mav-s2-logo-vertical">
-                                <div class="logo-txt">MAVERICK</div>
-                            </div>
-                            <div class="mav-s2-front-copy">
-                                <div class="name-txt" style="font-size: 18px;">Lawrence Brooks</div>
-                                <div class="title-txt" style="color: var(--bright-green);">Director / Advanced Coating Expert</div>
-                                <div class="info-txt" style="margin-top: 12px;">082 627 7082</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Back</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s2-back" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-fill">
-                            <div>
-                                <div class="logo-txt" style="font-size: 14px;"><span class="color-turq">MAVERICK</span> PAINTING</div>
-                                <div class="t-mono color-green" style="margin-top: 4px;">BEYOND PAINT. SPECIALIZED CONTRACTORS.</div>
-                            </div>
-                            <div class="service-list" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                                <div>• Concrete Spalling Repair</div>
-                                <div>• Epoxy &amp; Polyurethane</div>
-                                <div>• Torch-On Membranes</div>
-                                <div>• Body Corporate Painting</div>
-                            </div>
-                            <div class="info-txt" style="color: var(--turquoise);">maverickpainters1984@gmail.com</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-row">
-            <div class="row-header">Set 3: The Technical Specialist</div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Front</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage mav-stage--turq js-mav-stage" data-card-id="mav-s3-front" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-fill" style="border: 1px solid var(--turquoise); width: 100%; height: 100%; box-sizing: border-box;">
-                            <div class="flex-row">
-                                <div class="logo-txt">MAVERICK</div>
-                                <div style="width: 20px; height: 2px; background: var(--bright-green);"></div>
-                            </div>
-                            <div>
-                                <div class="name-txt">Lawrence Brooks</div>
-                                <div class="title-txt" style="margin-bottom: 4px;">Independent QA / Asset Solutions</div>
-                                <div class="info-txt" style="font-family: var(--font-mono); color: var(--turquoise);">+27 82 627 7082</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Back</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s3-back" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-center w-100" style="padding: 0 24px; text-align: left; display: flex; align-items: stretch;">
-                            <div class="vertical-line" aria-hidden="true"></div>
-                            <div>
-                                <div class="t-mono color-turq mb-1">THE 4 PILLARS OF ASSET PROTECTION</div>
-                                <div class="service-list" style="margin-top: 8px;">
-                                    <b>01</b> Structural &amp; Remedial Repairs<br>
-                                    <b>02</b> Specialized Coating Systems<br>
-                                    <b>03</b> Advanced Waterproofing<br>
-                                    <b>04</b> Commercial &amp; High-Access Painting
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-row">
-            <div class="row-header">Set 4: The Corporate Block</div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Front</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s4-front" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-tl" style="background: var(--turquoise); color: #000; padding: 6px 12px; border-radius: 2px;">
-                            <div class="logo-txt" style="font-size: 14px;">MAVERICK</div>
-                        </div>
-                        <div class="z-content pos-bl">
-                            <div class="name-txt">Lawrence Brooks</div>
-                            <div class="title-txt" style="color: var(--bright-green);">Turn-Key Asset Solutions</div>
-                        </div>
-                        <div class="z-content pos-br text-right">
-                            <div class="info-txt" style="justify-content: flex-end;">082 627 7082</div>
-                            <div class="info-txt" style="justify-content: flex-end;">maverickpainters1984@gmail.com</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Back</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s4-back" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-fill" style="background: rgba(0, 230, 118, 0.05);">
-                            <div class="t-mono color-green text-center">CERTIFIED APPLICATORS &amp; COMPLIANT</div>
-                            <div class="flex-row" style="flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px;">
-                                <span class="info-txt" style="border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">Sika</span>
-                                <span class="info-txt" style="border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">Plascon</span>
-                                <span class="info-txt" style="border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">Dulux</span>
-                                <span class="info-txt" style="border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">a.b.e.</span>
-                                <span class="info-txt" style="border: 1px solid rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;">Marmoran</span>
-                            </div>
-                            <div class="line-divider"></div>
-                            <div class="t-mono text-center color-turq">MBA &amp; NAMA Registered • Fully OHS Compliant</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card-row">
-            <div class="row-header">Set 5: The Bold Statement</div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Front</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage js-mav-stage" data-card-id="mav-s5-front" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#15181C">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-center text-center w-100" style="position: relative;">
-                            <div class="mav-watermark" aria-hidden="true">MAVERICK</div>
-                            <div class="mav-front-stack">
-                                <div class="name-txt" style="font-size: 20px;">Lawrence Brooks</div>
-                                <div class="title-txt" style="color: var(--turquoise); margin-bottom: 6px;">Specialized Contractor Services</div>
-                                <div class="t-mono color-green">082 627 7082</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mav-card-slot">
-                <div class="card-label">Back</div>
-                <div class="mav-toolbar">
-                    <label class="toolbar-btn">Upload<input type="file" class="js-mav-upload" accept="image/*" hidden></label>
-                    <button type="button" class="toolbar-btn toolbar-btn--secondary js-mav-download">Download PNG</button>
-                </div>
-                <div class="mav-stage mav-stage--turq js-mav-stage" data-card-id="mav-s5-back" data-logic-w="700" data-logic-h="400" data-export-w="2100" data-export-h="1200" data-base-fill="#00D2D3">
-                    <div class="mav-grid-faux" aria-hidden="true"></div>
-                    <div class="mav-readability-shade" aria-hidden="true"></div>
-                    <div class="mav-scale-root" style="width:700px;height:400px;">
-                        <div class="z-content pos-fill" style="color: #000;">
-                            <div>
-                                <div class="logo-txt" style="color: #000;">MAVERICK</div>
-                                <div class="t-mono" style="color: #222; font-weight: 800; margin-top: 4px;">DE-RISKING YOUR MULTI-MILLION RAND ASSET.</div>
-                            </div>
-                            <div style="background: #000; color: #fff; padding: 12px; border-radius: 4px;">
-                                <div class="info-txt" style="color: var(--turquoise);">We solve problems from the structure up.</div>
-                                <div class="info-txt" style="color: #fff;">Independent QA • Guaranteed Workmanship</div>
-                                <div class="info-txt" style="color: var(--bright-green); margin-top: 6px;">maverickpainters1984@gmail.com</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    <div class="grid" id="cardGrid" aria-label="Business card templates"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" crossorigin="anonymous"></script>
+    <script src="assets/maverick-blob-download.js"></script>
     <script>
         (function () {
-            function mavNum(el, name, fallback) {
-                var v = parseInt(el && el.getAttribute(name), 10);
-                return isNaN(v) ? fallback : v;
+            var contactData =
+                '<div class="data-list mono">' +
+                '<div><span>TEL</span>+27 82 627 7082</div>' +
+                '<div><span>WEB</span>maverickpainting.co.za</div>' +
+                '</div>';
+
+            var templates = [
+                {
+                    id: 'mav-biz-01',
+                    name: '01. Glass &amp; Charcoal Matrix',
+                    html:
+                        '<div class="t1-panel">' +
+                        '<div><div class="h-logo txt-white">MAVERICK</div><div class="h-tag">Structural Remediation</div></div>' +
+                        '<div><div class="h-name">Lawrence Brooks</div><div class="h-title">Director &amp; Specialist</div>' +
+                        contactData +
+                        '</div></div>' +
+                        '<div style="position:absolute;bottom:40px;right:40px;"><div class="qa-badge">Independent QA</div></div>'
+                },
+                {
+                    id: 'mav-biz-02',
+                    name: '02. The Cupertino Float',
+                    html:
+                        '<div style="position:absolute;top:40px;right:40px;text-align:right;" class="txt-harsh">' +
+                        '<div class="h-logo txt-white">MAVERICK</div>' +
+                        '<div class="h-tag" style="color:var(--green);">Advanced Coatings</div></div>' +
+                        '<div class="t2-box">' +
+                        '<div class="h-name">Lawrence Brooks</div>' +
+                        '<div class="h-title">Turn-Key Asset Solution</div>' +
+                        '<div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;">' +
+                        contactData +
+                        '</div></div>'
+                },
+                {
+                    id: 'mav-biz-03',
+                    name: '03. The Tech Bar Bottom',
+                    html:
+                        '<div style="position:absolute;top:40px;left:40px;" class="txt-harsh">' +
+                        '<div class="h-logo txt-white" style="font-size:56px;">MAVERICK</div>' +
+                        '<div class="qa-badge" style="margin-top:15px;">MBA / NAMA Registered</div></div>' +
+                        '<div class="t3-bar">' +
+                        '<div><div class="h-name">Lawrence Brooks</div><div class="h-title" style="margin-bottom:0;">Project Director</div></div>' +
+                        '<div style="text-align:right;">' +
+                        contactData +
+                        '</div></div>'
+                },
+                {
+                    id: 'mav-biz-04',
+                    name: '04. OLED Minimalist Right',
+                    html:
+                        '<div style="position:absolute;top:40px;left:40px;">' +
+                        '<div class="qa-badge" style="border-color:var(--turq);color:var(--turq);">Specialized Contractor</div></div>' +
+                        '<div class="t4-right">' +
+                        '<div class="h-logo txt-white" style="margin-bottom:40px;">MAVERICK</div>' +
+                        '<div class="h-name">Lawrence Brooks</div>' +
+                        '<div class="h-title">Structural Assessor</div>' +
+                        '<div style="margin-top:20px;">' +
+                        contactData +
+                        '</div></div>'
+                },
+                {
+                    id: 'mav-biz-05',
+                    name: '05. Structural Edge Framing',
+                    html:
+                        '<div class="t5-frame">' +
+                        '<div class="t5-header">' +
+                        '<div class="h-logo txt-white">MAVERICK</div><div class="h-tag">Beyond Paint.</div></div>' +
+                        '<div class="t5-footer">' +
+                        '<div><div class="h-name" style="font-size:32px;">Lawrence Brooks</div><div class="h-title" style="margin-bottom:0;">Director</div></div>' +
+                        '<div class="data-list mono" style="font-size:16px;">' +
+                        '<div><span>TEL</span>+27 82 627 7082</div>' +
+                        '<div><span>WEB</span>maverickpainting.co.za</div></div></div></div>'
+                },
+                {
+                    id: 'mav-biz-06',
+                    name: '06. The Developer Split',
+                    html:
+                        '<div class="t6-top txt-harsh">' +
+                        '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">' +
+                        '<div><div class="h-logo txt-white">MAVERICK</div>' +
+                        '<div class="h-title" style="margin-top:5px;margin-bottom:0;">De-Risking Multi-Million Rand Assets</div></div>' +
+                        '<div class="qa-badge">Approved Applicator</div></div></div>' +
+                        '<div class="t6-bot">' +
+                        '<div class="h-name" style="color:var(--charcoal);">Lawrence Brooks</div>' +
+                        '<div class="data-list mono" style="color:var(--charcoal);margin-top:15px;font-weight:800;">' +
+                        '<div><span style="color:#000;">TEL</span>+27 82 627 7082</div>' +
+                        '<div><span style="color:#000;">WEB</span>maverickpainting.co.za</div></div></div>'
+                }
+            ];
+
+            function escapeAttr(s) {
+                return String(s)
+                    .replace(/&/g, '&amp;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
             }
 
-            function mavDrawCover(ctx, img, cw, ch) {
-                var iw = img.naturalWidth || img.width;
-                var ih = img.naturalHeight || img.height;
-                if (!iw || !ih) return;
-                var scale = Math.max(cw / iw, ch / ih);
-                var dw = iw * scale;
-                var dh = ih * scale;
-                var dx = (cw - dw) / 2;
-                var dy = (ch - dh) / 2;
-                ctx.drawImage(img, dx, dy, dw, dh);
-            }
-
-            function mavDrawReadabilityGradient(ctx, cw, ch) {
-                var g = ctx.createLinearGradient(0, 0, cw, 0);
-                g.addColorStop(0, 'rgba(21, 24, 28, 0.95)');
-                g.addColorStop(1, 'rgba(21, 24, 28, 0.7)');
-                ctx.fillStyle = g;
-                ctx.fillRect(0, 0, cw, ch);
-            }
-
-            function mavDrawTurqReadability(ctx, cw, ch) {
-                var g = ctx.createLinearGradient(0, 0, cw, 0);
-                g.addColorStop(0, 'rgba(0, 0, 0, 0.35)');
-                g.addColorStop(1, 'rgba(0, 0, 0, 0.12)');
-                ctx.fillStyle = g;
-                ctx.fillRect(0, 0, cw, ch);
-            }
-
-            function mavLoadImage(src) {
-                return new Promise(function (resolve, reject) {
-                    var im = new Image();
-                    im.onload = function () { resolve(im); };
-                    im.onerror = function () { reject(new Error('Could not load image for export')); };
-                    im.src = src;
-                });
-            }
-
-            function mavRenderOverlayOnly(stage) {
-                return new Promise(function (resolve, reject) {
-                    var logicW = mavNum(stage, 'data-logic-w', 700);
-                    var logicH = mavNum(stage, 'data-logic-h', 400);
-                    var exportW = mavNum(stage, 'data-export-w', 2100);
-                    var exportH = mavNum(stage, 'data-export-h', 1200);
-                    var sx = exportW / logicW;
-                    var sy = exportH / logicH;
-                    if (Math.abs(sx - sy) > 0.001) {
-                        reject(new Error('Export aspect mismatch'));
-                        return;
-                    }
-                    var scaleRoot = stage.querySelector('.mav-scale-root');
-                    if (!scaleRoot) {
-                        reject(new Error('Missing scale root'));
-                        return;
-                    }
-                    var exportToken = 'mav-e-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
-                    var host = document.createElement('div');
-                    host.className = 'mav-stage exporting mav-export-host';
-                    host.setAttribute('data-mav-export', exportToken);
-                    host.style.cssText = [
-                        'position:fixed',
-                        'left:-10000px',
-                        'top:0',
-                        'width:' + exportW + 'px',
-                        'height:' + exportH + 'px',
-                        'box-sizing:border-box',
-                        'background:transparent',
-                        'border:none',
-                        'box-shadow:none',
-                        'overflow:hidden',
-                        'margin:0',
-                        'padding:0'
-                    ].join(';');
-                    host.appendChild(scaleRoot.cloneNode(true));
-                    document.body.appendChild(host);
-
-                    html2canvas(host, {
-                        scale: 1,
-                        width: exportW,
-                        height: exportH,
-                        backgroundColor: null,
-                        useCORS: true,
-                        logging: false,
-                        onclone: function (doc) {
-                            var h2 = doc.querySelector('[data-mav-export="' + exportToken + '"]');
-                            if (h2) {
-                                var sr = h2.querySelector('.mav-scale-root');
-                                if (sr) {
-                                    sr.style.transform = 'scale(' + sx + ')';
-                                    sr.style.transformOrigin = '0 0';
-                                }
-                            }
-                        }
+            function buildGrid() {
+                var grid = document.getElementById('cardGrid');
+                if (!grid) return;
+                var html = templates
+                    .map(function (t) {
+                        return (
+                            '<div class="card-container" data-biz-id="' +
+                            escapeAttr(t.id) +
+                            '">' +
+                            '<div class="card-actions-top">' +
+                            '<span class="card-label">' +
+                            t.name +
+                            '</span>' +
+                            '<label class="btn-upload">Upload background<input type="file" class="js-biz-upload" accept="image/*" hidden></label>' +
+                            '</div>' +
+                            '<div class="scale-wrapper">' +
+                            '<div class="biz-card js-biz-card" id="' +
+                            escapeAttr(t.id) +
+                            '" data-export-w="2520" data-export-h="1440">' +
+                            t.html +
+                            '</div></div>' +
+                            '<button type="button" class="btn-download js-biz-download">Download high-res PNG</button>' +
+                            '</div>'
+                        );
                     })
-                        .then(function (canvas) {
-                            if (host.parentNode) host.parentNode.removeChild(host);
-                            resolve(canvas);
-                        })
-                        .catch(function (err) {
-                            if (host.parentNode) host.parentNode.removeChild(host);
-                            reject(err);
-                        });
+                    .join('');
+                grid.innerHTML = html;
+            }
+
+            function resizeCards() {
+                document.querySelectorAll('.scale-wrapper').forEach(function (wrapper) {
+                    var card = wrapper.querySelector('.biz-card');
+                    if (!card) return;
+                    var scale = wrapper.clientWidth / 840;
+                    card.style.transform = 'scale(' + scale + ')';
                 });
             }
 
-            function mavCompositeExport(stage) {
-                return new Promise(function (resolve, reject) {
-                    var exportW = mavNum(stage, 'data-export-w', 2100);
-                    var exportH = mavNum(stage, 'data-export-h', 1200);
-                    var baseFill = (stage.getAttribute('data-base-fill') || '#15181C').trim();
-                    var out = document.createElement('canvas');
-                    out.width = exportW;
-                    out.height = exportH;
-                    var ctx = out.getContext('2d');
-                    if (!ctx) {
-                        reject(new Error('Canvas unsupported'));
-                        return;
-                    }
+            function downloadBizCard(cardEl, safeName) {
+                if (typeof html2canvas !== 'function') {
+                    alert('html2canvas did not load. Check your network and refresh the page.');
+                    return Promise.reject();
+                }
+                var prevTransform = cardEl.style.transform;
+                var clone = cardEl.cloneNode(true);
+                clone.style.transform = 'none';
+                clone.style.position = 'fixed';
+                clone.style.left = '-12000px';
+                clone.style.top = '0';
+                clone.style.margin = '0';
+                clone.classList.add('mav-exporting');
+                document.body.appendChild(clone);
 
-                    ctx.fillStyle = baseFill;
-                    ctx.fillRect(0, 0, exportW, exportH);
-
-                    var bgUrl = stage.dataset.objectUrl;
-                    var hasPhoto = !!(bgUrl && stage.classList.contains('has-image'));
-
-                    function afterBase() {
-                        return mavRenderOverlayOnly(stage).then(function (overlayCv) {
-                            ctx.drawImage(overlayCv, 0, 0);
-                            return out;
+                return html2canvas(clone, {
+                    scale: 3,
+                    width: 840,
+                    height: 480,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: null
+                })
+                    .then(function (canvas) {
+                        return new Promise(function (resolve, reject) {
+                            canvas.toBlob(function (blob) {
+                                if (!blob) {
+                                    reject(new Error('Empty PNG'));
+                                    return;
+                                }
+                                var fn = safeName + '-2520x1440.png';
+                                if (typeof MaverickSaveBlob !== 'undefined' && MaverickSaveBlob.save) {
+                                    MaverickSaveBlob.save(blob, fn).then(resolve).catch(reject);
+                                    return;
+                                }
+                                var a = document.createElement('a');
+                                var href = URL.createObjectURL(blob);
+                                a.href = href;
+                                a.download = fn;
+                                document.body.appendChild(a);
+                                a.click();
+                                a.remove();
+                                URL.revokeObjectURL(href);
+                                resolve();
+                            }, 'image/png');
                         });
-                    }
-
-                    if (!hasPhoto) {
-                        afterBase().then(resolve).catch(reject);
-                        return;
-                    }
-
-                    mavLoadImage(bgUrl)
-                        .then(function (img) {
-                            mavDrawCover(ctx, img, exportW, exportH);
-                            if (stage.classList.contains('mav-stage--turq')) {
-                                mavDrawTurqReadability(ctx, exportW, exportH);
-                            } else {
-                                mavDrawReadabilityGradient(ctx, exportW, exportH);
-                            }
-                            return afterBase();
-                        })
-                        .then(resolve)
-                        .catch(reject);
-                });
+                    })
+                    .finally(function () {
+                        cardEl.style.transform = prevTransform;
+                        if (clone.parentNode) clone.parentNode.removeChild(clone);
+                    });
             }
 
-            document.querySelectorAll('.mav-card-slot').forEach(function (slot) {
-                var fileInput = slot.querySelector('.js-mav-upload');
-                var dlBtn = slot.querySelector('.js-mav-download');
-                var stage = slot.querySelector('.js-mav-stage');
-                if (!fileInput || !dlBtn || !stage) return;
+            buildGrid();
 
-                var cardId = stage.getAttribute('data-card-id') || 'mav';
-                var ew = mavNum(stage, 'data-export-w', 2100);
-                var eh = mavNum(stage, 'data-export-h', 1200);
-
-                fileInput.addEventListener('change', function () {
-                    var file = fileInput.files && fileInput.files[0];
-                    if (!file) return;
-                    var prev = stage.dataset.objectUrl;
-                    if (prev) URL.revokeObjectURL(prev);
-                    var url = URL.createObjectURL(file);
-                    stage.dataset.objectUrl = url;
-                    stage.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
-                    stage.style.backgroundSize = 'cover';
-                    stage.style.backgroundPosition = 'center';
-                    stage.classList.add('has-image');
-                    fileInput.value = '';
-                });
-
-                dlBtn.addEventListener('click', function () {
-                    if (typeof html2canvas !== 'function') {
-                        alert('html2canvas did not load. Check your network and refresh the page.');
-                        return;
-                    }
-                    var lw = mavNum(stage, 'data-logic-w', 700);
-                    if (!lw) {
-                        alert('Card has no logical width; cannot export.');
-                        return;
-                    }
-
-                    var prevText = dlBtn.textContent;
-                    dlBtn.disabled = true;
-                    dlBtn.textContent = 'Rendering…';
-
-                    mavCompositeExport(stage)
-                        .then(function (canvas) {
-                            return new Promise(function (resolve, reject) {
-                                canvas.toBlob(function (blob) {
-                                    if (!blob) {
-                                        reject(new Error('Empty PNG'));
-                                        return;
-                                    }
-                                    var a = document.createElement('a');
-                                    var href = URL.createObjectURL(blob);
-                                    a.href = href;
-                                    a.download = cardId + '-' + ew + 'x' + eh + '.png';
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    a.remove();
-                                    URL.revokeObjectURL(href);
-                                    resolve();
-                                }, 'image/png');
-                            });
-                        })
-                        .catch(function (err) {
-                            console.error(err);
-                            alert('Export failed. Try another image or browser.');
-                        })
-                        .finally(function () {
-                            dlBtn.disabled = false;
-                            dlBtn.textContent = prevText;
-                        });
-                });
+            document.getElementById('cardGrid').addEventListener('change', function (e) {
+                var input = e.target;
+                if (!input.classList || !input.classList.contains('js-biz-upload')) return;
+                var file = input.files && input.files[0];
+                if (!file) return;
+                var wrap = input.closest('.card-container');
+                var card = wrap && wrap.querySelector('.js-biz-card');
+                if (!card) return;
+                var prev = card.dataset.objectUrl;
+                if (prev) URL.revokeObjectURL(prev);
+                var url = URL.createObjectURL(file);
+                card.dataset.objectUrl = url;
+                card.style.backgroundImage = 'url(' + JSON.stringify(url) + ')';
+                input.value = '';
             });
+
+            document.getElementById('cardGrid').addEventListener('click', function (e) {
+                var btn = e.target.closest('.js-biz-download');
+                if (!btn) return;
+                var wrap = btn.closest('.card-container');
+                var card = wrap && wrap.querySelector('.js-biz-card');
+                if (!card) return;
+                var id = card.getAttribute('id') || 'mav-biz';
+                var prev = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Rendering…';
+                downloadBizCard(card, id)
+                    .catch(function (err) {
+                        console.error(err);
+                        alert('Export failed. Try another image or browser.');
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = prev;
+                    });
+            });
+
+            window.addEventListener('resize', resizeCards);
+            window.addEventListener('orientationchange', function () {
+                setTimeout(resizeCards, 200);
+            });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', resizeCards);
+            }
+            window.addEventListener('load', resizeCards);
+            resizeCards();
         })();
     </script>
 </body>

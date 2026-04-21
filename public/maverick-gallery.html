@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#050608">
+    <link rel="stylesheet" href="assets/maverick-mobile.css">
+    <title>Maverick — Gallery</title>
+    <style>
+        :root {
+            --mav-shell: 1200px;
+            --turquoise: #00d2d3;
+            --titanium: #a1a1a6;
+            --border: rgba(255, 255, 255, 0.08);
+            --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: var(--font-main);
+            background: #050608;
+            color: #fff;
+            padding: 40px 24px 80px;
+        }
+        .site-nav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 20px;
+            font-size: 14px;
+        }
+        .site-nav a {
+            color: var(--titanium);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(161, 161, 166, 0.35);
+        }
+        .site-nav a:hover {
+            color: #fff;
+            border-bottom-color: rgba(255, 255, 255, 0.35);
+        }
+        .mav-subnav {
+            max-width: var(--mav-shell);
+            margin: 0 auto 28px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            background: rgba(20, 24, 28, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .mav-subnav a {
+            color: var(--titanium);
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 10px 18px;
+            border-radius: 8px;
+        }
+        .mav-subnav a:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .mav-subnav a.is-active {
+            color: #000;
+            background: var(--turquoise);
+        }
+        .wrap {
+            max-width: var(--mav-shell);
+            margin: 0 auto;
+        }
+        .panel {
+            text-align: center;
+            padding: 28px 24px 36px;
+            background: #0c0e12;
+            border: 1px solid #1a1f26;
+            border-radius: 16px;
+            margin-bottom: 32px;
+        }
+        .panel h1 {
+            font-weight: 900;
+            font-size: clamp(22px, 4vw, 30px);
+            letter-spacing: -0.5px;
+            margin: 0 0 10px;
+            color: var(--turquoise);
+            text-transform: uppercase;
+        }
+        .panel p {
+            margin: 0 auto;
+            max-width: 640px;
+            color: #888;
+            font-size: 15px;
+            line-height: 1.55;
+        }
+        .mav-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+            gap: 16px;
+        }
+        .mav-gallery-item {
+            margin: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(0, 210, 211, 0.2);
+            background: rgba(17, 20, 24, 0.9);
+        }
+        .mav-gallery-item a {
+            display: block;
+            color: inherit;
+        }
+        .mav-gallery-item a:focus-visible {
+            outline: 2px solid var(--turquoise);
+            outline-offset: 2px;
+        }
+        .mav-gallery-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        .mav-gallery-item figcaption {
+            padding: 10px 12px;
+            font-size: 13px;
+            color: var(--titanium);
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav"><a href="index.html">← Home</a></nav>
+
+    <nav class="mav-subnav" aria-label="Maverick studios">
+        <a href="maverick-studio.html">Business cards</a>
+        <a href="maverick-social.html">Social templates</a>
+        <a href="maverick-brand.html">Brand guide</a>
+        <a href="maverick-flyer.html">Flyers &amp; brochures</a>
+        <a href="maverick-corporate.html">Corporate</a>
+        <a href="maverick-gallery.html" class="is-active" aria-current="page">Gallery</a>
+    </nav>
+
+    <div class="wrap">
+        <div class="panel">
+            <h1><span style="color:#fff;">Maverick</span> gallery</h1>
+            <p>Project and site photography. Tap or click a photo to open the full-resolution file in a new tab.</p>
+        </div>
+
+        <div class="mav-gallery-grid" role="list" id="mavGalleryGrid">
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_16AM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_16AM.jpg" alt="Maverick gallery, April 21, 2026, 9:16 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:16 AM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_18AM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_18AM.jpg" alt="Maverick gallery, April 21, 2026, 9:18 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:18 AM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2010_47AM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2010_47AM.jpg" alt="Maverick gallery, April 21, 2026, 10:47 AM" loading="lazy" decoding="async"></a>
+                <figcaption>10:47 AM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_06PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_06PM.jpg" alt="Maverick gallery, April 21, 2026, 12:06 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:06 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_09PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_09PM.jpg" alt="Maverick gallery, April 21, 2026, 12:09 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:09 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_11PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_11PM.jpg" alt="Maverick gallery, April 21, 2026, 12:11 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:11 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_16PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_16PM.jpg" alt="Maverick gallery, April 21, 2026, 12:16 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:16 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_19PM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_19PM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 12:19 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:19 PM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_19PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_19PM.jpg" alt="Maverick gallery, April 21, 2026, 12:19 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:19 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_20PM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_20PM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 12:20 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:20 PM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_20PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_20PM.jpg" alt="Maverick gallery, April 21, 2026, 12:20 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:20 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_40PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_40PM.jpg" alt="Maverick gallery, April 21, 2026, 12:40 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:40 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_45PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_45PM.jpg" alt="Maverick gallery, April 21, 2026, 12:45 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:45 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_46PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_46PM.jpg" alt="Maverick gallery, April 21, 2026, 12:46 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:46 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_53PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_53PM.jpg" alt="Maverick gallery, April 21, 2026, 12:53 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:53 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_54PM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_54PM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 12:54 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:54 PM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_54PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_54PM.jpg" alt="Maverick gallery, April 21, 2026, 12:54 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:54 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_56PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_56PM.jpg" alt="Maverick gallery, April 21, 2026, 12:56 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:56 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_57PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_57PM.jpg" alt="Maverick gallery, April 21, 2026, 12:57 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:57 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_59PM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_59PM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 12:59 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:59 PM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_59PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%2012_59PM.jpg" alt="Maverick gallery, April 21, 2026, 12:59 PM" loading="lazy" decoding="async"></a>
+                <figcaption>12:59 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%201_01PM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%201_01PM.jpg" alt="Maverick gallery, April 21, 2026, 1:01 PM" loading="lazy" decoding="async"></a>
+                <figcaption>1:01 PM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_13AM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_13AM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 9:13 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:13 AM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_13AM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_13AM.jpg" alt="Maverick gallery, April 21, 2026, 9:13 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:13 AM</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_15AM%20(1).jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_15AM%20(1).jpg" alt="Maverick gallery, April 21, 2026, 9:15 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:15 AM (1)</figcaption>
+            </figure>
+            <figure class="mav-gallery-item" role="listitem">
+                <a href="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_15AM.jpg" target="_blank" rel="noopener noreferrer"><img src="images/maverick/Generated%20Image%20April%2021%2C%202026%20-%209_15AM.jpg" alt="Maverick gallery, April 21, 2026, 9:15 AM" loading="lazy" decoding="async"></a>
+                <figcaption>9:15 AM</figcaption>
+            </figure>
+        </div>
+    </div>
+</body>
+</html>
